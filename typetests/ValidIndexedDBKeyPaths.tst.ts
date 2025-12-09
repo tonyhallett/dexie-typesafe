@@ -1,6 +1,6 @@
 import { expect, describe, it } from "tstyche";
-import type { ValidIndexedDBKeyPath } from "../ValidIndexedDBKeyPaths";
-import type { NoDescend } from "../utilitytypes";
+import type { ValidIndexedDBKeyPath } from "../src/ValidIndexedDBKeyPaths";
+import type { NoDescend } from "../src/utilitytypes";
 
 describe("ValidIndexedDBKeyPaths type", () => {
   it("should have path for leaf types at the root level", () => {

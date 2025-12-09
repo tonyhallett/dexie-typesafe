@@ -1,18 +1,18 @@
 import { add as dexieAddPropModHelper, type PromiseExtended } from "dexie";
-import { dexieFactory } from "../dexieFactory";
+import { dexieFactory } from "../src/dexieFactory";
 import {
   tableBuilder,
   tableClassBuilder,
   tableClassBuilderExcluded,
   type DuplicateIndexError,
   type DuplicateKeysError,
-} from "../tableBuilder";
+} from "../src/tableBuilder";
 import { expect, describe, it } from "tstyche";
-import type { ChangeCallback } from "../Collection";
-import { add, ObjectPropModification } from "../propmodifications";
-import type { NoDescend } from "../utilitytypes";
-import type { Level2 } from "../UpdateSpec";
-import { upgrade } from "../upgrade";
+import type { ChangeCallback } from "../src/Collection";
+import { add, ObjectPropModification } from "../src/propmodifications";
+import type { NoDescend } from "../src/utilitytypes";
+import type { Level2 } from "../src/UpdateSpec";
+import { upgrade } from "../src/upgrade";
 
 describe("tableBuilder", () => {
   describe("primary key selection", () => {

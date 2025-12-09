@@ -1,0 +1,4 @@
+{
+  "tsconfig": "./tsconfig.tstyche.json",
+  "testFileMatch": ["typetests/**/*.tst.ts"]
+}
