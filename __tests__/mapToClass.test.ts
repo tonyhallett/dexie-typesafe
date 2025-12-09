@@ -1,4 +1,4 @@
-import { mapToClass } from "../src/demoDexie/mapToClass";
+import { mapToClass } from "../src/mapToClass";
 
 describe("mapToClass", () => {
   it("maps tables to classes when mapToClass is defined", () => {

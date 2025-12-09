@@ -3,7 +3,7 @@ import {
   duplicateKeysErrorInstance,
   tableBuilder,
   TableConfig,
-} from "../src/demoDexie/tableBuilder";
+} from "../src/tableBuilder";
 
 describe("tableBuilder", () => {
   describe("primary key only", () => {

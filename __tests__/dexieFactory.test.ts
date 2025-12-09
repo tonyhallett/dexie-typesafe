@@ -1,15 +1,15 @@
-import { dexieFactory } from "../src/demoDexie/dexieFactory";
-import { mapToClass } from "../src/demoDexie/mapToClass";
-import { configureStores } from "../src/demoDexie/configureStores";
-import { TableConfig } from "../src/demoDexie/tableBuilder";
+import { dexieFactory } from "../src/dexieFactory";
+import { mapToClass } from "../src/mapToClass";
+import { configureStores } from "../src/configureStores";
+import { TableConfig } from "../src/tableBuilder";
 
-jest.mock("../src/demoDexie/configureStores", () => {
+jest.mock("../src/configureStores", () => {
   return {
     configureStores: jest.fn(),
   };
 });
 
-jest.mock("../src/demoDexie/mapToClass", () => {
+jest.mock("../src/mapToClass", () => {
   return {
     mapToClass: jest.fn(),
   };

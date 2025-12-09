@@ -1,8 +1,8 @@
-import { buildStores } from "../src/demoDexie/buildStores";
-import { configureStores } from "../src/demoDexie/configureStores";
-import { TableConfig } from "../src/demoDexie/tableBuilder";
+import { buildStores } from "../src/buildStores";
+import { configureStores } from "../src/configureStores";
+import { TableConfig } from "../src/tableBuilder";
 
-jest.mock("../src/demoDexie/buildStores", () => {
+jest.mock("../src/buildStores", () => {
   return {
     buildStores: jest.fn().mockReturnValue("mockedStores"),
   };

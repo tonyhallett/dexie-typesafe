@@ -1,4 +1,4 @@
-import { buildStores } from "../src/demoDexie/buildStores";
+import { buildStores } from "../src/buildStores";
 
 describe("buildStores", () => {
   it("should have just pk when no indices", () => {
