@@ -17,7 +17,7 @@ export class PropModificationTyped<T> extends PropModification {
   }
   //@ts-expect-error
   override execute(value: T): T {
-    return super.execute(value) as T;
+    return super.execute(value);
   }
 }
 

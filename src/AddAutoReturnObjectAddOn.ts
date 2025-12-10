@@ -11,7 +11,7 @@ export interface TableInboundAutoAdd<TDatabase, TPKeyPathOrPaths, TInsert> {
     }
   >;
 }
-export function AddAutoReturnObjectAddon(db: Dexie) {
+export function AddAutoReturnObjectAddon(db: Dexie): void {
   const tablePrototype = db.Table.prototype as Table &
     TableInboundAutoAdd<any, any, any>;
 

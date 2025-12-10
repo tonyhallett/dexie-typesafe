@@ -23,7 +23,7 @@ const whereMethods: WhereEqualityMethods = [
   "whereSingleEquality",
 ];
 
-export function WhereEqualityAddOn(db: Dexie) {
+export function WhereEqualityAddOn(db: Dexie): void {
   const tablePrototype = db.Table.prototype as Table &
     TableGetEquality<any, any, any> &
     WhereEquality<any, any, any, any, any, any, any, any, any>;

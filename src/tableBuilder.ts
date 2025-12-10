@@ -289,13 +289,119 @@ function createCompoundSchemaPart(keys: string[]): string {
   return `[${keys.join("+")}]`;
 }
 
+type TableBuilder<
+  TDatabase,
+  TGet,
+  TAllowTypeSpecificProperties extends boolean,
+  TKeyMaxDepth extends string,
+  TMaxDepth extends string
+> = {
+  autoIncrement<
+    TPKeyPath extends InboundAutoIncrementKeyPath<TDatabase, TKeyMaxDepth>
+  >(
+    key: TPKeyPath
+  ): IndexMethods<
+    TDatabase,
+    TPKeyPath,
+    true,
+    [],
+    TGet,
+    true,
+    never,
+    TAllowTypeSpecificProperties,
+    TKeyMaxDepth,
+    TMaxDepth
+  >;
+
+  primaryKey<
+    TPKeyPath extends ValidIndexedDBKeyPath<
+      TDatabase,
+      TAllowTypeSpecificProperties,
+      TKeyMaxDepth,
+      false
+    >
+  >(
+    key: TPKeyPath
+  ): IndexMethods<
+    TDatabase,
+    TPKeyPath,
+    false,
+    [],
+    TGet,
+    true,
+    never,
+    TAllowTypeSpecificProperties,
+    TKeyMaxDepth,
+    TMaxDepth
+  >;
+  compoundKey<
+    const TCompoundKeyPaths extends CompoundKeyPaths<
+      TDatabase,
+      TAllowTypeSpecificProperties,
+      TKeyMaxDepth,
+      false
+    >
+  >(
+    ...keys: TCompoundKeyPaths
+  ): NoDuplicates<TCompoundKeyPaths> extends never
+    ? DuplicateKeysError
+    : IndexMethods<
+        TDatabase,
+        TCompoundKeyPaths,
+        false,
+        [],
+        TGet,
+        false,
+        never,
+        TAllowTypeSpecificProperties,
+        TKeyMaxDepth
+      >;
+
+  hiddenAuto<PKey extends IndexableType = number>(
+    ...args: IncludesNumberInUnion<PKey> extends false
+      ? PKey extends number
+        ? []
+        : [never] // Error: PKey must include number in union
+      : []
+  ): IndexMethods<
+    TDatabase,
+    null,
+    true,
+    [],
+    TGet,
+    false,
+    PKey,
+    TAllowTypeSpecificProperties,
+    TKeyMaxDepth
+  >;
+  hiddenExplicit<PKey extends IndexableType = number>(): IndexMethods<
+    TDatabase,
+    null,
+    false,
+    [],
+    TGet,
+    false,
+    PKey,
+    TAllowTypeSpecificProperties,
+    TKeyMaxDepth
+  >;
+};
+
 function createTableBuilder<
   TDatabase,
   TGet,
   TAllowTypeSpecificProperties extends boolean,
   TKeyMaxDepth extends string,
   TMaxDepth extends string
->(mapToClass?: ConstructorOf<TDatabase>) {
+>(
+  mapToClass?: ConstructorOf<TDatabase>
+): TableBuilder<
+  TDatabase,
+  TGet,
+  TAllowTypeSpecificProperties,
+  TKeyMaxDepth,
+  TMaxDepth
+> {
   const indexParts: string[] = [];
   const indexPartsNoUnique: string[] = [];
 
@@ -471,8 +577,8 @@ function createTableBuilder<
         TAllowTypeSpecificProperties,
         TKeyMaxDepth,
         false
-      > &
-        string
+      > /* &
+        string */
     >(key: TPKeyPath) {
       return createIndexMethods(key, false, [] as const, true, null as never);
     },
@@ -539,7 +645,13 @@ export function tableBuilder<
   TMaxDepth extends string = Level2,
   TKeyMaxDepth extends string = NoDescend,
   TAllowTypeSpecificProperties extends boolean = false
->() {
+>(): TableBuilder<
+  TDatabase,
+  TDatabase,
+  TAllowTypeSpecificProperties,
+  TKeyMaxDepth,
+  TMaxDepth
+> {
   return createTableBuilder<
     TDatabase,
     TDatabase,
@@ -554,7 +666,15 @@ export function tableClassBuilder<
   TMaxDepth extends string = Level2,
   TKeyMaxDepth extends string = NoDescend,
   TAllowTypeSpecificProperties extends boolean = false
->(ctor: TGetCtor) {
+>(
+  ctor: TGetCtor
+): TableBuilder<
+  InsertType<InstanceType<TGetCtor>, never>,
+  InstanceType<TGetCtor>,
+  TAllowTypeSpecificProperties,
+  TKeyMaxDepth,
+  TMaxDepth
+> {
   type TEntity = InstanceType<TGetCtor>;
   type TDatabase = InsertType<TEntity, never>;
 
@@ -567,15 +687,41 @@ export function tableClassBuilder<
   >(ctor);
 }
 
+type TableClassBuilderExcluded<
+  TGetCtor extends new (...args: any) => any,
+  TMaxDepth extends string = Level2,
+  TKeyMaxDepth extends string = NoDescend,
+  TAllowTypeSpecificProperties extends boolean = false
+> = {
+  excludedKeys<
+    TExcludeProps extends keyof InstanceType<TGetCtor> & string
+  >(): TableBuilder<
+    InsertType<Omit<InstanceType<TGetCtor>, TExcludeProps>, never>,
+    InstanceType<TGetCtor>,
+    TAllowTypeSpecificProperties,
+    TKeyMaxDepth,
+    TMaxDepth
+  >;
+};
+
 export function tableClassBuilderExcluded<
   TGetCtor extends new (...args: any) => any,
   TMaxDepth extends string = Level2,
   TKeyMaxDepth extends string = NoDescend,
   TAllowTypeSpecificProperties extends boolean = false
->(ctor: TGetCtor) {
+>(
+  ctor: TGetCtor
+): TableClassBuilderExcluded<
+  TGetCtor,
+  TMaxDepth,
+  TKeyMaxDepth,
+  TAllowTypeSpecificProperties
+> {
   type TGet = InstanceType<TGetCtor>;
   return {
-    excludedKeys<TExcludeProps extends keyof TGet & string>() {
+    excludedKeys<
+      TExcludeProps extends keyof InstanceType<TGetCtor> & string
+    >() {
       type T = Omit<TGet, TExcludeProps>;
       type TDatabase = InsertType<T, never>;
 

@@ -7,7 +7,7 @@ export function configureStores(
   version: number,
   tableConfigs: Record<string, TableConfig<any, any, any, any> | null>,
   upgradeFunction?: any
-) {
+): void {
   const dexieVersion = db.version(version).stores(buildStores(tableConfigs));
   if (upgradeFunction) {
     dexieVersion.upgrade(upgradeFunction as any);

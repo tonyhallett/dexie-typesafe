@@ -2,7 +2,7 @@ import type { TableConfig } from "./tableBuilder";
 
 export function buildStores(
   tableConfigs: Record<string, TableConfig<any, any, any, any> | null>
-) {
+): Record<string, string | null> {
   const stores: Record<string, string | null> = {};
   for (const [name, cfg] of Object.entries(tableConfigs)) {
     if (cfg === null) {

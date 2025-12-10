@@ -82,7 +82,7 @@ export interface TableOutboundAutoBulkTuple<
   ): PromiseExtendedPKeyOrKeys<TPKey, B>;
 }
 
-export function TableBulkTupleAddOn(db: Dexie) {
+export function TableBulkTupleAddOn(db: Dexie): void {
   const tablePrototype = db.Table.prototype as Table &
     TableInboundBaseBulkTuple<any, any, any> &
     TableInboundAutoBulkTuple<any, any, any> &

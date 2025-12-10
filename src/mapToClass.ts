@@ -7,11 +7,10 @@ export function mapToClass(
     string,
     TableConfig<any, any, any, any, any, any, any, any> | null
   >
-) {
+): void {
   for (const [name, cfg] of Object.entries(tableConfigs)) {
     if (cfg && cfg.mapToClass) {
       db.table(name).mapToClass(cfg.mapToClass);
     }
   }
-  return db;
 }
