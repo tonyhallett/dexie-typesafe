@@ -29,9 +29,10 @@ describe("PropModification exports", () => {
   });
 
   it("should export ObjectPropModification class, instanceof PropModification true", () => {
-    new ObjectPropModification<string>((v) => v);
-    expect(new ObjectPropModification<string>((v) => v)).toBeInstanceOf(
-      PropModification
+    const objectPropModification = new ObjectPropModification<string>(
+      (s) => s + " modified"
     );
+    expect(objectPropModification.execute("test")).toBe("test modified");
+    expect(objectPropModification).toBeInstanceOf(PropModification);
   });
 });

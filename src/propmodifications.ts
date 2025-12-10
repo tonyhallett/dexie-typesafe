@@ -10,11 +10,13 @@ export type AddRemoveValueType = AddRemoveNumberType | Array<string | number>;
 
 export abstract class PropModificationTyped<T> {
   private readonly __brand!: T;
-  constructor() {
-    Object.setPrototypeOf(this, PropModification.prototype);
-  }
   abstract execute(value: T): T;
 }
+
+Object.setPrototypeOf(
+  PropModificationTyped.prototype,
+  PropModification.prototype
+);
 
 export function replacePrefix(
   prefix: string,
