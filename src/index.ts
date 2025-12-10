@@ -4,3 +4,11 @@ export {
   tableClassBuilder,
   tableClassBuilderExcluded,
 } from "./tableBuilder";
+export {
+  add,
+  remove,
+  replacePrefix,
+  safeRemoveNumber,
+  RemoveUndefinedBehaviour,
+  ObjectPropModification,
+} from "./propmodifications";

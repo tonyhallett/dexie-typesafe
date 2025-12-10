@@ -7,7 +7,6 @@ import {
 
 export type AddRemoveNumberType = number | bigint;
 export type AddRemoveValueType = AddRemoveNumberType | Array<string | number>;
-export type PropModificationValueType = string | AddRemoveValueType;
 
 export abstract class PropModificationTyped<T> {
   private readonly __brand!: T;
