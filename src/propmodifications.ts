@@ -1,6 +1,5 @@
 import {
   PropModification,
-  type PropModSpec,
   replacePrefix as dexiereplacePrefix,
   add as dexieadd,
   remove as dexieremove,
@@ -10,40 +9,36 @@ export type AddRemoveNumberType = number | bigint;
 export type AddRemoveValueType = AddRemoveNumberType | Array<string | number>;
 export type PropModificationValueType = string | AddRemoveValueType;
 
-export class PropModificationTyped<T> extends PropModification {
-  private readonly __brand!: T;
-  constructor(spec: PropModSpec) {
-    super(spec);
+export abstract class PropModificationTyped<T> {
+  constructor() {
+    Object.setPrototypeOf(this, PropModification.prototype);
   }
-  //@ts-expect-error
-  override execute(value: T): T {
-    return super.execute(value);
-  }
+  abstract execute(value: T): T;
 }
 
 export function replacePrefix(
   prefix: string,
   replaced: string
 ): PropModificationTyped<string> {
-  return dexiereplacePrefix(prefix, replaced) as PropModificationTyped<string>;
+  return dexiereplacePrefix(prefix, replaced);
 }
 
 export function add<T extends AddRemoveValueType>(
   value: T
 ): PropModificationTyped<T> {
-  return dexieadd(value) as PropModificationTyped<T>;
+  return dexieadd(value);
 }
 
 export function remove<T extends AddRemoveValueType>(
   value: T
 ): PropModificationTyped<T> {
-  return dexieremove(value) as PropModificationTyped<T>;
+  return dexieremove(value);
 }
 
 export class ObjectPropModification<T> extends PropModificationTyped<T> {
   executor: (value: T) => T;
   constructor(executor: (value: T) => T) {
-    super(null as any);
+    super();
     this.executor = executor;
   }
   override execute(value: T): T {
