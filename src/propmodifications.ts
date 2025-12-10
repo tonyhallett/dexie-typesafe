@@ -10,6 +10,7 @@ export type AddRemoveValueType = AddRemoveNumberType | Array<string | number>;
 export type PropModificationValueType = string | AddRemoveValueType;
 
 export abstract class PropModificationTyped<T> {
+  private readonly __brand!: T;
   constructor() {
     Object.setPrototypeOf(this, PropModification.prototype);
   }
@@ -20,19 +21,22 @@ export function replacePrefix(
   prefix: string,
   replaced: string
 ): PropModificationTyped<string> {
-  return dexiereplacePrefix(prefix, replaced);
+  return dexiereplacePrefix(
+    prefix,
+    replaced
+  ) as unknown as PropModificationTyped<string>;
 }
 
 export function add<T extends AddRemoveValueType>(
   value: T
 ): PropModificationTyped<T> {
-  return dexieadd(value);
+  return dexieadd(value) as unknown as PropModificationTyped<T>;
 }
 
 export function remove<T extends AddRemoveValueType>(
   value: T
 ): PropModificationTyped<T> {
-  return dexieremove(value);
+  return dexieremove(value) as unknown as PropModificationTyped<T>;
 }
 
 export class ObjectPropModification<T> extends PropModificationTyped<T> {
