@@ -1,4 +1,4 @@
-import { upgrade } from "../src/upgrade";
+import { upgrade } from "../src/index";
 import { mapToClass } from "../src/mapToClass";
 import { configureStores } from "../src/configureStores";
 import { TableConfigAny } from "../src/tableBuilder";

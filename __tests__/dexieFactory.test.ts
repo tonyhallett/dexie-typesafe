@@ -1,4 +1,4 @@
-import { dexieFactory } from "../src/dexieFactory";
+import { dexieFactory } from "../src/index";
 import { mapToClass } from "../src/mapToClass";
 import { configureStores } from "../src/configureStores";
 import { TableConfig } from "../src/tableBuilder";
