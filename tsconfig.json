@@ -1,47 +1,23 @@
 {
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
-    // File Layout
-    "rootDir": "./src",
-    "outDir": "./dist",
-
-    // Environment Settings
-    // See also https://aka.ms/tsconfig/module
-    "module": "esnext",
+    "target": "es2020",
+    "module": "preserve",
     "moduleResolution": "bundler",
-    "esModuleInterop": true,
-    "target": "esnext",
-    "types": [],
-    "noEmit": true, // or `emitDeclarationOnly`
-    "allowImportingTsExtensions": true,
-    "allowArbitraryExtensions": true,
+    "strict": true,
+    "verbatimModuleSyntax": true,
 
-    // Other Outputs
-    "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
+    "emitDeclarationOnly": true,
+    "stripInternal": false,
 
-    // Stricter Typechecking Options
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
+    "rootDir": "src",
+    "outDir": "dist",
 
-    // Style Options
-    // "noImplicitReturns": true,
-    // "noImplicitOverride": true,
-    // "noUnusedLocals": true,
-    // "noUnusedParameters": true,
-    // "noFallthroughCasesInSwitch": true,
-    // "noPropertyAccessFromIndexSignature": true,
+    "isolatedDeclarations": true,
 
-    // Recommended Options
-    "strict": true,
-    "jsx": "react-jsx",
-    "verbatimModuleSyntax": true,
-    "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
-    "moduleDetection": "force",
     "skipLibCheck": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["**/*.test.ts", "**/*.tst.ts", "__tests__", "typetests"]
+  "include": ["src/**/*"]
 }

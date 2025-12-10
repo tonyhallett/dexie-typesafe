@@ -4,6 +4,32 @@
   "author": "Tony Hallett",
   "license": "ISC",
   "description": "Typesafe schema building producing typesafe dexie Table, Collection and Where",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup"
+  },
+  "tsup": {
+    "entry": [
+      "src/index.ts"
+    ],
+    "format": [
+      "cjs",
+      "esm"
+    ],
+    "dts": true,
+    "splitting": false,
+    "sourcemap": true,
+    "clean": true
+  },
   "dependencies": {
     "dexie": "^4.2.1"
   },
@@ -14,6 +40,7 @@
     "jest-environment-jsdom": "^30.2.0",
     "ts-jest": "^29.4.5",
     "tstyche": "^5.0.1",
+    "tsup": "^8.5.1",
     "typescript": "^5.9.3"
   }
 }
