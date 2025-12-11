@@ -1,11 +1,11 @@
 import { add as dexieAddPropModHelper, type PromiseExtended } from "dexie";
 import { dexieFactory } from "../src/dexieFactory";
 import {
+  type CompoundIndexError,
+  type DuplicateKeysError,
   tableBuilder,
   tableClassBuilder,
   tableClassBuilderExcluded,
-  type DuplicateIndexError,
-  type DuplicateKeysError,
 } from "../src/tableBuilder";
 import { expect, describe, it } from "tstyche";
 import type { ChangeCallback } from "../src/Collection";
@@ -429,20 +429,32 @@ describe("tableBuilder", () => {
       expect(builder.compound).type.not.toBeCallableWith();
     });
 
-    it("should not be possible to complete the chain when duplicate compound indexes are used", () => {
+    it("should not be possible to build when duplicate parts in compound keys", () => {
       expect(
         builder.compound("index", "index")
-      ).type.toBe<DuplicateKeysError>();
+      ).type.toBe<CompoundIndexError>();
     });
 
-    it("should not be possible to complete the chain when duplicate indexes are used", () => {
+    it("should not be possible to input duplicate indexes", () => {
+      expect(builder.index("index").index).type.not.toBeCallableWith("index");
       expect(
-        builder.index("index").index("index")
-      ).type.toBe<DuplicateIndexError>();
+        builder.index("index").compound("index", "date").index
+      ).type.not.toBeCallableWith("index");
+      expect(builder.index("index").uniqueIndex).type.not.toBeCallableWith(
+        "index"
+      );
+      expect(builder.multi("multiEntry").index).type.not.toBeCallableWith(
+        "multiEntry"
+      );
+      expect(builder.index("multiEntry").multi).type.not.toBeCallableWith(
+        "multiEntry"
+      );
+    });
 
+    it("should not be possible to build when duplicate compound keys", () => {
       expect(
         builder.compound("index", "date").compound("index", "date")
-      ).type.toBe<DuplicateIndexError>();
+      ).type.toBe<CompoundIndexError>();
     });
 
     it("should work with hiddenAuto and hiddenExplicit primary keys", () => {

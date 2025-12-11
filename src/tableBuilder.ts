@@ -4,6 +4,7 @@ import type {
   SingleIndexPath,
   MultiIndexPath,
   CompoundIndexPaths,
+  CompoundKeyPathsAsStr,
 } from "./indexpaths";
 import type {
   AllowedKeyLeaf,
@@ -79,46 +80,12 @@ export const duplicateKeysErrorInstance: DuplicateKeysError = {
   error: "Duplicate keys in compound key are not allowed",
 };
 
-export type DuplicateIndexError = {
-  readonly error: "Duplicate index name is not allowed";
+export type CompoundIndexError = {
+  readonly error: "Compound index is a duplicate, or has duplicate parts";
 };
-
-export const duplicateIndexErrorInstance: DuplicateIndexError = {
-  error: "Duplicate index name is not allowed",
+export const compoundIndexErrorInstance: CompoundIndexError = {
+  error: "Compound index is a duplicate, or has duplicate parts",
 };
-
-// Helper to extract index path identifier
-type IndexName<TIndexPath> = TIndexPath extends SingleIndexPath<any, infer P>
-  ? P
-  : TIndexPath extends MultiIndexPath<any, infer P>
-  ? P
-  : TIndexPath extends CompoundIndexPaths<any, infer Paths>
-  ? Paths // Keep the tuple for compound indexes
-  : never;
-
-// Extract all used index names as a union
-type UsedIndexNames<TIndexPaths extends DexieIndexPaths<any>> =
-  TIndexPaths extends readonly [infer First, ...infer Rest]
-    ? Rest extends DexieIndexPaths<any>
-      ? IndexName<First> | UsedIndexNames<Rest>
-      : IndexName<First>
-    : never;
-
-// Check if an index name is already used
-type IsIndexDuplicate<
-  TIndexPath,
-  TIndexPaths extends DexieIndexPaths<any>
-> = UsedIndexNames<TIndexPaths> extends never
-  ? false
-  : TIndexPath extends readonly any[] // Is it a compound index?
-  ? UsedIndexNames<TIndexPaths> extends infer Used
-    ? Used extends readonly any[] // Check against other compound indexes
-      ? TuplesEqual<TIndexPath, Used>
-      : false
-    : false
-  : TIndexPath extends UsedIndexNames<TIndexPaths> // Single index check
-  ? true
-  : false;
 
 type CompoundMatchesPK<TCompound, PK> = PK extends readonly any[]
   ? TCompound extends readonly any[]
@@ -163,6 +130,33 @@ type ApplySinglePkRemoval<TDatabase, PkPathOrPaths> = [PkPathOrPaths] extends [
   ? TDatabase
   : DeletePrimaryKeys<TDatabase, PkPathOrPaths>;
 
+interface AvailableIndexMethods<TSingle, TMulti, TCompound> {
+  single: TSingle;
+  multi: TMulti;
+  compound: TCompound;
+}
+
+type StrictCompoundIndexPaths<
+  TCompoundIndexPaths extends string[],
+  TIndexPaths extends DexieIndexPaths<any>
+> = NoDuplicates<TCompoundIndexPaths> extends never
+  ? never
+  : ExcludeExistingCompound<TCompoundIndexPaths, TIndexPaths>;
+
+export type ExcludeExistingCompound<
+  TCompoundIndexPaths extends readonly string[],
+  TIndexPaths extends DexieIndexPaths<any>
+> = TIndexPaths extends readonly [
+  infer First,
+  ...infer Rest extends DexieIndexPaths<any>
+]
+  ? First extends CompoundIndexPaths<any, infer P extends CompoundKeyPathsAsStr>
+    ? TuplesEqual<TCompoundIndexPaths, P> extends true
+      ? never // exact match found → exclude
+      : ExcludeExistingCompound<TCompoundIndexPaths, Rest>
+    : ExcludeExistingCompound<TCompoundIndexPaths, Rest>
+  : TCompoundIndexPaths; // not found → allowed
+
 interface IndexMethods<
   TDatabase,
   PkPathOrPaths,
@@ -174,62 +168,69 @@ interface IndexMethods<
   TPKeyOutbound extends IndexableType = never,
   TAllowTypeSpecificProperties extends boolean = false,
   TKeyMaxDepth extends string = NoDescend,
-  TMaxDepth extends string = Level2
-> {
-  index<
-    TIndexPath extends SingleIndexKeyPathExcludePrimaryKey<
+  TMaxDepth extends string = Level2,
+  TAvailableIndexMethods extends AvailableIndexMethods<
+    any,
+    any,
+    any
+  > = AvailableIndexMethods<
+    SingleIndexKeyPathExcludePrimaryKey<
       TDatabase,
       PkPathOrPaths,
       TAllowTypeSpecificProperties,
       TKeyMaxDepth
-    >
-  >(
-    indexPath: TIndexPath
-  ): IsIndexDuplicate<TIndexPath, TIndexPaths> extends true
-    ? DuplicateIndexError
-    : IndexMethods<
-        TDatabase,
-        PkPathOrPaths,
-        Auto,
-        [...TIndexPaths, SingleIndexPath<TDatabase, TIndexPath>],
-        TGet,
-        TPKeyIsInbound,
-        TPKeyOutbound,
-        TAllowTypeSpecificProperties,
-        TKeyMaxDepth,
-        TMaxDepth
-      >;
-  uniqueIndex: this["index"];
-  multi<
-    TIndexPath extends MultiIndexKeyPathExcludePrimaryKey<
-      TDatabase,
-      PkPathOrPaths,
-      TKeyMaxDepth
-    >
-  >(
-    indexPath: TIndexPath
-  ): IsIndexDuplicate<TIndexPath, TIndexPaths> extends true
-    ? DuplicateIndexError
-    : IndexMethods<
-        TDatabase,
-        PkPathOrPaths,
-        Auto,
-        [...TIndexPaths, MultiIndexPath<TDatabase, TIndexPath>],
-        TGet,
-        TPKeyIsInbound,
-        TPKeyOutbound,
-        TAllowTypeSpecificProperties,
-        TKeyMaxDepth,
-        TMaxDepth
-      >;
-  uniqueMulti: this["multi"];
-  compound<
-    const TCompoundIndexPaths extends CompoundKeyPaths<
+    >,
+    MultiIndexKeyPathExcludePrimaryKey<TDatabase, PkPathOrPaths, TKeyMaxDepth>,
+    CompoundKeyPaths<
       TDatabase,
       TAllowTypeSpecificProperties,
       TKeyMaxDepth,
       true
     >
+  >
+> {
+  index<TIndexPath extends TAvailableIndexMethods["single"]>(
+    indexPath: TIndexPath
+  ): IndexMethods<
+    TDatabase,
+    PkPathOrPaths,
+    Auto,
+    [...TIndexPaths, SingleIndexPath<TDatabase, TIndexPath>],
+    TGet,
+    TPKeyIsInbound,
+    TPKeyOutbound,
+    TAllowTypeSpecificProperties,
+    TKeyMaxDepth,
+    TMaxDepth,
+    {
+      single: Exclude<TAvailableIndexMethods["single"], TIndexPath>;
+      multi: Exclude<TAvailableIndexMethods["multi"], TIndexPath>;
+      compound: TAvailableIndexMethods["compound"];
+    }
+  >;
+  uniqueIndex: this["index"];
+  multi<TIndexPath extends TAvailableIndexMethods["multi"]>(
+    indexPath: TIndexPath
+  ): IndexMethods<
+    TDatabase,
+    PkPathOrPaths,
+    Auto,
+    [...TIndexPaths, MultiIndexPath<TDatabase, TIndexPath>],
+    TGet,
+    TPKeyIsInbound,
+    TPKeyOutbound,
+    TAllowTypeSpecificProperties,
+    TKeyMaxDepth,
+    TMaxDepth,
+    {
+      single: Exclude<TAvailableIndexMethods["single"], TIndexPath>;
+      multi: Exclude<TAvailableIndexMethods["multi"], TIndexPath>;
+      compound: TAvailableIndexMethods["compound"];
+    }
+  >;
+  uniqueMulti: this["multi"];
+  compound<
+    const TCompoundIndexPaths extends TAvailableIndexMethods["compound"]
   >(
     ...indexPaths: CompoundMatchesPK<
       TCompoundIndexPaths,
@@ -237,10 +238,8 @@ interface IndexMethods<
     > extends true
       ? never
       : TCompoundIndexPaths
-  ): NoDuplicates<TCompoundIndexPaths> extends never
-    ? DuplicateKeysError
-    : IsIndexDuplicate<TCompoundIndexPaths, TIndexPaths> extends true
-    ? DuplicateIndexError
+  ): StrictCompoundIndexPaths<TCompoundIndexPaths, TIndexPaths> extends never
+    ? CompoundIndexError
     : IndexMethods<
         TDatabase,
         PkPathOrPaths,
@@ -251,7 +250,12 @@ interface IndexMethods<
         TPKeyOutbound,
         TAllowTypeSpecificProperties,
         TKeyMaxDepth,
-        TMaxDepth
+        TMaxDepth,
+        {
+          single: TAvailableIndexMethods["single"];
+          multi: TAvailableIndexMethods["multi"];
+          compound: TAvailableIndexMethods["compound"];
+        }
       >;
   uniqueCompound: this["compound"];
   build(): TableConfig<
@@ -354,7 +358,8 @@ type TableBuilder<
         false,
         never,
         TAllowTypeSpecificProperties,
-        TKeyMaxDepth
+        TKeyMaxDepth,
+        TMaxDepth
       >;
 
   hiddenAuto<PKey extends IndexableType = number>(
@@ -372,7 +377,8 @@ type TableBuilder<
     false,
     PKey,
     TAllowTypeSpecificProperties,
-    TKeyMaxDepth
+    TKeyMaxDepth,
+    TMaxDepth
   >;
   hiddenExplicit<PKey extends IndexableType = number>(): IndexMethods<
     TDatabase,
@@ -383,7 +389,8 @@ type TableBuilder<
     false,
     PKey,
     TAllowTypeSpecificProperties,
-    TKeyMaxDepth
+    TKeyMaxDepth,
+    TMaxDepth
   >;
 };
 
@@ -403,14 +410,36 @@ function createTableBuilder<
   TMaxDepth
 > {
   const indexParts: string[] = [];
-  const indexPartsNoUnique: string[] = [];
 
   function createIndexMethods<
     TPKeyPathOrPaths extends string | readonly string[] | null,
     TAuto extends boolean,
     TIndexPaths extends DexieIndexPaths<TDatabase>,
     TPKeyIsInbound extends boolean,
-    TOutboundPKey extends IndexableType
+    TOutboundPKey extends IndexableType,
+    TAvailableIndexMethods extends AvailableIndexMethods<
+      any,
+      any,
+      any
+    > = AvailableIndexMethods<
+      SingleIndexKeyPathExcludePrimaryKey<
+        TDatabase,
+        TPKeyPathOrPaths,
+        TAllowTypeSpecificProperties,
+        TKeyMaxDepth
+      >,
+      MultiIndexKeyPathExcludePrimaryKey<
+        TDatabase,
+        TPKeyPathOrPaths,
+        TKeyMaxDepth
+      >,
+      CompoundKeyPaths<
+        TDatabase,
+        TAllowTypeSpecificProperties,
+        TKeyMaxDepth,
+        true
+      >
+    >
   >(
     key: TPKeyPathOrPaths,
     auto: TAuto,
@@ -427,83 +456,154 @@ function createTableBuilder<
     TOutboundPKey,
     TAllowTypeSpecificProperties,
     TKeyMaxDepth,
-    TMaxDepth
+    TMaxDepth,
+    TAvailableIndexMethods
   > {
-    const addIfNotDuplicatePart = (part: string, unique: boolean) => {
-      if (indexPartsNoUnique.includes(part)) {
-        return duplicateIndexErrorInstance;
-      }
-      indexPartsNoUnique.push(part);
+    const addIndexPart = (part: string, unique: boolean) => {
       indexParts.push(unique ? `&${part}` : part);
     };
 
-    function doIndex<
-      TIndexPath extends SingleIndexKeyPathExcludePrimaryKey<
+    function doIndex<TIndexPath extends TAvailableIndexMethods["single"]>(
+      indexKey: TIndexPath,
+      unique: boolean
+    ) {
+      addIndexPart(indexKey, unique);
+      return createIndexMethods(
+        key,
+        auto,
+        [
+          ...indices,
+          {
+            kind: "single",
+            path: indexKey,
+            multi: false,
+          },
+        ],
+        pkeyIsInbound,
+        outboundPKey
+      ) as IndexMethods<
         TDatabase,
         TPKeyPathOrPaths,
+        TAuto,
+        [...TIndexPaths, SingleIndexPath<TDatabase, TIndexPath>],
+        TGet,
+        TPKeyIsInbound,
+        TOutboundPKey,
         TAllowTypeSpecificProperties,
-        TKeyMaxDepth
-      >
-    >(indexKey: TIndexPath, unique: boolean) {
-      return (
-        addIfNotDuplicatePart(indexKey, unique) ||
-        (createIndexMethods(
-          key,
-          auto,
-          [
-            ...indices,
-            {
-              kind: "single",
-              path: indexKey,
-              multi: false,
-            },
-          ],
-          pkeyIsInbound,
-          outboundPKey
-        ) as any)
-      );
+        TKeyMaxDepth,
+        TMaxDepth,
+        {
+          single: Exclude<TAvailableIndexMethods["single"], TIndexPath>;
+          multi: TAvailableIndexMethods["multi"];
+          compound: TAvailableIndexMethods["compound"];
+        }
+      >;
     }
 
-    function doMulti<
-      TIndexPath extends MultiIndexKeyPathExcludePrimaryKey<
+    function doMulti<TIndexPath extends TAvailableIndexMethods["multi"]>(
+      indexKey: TIndexPath,
+      unique: boolean
+    ) {
+      addIndexPart(`*${indexKey}`, unique);
+      return createIndexMethods(
+        key,
+        auto,
+        [...indices, { kind: "multi", path: indexKey, multi: true }],
+        pkeyIsInbound,
+        outboundPKey
+      ) as IndexMethods<
         TDatabase,
         TPKeyPathOrPaths,
-        TKeyMaxDepth
-      >
-    >(indexKey: TIndexPath, unique: boolean) {
-      return (
-        addIfNotDuplicatePart(`*${indexKey}`, unique) ||
-        (createIndexMethods(
-          key,
-          auto,
-          [...indices, { kind: "multi", path: indexKey, multi: true }],
-          pkeyIsInbound,
-          outboundPKey
-        ) as any)
-      );
+        TAuto,
+        [...TIndexPaths, MultiIndexPath<TDatabase, TIndexPath>],
+        TGet,
+        TPKeyIsInbound,
+        TOutboundPKey,
+        TAllowTypeSpecificProperties,
+        TKeyMaxDepth,
+        TMaxDepth,
+        {
+          single: TAvailableIndexMethods["single"];
+          multi: Exclude<TAvailableIndexMethods["multi"], TIndexPath>;
+          compound: TAvailableIndexMethods["compound"];
+        }
+      >;
     }
 
     function doCompound<
-      const TCompoundIndexPaths extends CompoundKeyPaths<
+      const TCompoundIndexPaths extends TAvailableIndexMethods["compound"]
+    >(
+      unique: boolean,
+      ...keys: CompoundMatchesPK<
+        TCompoundIndexPaths,
+        TPKeyPathOrPaths
+      > extends true
+        ? never
+        : TCompoundIndexPaths
+    ): StrictCompoundIndexPaths<TCompoundIndexPaths, TIndexPaths> extends never
+      ? CompoundIndexError
+      : IndexMethods<
+          TDatabase,
+          TPKeyPathOrPaths,
+          TAuto,
+          [...TIndexPaths, CompoundIndexPaths<TDatabase, TCompoundIndexPaths>],
+          TGet,
+          TPKeyIsInbound,
+          TOutboundPKey,
+          TAllowTypeSpecificProperties,
+          TKeyMaxDepth,
+          TMaxDepth,
+          {
+            single: TAvailableIndexMethods["single"];
+            multi: TAvailableIndexMethods["multi"];
+            compound: TAvailableIndexMethods["compound"];
+          }
+        > {
+      if (isDistinctArray(keys) === false) {
+        return compoundIndexErrorInstance as any;
+      }
+      for (const idx of indices) {
+        if ((idx as any).paths !== undefined) {
+          const compoundIndexPaths = idx as CompoundIndexPaths<any, any>;
+          const paths = compoundIndexPaths.paths;
+          if (paths.length === keys.length) {
+            let allMatch = true;
+            for (let i = 0; i < paths.length; i++) {
+              if (paths[i] !== keys[i]) {
+                allMatch = false;
+                break;
+              }
+            }
+            if (allMatch) {
+              return compoundIndexErrorInstance as any;
+            }
+          }
+        }
+      }
+      addIndexPart(createCompoundSchemaPart(keys), unique);
+      return createIndexMethods(
+        key,
+        auto,
+        [...indices, { kind: "compound", paths: keys }],
+        pkeyIsInbound,
+        outboundPKey
+      ) as IndexMethods<
         TDatabase,
+        TPKeyPathOrPaths,
+        TAuto,
+        [...TIndexPaths, CompoundIndexPaths<TDatabase, TCompoundIndexPaths>],
+        TGet,
+        TPKeyIsInbound,
+        TOutboundPKey,
         TAllowTypeSpecificProperties,
         TKeyMaxDepth,
-        true
-      >
-    >(unique: boolean, ...keys: TCompoundIndexPaths) {
-      if (!isDistinctArray(keys)) {
-        return duplicateKeysErrorInstance;
-      }
-      return (
-        addIfNotDuplicatePart(createCompoundSchemaPart(keys), unique) ||
-        (createIndexMethods(
-          key,
-          auto,
-          [...indices, { kind: "compound", paths: keys }],
-          pkeyIsInbound,
-          outboundPKey
-        ) as any)
-      );
+        TMaxDepth,
+        {
+          single: TAvailableIndexMethods["single"];
+          multi: TAvailableIndexMethods["multi"];
+          compound: TAvailableIndexMethods["compound"];
+        }
+      > as any;
     }
 
     return {
@@ -603,6 +703,9 @@ function createTableBuilder<
           TAllowTypeSpecificProperties,
           TKeyMaxDepth
         > {
+      if (isDistinctArray(keys) === false) {
+        return duplicateKeysErrorInstance as any;
+      }
       return createIndexMethods(
         keys,
         false,

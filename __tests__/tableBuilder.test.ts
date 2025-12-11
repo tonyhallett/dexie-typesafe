@@ -1,5 +1,5 @@
 import {
-  duplicateIndexErrorInstance,
+  compoundIndexErrorInstance,
   duplicateKeysErrorInstance,
   tableBuilder,
   TableConfig,
@@ -42,6 +42,15 @@ describe("tableBuilder", () => {
         .hiddenExplicit()
         .build();
       expectHiddenNoIndices(tableConfig, false);
+    });
+
+    it("should error on duplicate compound part", () => {
+      const error = tableBuilder<{ id: number; index: string }>().compoundKey(
+        "id",
+        "id"
+      );
+
+      expect(error).toBe(duplicateKeysErrorInstance);
     });
 
     function expectHiddenNoIndices(
@@ -139,15 +148,6 @@ describe("tableBuilder", () => {
     });
 
     describe("error return cases", () => {
-      it("should error on duplicate index", () => {
-        const error = tableBuilder<{ id: number; index: string }>()
-          .primaryKey("id")
-          .index("index")
-          .uniqueIndex("index");
-
-        expect(error).toBe(duplicateIndexErrorInstance);
-      });
-
       it("should error on duplicate compound entries", () => {
         const error = tableBuilder<{
           id: number;
@@ -157,7 +157,20 @@ describe("tableBuilder", () => {
           .primaryKey("id")
           .compound("index1", "index1");
 
-        expect(error).toBe(duplicateKeysErrorInstance);
+        expect(error).toBe(compoundIndexErrorInstance);
+      });
+
+      it("should error on duplicate compound", () => {
+        const error = tableBuilder<{
+          id: number;
+          index1: string;
+          index2: string;
+        }>()
+          .primaryKey("id")
+          .compound("index1", "index2")
+          .compound("index1", "index2");
+
+        expect(error).toBe(compoundIndexErrorInstance);
       });
     });
   });

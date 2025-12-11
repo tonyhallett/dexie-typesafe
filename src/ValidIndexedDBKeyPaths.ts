@@ -1,5 +1,3 @@
-// ---------- Helpers ----------
-
 import type { NextDepth, NoDescend, StringKey } from "./utilitytypes";
 
 type IsValidKey<T> = T extends AllowedKeyLeaf
