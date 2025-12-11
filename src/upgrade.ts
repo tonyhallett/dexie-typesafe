@@ -32,7 +32,7 @@ type MergedConfig<
 type UpgradedDexie<
   TOldConfig extends Record<string, TableConfigAny>,
   TNewConfig extends Record<string, TableConfigAny | null>
-> = TypedDexie<MergedConfig<TOldConfig, TNewConfig>>;
+> = TypedDexie<MergedConfig<TOldConfig, TNewConfig>, false>;
 
 type ReplaceInsert<
   T extends TableConfigAny,
@@ -82,24 +82,24 @@ type UpgradeConfig<
 export type TransactionWithTables<
   TConfig extends Record<string, TableConfigAny>
 > = Omit<Transaction, "table"> &
-  Pick<DBTables<TConfig>, StringKeyOf<DBTables<TConfig>>>;
+  Pick<DBTables<TConfig, any>, StringKeyOf<DBTables<TConfig, any>>>;
 
 type UpgradeTransaction<
   TOldConfig extends Record<string, TableConfigAny>,
   TNewConfig extends Record<string, TableConfigAny | null>
 > = TransactionWithTables<UpgradeConfig<TOldConfig, TNewConfig>>;
 
-type GetDexieConfig<TTypedDexie extends TypedDexie<any>> =
-  TTypedDexie extends TypedDexie<infer TConfig> ? TConfig : never;
+type GetDexieConfig<TTypedDexie extends TypedDexie<any, any>> =
+  TTypedDexie extends TypedDexie<infer TConfig, any> ? TConfig : never;
 
 type UpgradeFunction<
-  TTypedDexie extends TypedDexie<any>,
+  TTypedDexie extends TypedDexie<any, any>,
   TNewConfig extends Record<string, TableConfigAny | null>
 > = (
   trans: UpgradeTransaction<GetDexieConfig<TTypedDexie>, TNewConfig>
 ) => PromiseLike<any> | void;
 export function upgrade<
-  TTypedDexie extends TypedDexie<any>,
+  TTypedDexie extends TypedDexie<any, any>,
   TNewConfig extends Record<string, TableConfigAny | null>
 >(
   db: TTypedDexie,
@@ -107,7 +107,7 @@ export function upgrade<
 ): UpgradedDexie<GetDexieConfig<TTypedDexie>, TNewConfig>;
 
 export function upgrade<
-  TTypedDexie extends TypedDexie<any>,
+  TTypedDexie extends TypedDexie<any, any>,
   TNewConfig extends Record<string, TableConfigAny | null>
 >(
   db: TTypedDexie,
@@ -116,7 +116,7 @@ export function upgrade<
 ): UpgradedDexie<GetDexieConfig<TTypedDexie>, TNewConfig>;
 
 export function upgrade<
-  TTypedDexie extends TypedDexie<any>,
+  TTypedDexie extends TypedDexie<any, any>,
   TNewConfig extends Record<string, TableConfigAny | null>
 >(
   db: TTypedDexie,
@@ -125,7 +125,7 @@ export function upgrade<
 ): UpgradedDexie<GetDexieConfig<TTypedDexie>, TNewConfig>;
 
 export function upgrade<
-  TTypedDexie extends TypedDexie<any>,
+  TTypedDexie extends TypedDexie<any, any>,
   TNewConfig extends Record<string, TableConfigAny | null>
 >(
   db: TTypedDexie,
@@ -134,7 +134,7 @@ export function upgrade<
   upgradeFunction: UpgradeFunction<TTypedDexie, TNewConfig>
 ): UpgradedDexie<GetDexieConfig<TTypedDexie>, TNewConfig>;
 export function upgrade<
-  TTypedDexie extends TypedDexie<any>,
+  TTypedDexie extends TypedDexie<any, any>,
   TNewConfig extends Record<string, TableConfigAny | null>
 >(
   db: TTypedDexie,

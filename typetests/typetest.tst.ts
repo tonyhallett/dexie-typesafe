@@ -2379,10 +2379,31 @@ describe("upgrade", () => {
         });
       }
     );
+
     expect(db2).type.not.toHaveProperty("tableRemoved");
     expect(db2).type.toHaveProperty("tableRemain");
     expect(db2.tableUpdate.toArray()).type.toBe<
       PromiseExtended<TableUpdate2[]>
     >();
+    const noop = () => {};
+    expect(db.on).type.toBeCallableWith("populate", noop);
+    expect(db2.on).type.not.toBeCallableWith("populate", noop);
+    expect(db.once).type.toBeCallableWith("populate", noop);
+    expect(db2.once).type.not.toBeCallableWith("populate", noop);
+    expect(db.on).type.toHaveProperty("populate");
+    expect(db2.on).type.not.toHaveProperty("populate");
+    db.once("blocked", noop);
+    db.once("close", noop);
+    db.once("versionchange", noop);
+    db.on("blocked", noop);
+    db.on("close", noop);
+    db.on("versionchange", noop);
+
+    db2.once("blocked", noop);
+    db2.once("close", noop);
+    db2.once("versionchange", noop);
+    db2.on("blocked", noop);
+    db2.on("close", noop);
+    db2.on("versionchange", noop);
   });
 });

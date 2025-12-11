@@ -14,26 +14,26 @@ Dexie.addons.push(WhereEqualityAddOn);
 export function dexieFactory<S extends Record<string, TableConfigAny>>(
   tableConfigs: S,
   databaseName: string
-): TypedDexie<S>;
+): TypedDexie<S, true>;
 
 export function dexieFactory<S extends Record<string, TableConfigAny>>(
   tableConfigs: S,
   databaseName: string,
   version: number
-): TypedDexie<S>;
+): TypedDexie<S, true>;
 
 export function dexieFactory<S extends Record<string, TableConfigAny>>(
   tableConfigs: S,
   databaseName: string,
   options: DexieOptions
-): TypedDexie<S>;
+): TypedDexie<S, true>;
 
 export function dexieFactory<S extends Record<string, TableConfigAny>>(
   tableConfigs: S,
   databaseName: string,
   version: number,
   options: DexieOptions
-): TypedDexie<S>;
+): TypedDexie<S, true>;
 
 export function dexieFactory<S extends Record<string, TableConfigAny>>(
   tableConfigs: S,
@@ -44,7 +44,7 @@ export function dexieFactory<S extends Record<string, TableConfigAny>>(
   const version = typeof versionOrOptions === "number" ? versionOrOptions : 1;
   const options =
     typeof versionOrOptions === "object" ? versionOrOptions : maybeOptions;
-  const db = new Dexie(databaseName, options) as unknown as TypedDexie<S>;
+  const db = new Dexie(databaseName, options) as unknown as TypedDexie<S, true>;
   configureStores(db, version, tableConfigs);
   mapToClass(db, tableConfigs);
   return db;

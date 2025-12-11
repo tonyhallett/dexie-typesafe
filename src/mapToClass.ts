@@ -2,7 +2,7 @@ import type { TableConfigAny } from "./tableBuilder";
 import type { TypedDexie } from "./TypedDexie";
 
 export function mapToClass(
-  db: TypedDexie<any>,
+  db: TypedDexie<any, any>,
   tableConfigs: Record<string, TableConfigAny | null>
 ): void {
   for (const [name, cfg] of Object.entries(tableConfigs)) {
