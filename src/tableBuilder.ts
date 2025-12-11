@@ -577,8 +577,7 @@ function createTableBuilder<
         TAllowTypeSpecificProperties,
         TKeyMaxDepth,
         false
-      > /* &
-        string */
+      >
     >(key: TPKeyPath) {
       return createIndexMethods(key, false, [] as const, true, null as never);
     },

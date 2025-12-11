@@ -9,7 +9,7 @@ import {
 } from "../src/tableBuilder";
 import { expect, describe, it } from "tstyche";
 import type { ChangeCallback } from "../src/Collection";
-import { add, ObjectPropModification } from "../src/propmodifications";
+import { add, PropModification } from "../src/propmodifications";
 import type { NoDescend } from "../src/utilitytypes";
 import type { Level2 } from "../src/UpdateSpec";
 import { upgrade } from "../src/upgrade";
@@ -1877,7 +1877,7 @@ describe("Inbound - non auto", () => {
 
     it("should update with typed prop modifications", () => {
       expect(db.table.update).type.toBeCallableWith(tableItem, {
-        nested: new ObjectPropModification<{
+        nested: new PropModification<{
           sub: number;
           deep: {
             level2: {
@@ -1888,7 +1888,7 @@ describe("Inbound - non auto", () => {
       });
 
       expect(db.table.update).type.not.toBeCallableWith(tableItem, {
-        nested: new ObjectPropModification<{ sub: string }>((value) => ({
+        nested: new PropModification<{ sub: string }>((value) => ({
           sub: value.sub + 1,
         })),
       });
