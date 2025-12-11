@@ -1,5 +1,5 @@
 import type { KeyPathIgnoreObject, KeyPathValue } from "dexie";
-import type { PropModificationTyped } from "./propmodifications";
+import type { PropModificationBase } from "./propmodifications";
 import type { NextDepth, NoDescend } from "./utilitytypes";
 
 export type Level2 = "II";
@@ -37,6 +37,6 @@ type UpdateKeyPaths<
 export type UpdateSpec<T, TMaxDepth extends string> = {
   [KP in UpdateKeyPaths<Required<T>, TMaxDepth>]?:
     | KeyPathValue<Required<T>, KP>
-    | PropModificationTyped<KeyPathValue<T, KP>>
+    | PropModificationBase<KeyPathValue<T, KP>>
     | (undefined extends KeyPathValue<T, KP> ? undefined : never);
 };

@@ -1,38 +1,35 @@
-import { PropModification } from "dexie";
-import {
-  add,
-  ObjectPropModification,
-  remove,
-  replacePrefix,
-} from "../src/index";
+import { PropModification as DexiePropModification } from "dexie";
+import { add, PropModification, remove, replacePrefix } from "../src/index";
 
 describe("PropModification exports", () => {
   it("should export add function that wraps dexie's PropModification", () => {
-    expect(add(5)).toBeInstanceOf(PropModification);
-    expect((add(5) as any as PropModification)["@@propmod"].add).toBe(5);
+    expect(add(5)).toBeInstanceOf(DexiePropModification);
+    expect((add(5) as any as DexiePropModification)["@@propmod"].add).toBe(5);
   });
 
   it("should export remove function that wraps dexie's PropModification", () => {
-    expect(remove(5)).toBeInstanceOf(PropModification);
-    expect((remove(5) as any as PropModification)["@@propmod"].remove).toBe(5);
+    expect(remove(5)).toBeInstanceOf(DexiePropModification);
+    expect(
+      (remove(5) as any as DexiePropModification)["@@propmod"].remove
+    ).toBe(5);
   });
 
   it("should export replacePrefix function that wraps dexie's PropModification", () => {
     expect(replacePrefix("prefix", "replaced")).toBeInstanceOf(
-      PropModification
+      DexiePropModification
     );
     expect(
-      (replacePrefix("prefix", "replaced") as any as PropModification)[
+      (replacePrefix("prefix", "replaced") as any as DexiePropModification)[
         "@@propmod"
       ].replacePrefix
     ).toEqual(["prefix", "replaced"]);
   });
 
-  it("should export ObjectPropModification class, instanceof PropModification true", () => {
-    const objectPropModification = new ObjectPropModification<string>(
+  it("should export PropModification class, instanceof dexie's PropModification true", () => {
+    const propModification = new PropModification<string>(
       (s) => s + " modified"
     );
-    expect(objectPropModification.execute("test")).toBe("test modified");
-    expect(objectPropModification).toBeInstanceOf(PropModification);
+    expect(propModification.execute("test")).toBe("test modified");
+    expect(propModification).toBeInstanceOf(DexiePropModification);
   });
 });

@@ -1,5 +1,5 @@
 import {
-  PropModification,
+  PropModification as DexiePropModification,
   replacePrefix as dexiereplacePrefix,
   add as dexieadd,
   remove as dexieremove,
@@ -8,39 +8,39 @@ import {
 export type AddRemoveNumberType = number | bigint;
 export type AddRemoveValueType = AddRemoveNumberType | Array<string | number>;
 
-export abstract class PropModificationTyped<T> {
+export abstract class PropModificationBase<T> {
   private readonly __brand!: T;
   abstract execute(value: T): T;
 }
 
 Object.setPrototypeOf(
-  PropModificationTyped.prototype,
-  PropModification.prototype
+  PropModificationBase.prototype,
+  DexiePropModification.prototype
 );
 
 export function replacePrefix(
   prefix: string,
   replaced: string
-): PropModificationTyped<string> {
+): PropModificationBase<string> {
   return dexiereplacePrefix(
     prefix,
     replaced
-  ) as unknown as PropModificationTyped<string>;
+  ) as unknown as PropModificationBase<string>;
 }
 
 export function add<T extends AddRemoveValueType>(
   value: T
-): PropModificationTyped<T> {
-  return dexieadd(value) as unknown as PropModificationTyped<T>;
+): PropModificationBase<T> {
+  return dexieadd(value) as unknown as PropModificationBase<T>;
 }
 
 export function remove<T extends AddRemoveValueType>(
   value: T
-): PropModificationTyped<T> {
-  return dexieremove(value) as unknown as PropModificationTyped<T>;
+): PropModificationBase<T> {
+  return dexieremove(value) as unknown as PropModificationBase<T>;
 }
 
-export class ObjectPropModification<T> extends PropModificationTyped<T> {
+export class PropModification<T> extends PropModificationBase<T> {
   executor: (value: T) => T;
   constructor(executor: (value: T) => T) {
     super();
@@ -60,8 +60,8 @@ export enum RemoveUndefinedBehaviour {
 export function safeRemoveNumber(
   num: number,
   undefinedBehaviour: RemoveUndefinedBehaviour = RemoveUndefinedBehaviour.LeaveUndefined
-): ObjectPropModification<number | undefined> {
-  return new ObjectPropModification<number | undefined>((value) => {
+): PropModification<number | undefined> {
+  return new PropModification<number | undefined>((value) => {
     if (value === undefined) {
       switch (undefinedBehaviour) {
         case RemoveUndefinedBehaviour.LeaveUndefined:

@@ -11,5 +11,5 @@ export {
   replacePrefix,
   safeRemoveNumber,
   RemoveUndefinedBehaviour,
-  ObjectPropModification,
+  PropModification,
 } from "./propmodifications";
