@@ -1,6 +1,6 @@
 import { buildStores } from "../src/buildStores";
 import { configureStores } from "../src/configureStores";
-import { TableConfig } from "../src/tableBuilder";
+import { TableConfigAny } from "../src/tableBuilder";
 
 jest.mock("../src/buildStores", () => {
   return {
@@ -10,10 +10,7 @@ jest.mock("../src/buildStores", () => {
 
 describe("configureStores", () => {
   it("should version and set schema from tableConfigs", () => {
-    const tableConfigs: Record<
-      string,
-      TableConfig<any, any, any, any, any, any, any, any>
-    > = {
+    const tableConfigs: Record<string, TableConfigAny> = {
       users: {
         indicesSchema: "",
         pk: {

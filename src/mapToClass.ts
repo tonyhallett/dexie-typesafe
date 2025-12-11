@@ -1,12 +1,9 @@
-import type { TableConfig } from "./tableBuilder";
+import type { TableConfigAny } from "./tableBuilder";
 import type { TypedDexie } from "./TypedDexie";
 
 export function mapToClass(
   db: TypedDexie<any>,
-  tableConfigs: Record<
-    string,
-    TableConfig<any, any, any, any, any, any, any, any> | null
-  >
+  tableConfigs: Record<string, TableConfigAny | null>
 ): void {
   for (const [name, cfg] of Object.entries(tableConfigs)) {
     if (cfg && cfg.mapToClass) {

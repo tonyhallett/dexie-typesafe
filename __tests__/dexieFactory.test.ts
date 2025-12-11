@@ -1,7 +1,7 @@
 import { dexieFactory } from "../src/index";
 import { mapToClass } from "../src/mapToClass";
 import { configureStores } from "../src/configureStores";
-import { TableConfig } from "../src/tableBuilder";
+import { TableConfig, TableConfigAny } from "../src/tableBuilder";
 
 jest.mock("../src/configureStores", () => {
   return {
@@ -17,10 +17,7 @@ jest.mock("../src/mapToClass", () => {
 
 describe("dexieFactory", () => {
   it("should create a Dexie database, configure stores and mapToClass", () => {
-    const tableConfigs: Record<
-      string,
-      TableConfig<any, any, any, any, any, any, any, any>
-    > = {
+    const tableConfigs: Record<string, TableConfigAny> = {
       users: {
         indicesSchema: "",
         pk: {

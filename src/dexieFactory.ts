@@ -1,6 +1,6 @@
 import { Dexie, type DexieOptions } from "dexie";
 import { configureStores } from "./configureStores";
-import type { TableConfig } from "./tableBuilder";
+import type { TableConfigAny } from "./tableBuilder";
 import { AddAutoReturnObjectAddon } from "./AddAutoReturnObjectAddOn";
 import { TableBulkTupleAddOn } from "./TableBulkTupleAddOn";
 import { WhereEqualityAddOn } from "./WhereEqualityAddOn";
@@ -11,30 +11,31 @@ Dexie.addons.push(TableBulkTupleAddOn);
 Dexie.addons.push(AddAutoReturnObjectAddon);
 Dexie.addons.push(WhereEqualityAddOn);
 
-export function dexieFactory<
-  S extends Record<string, TableConfig<any, any, any, any, any, any, any, any>>
->(tableConfigs: S, databaseName: string): TypedDexie<S>;
+export function dexieFactory<S extends Record<string, TableConfigAny>>(
+  tableConfigs: S,
+  databaseName: string
+): TypedDexie<S>;
 
-export function dexieFactory<
-  S extends Record<string, TableConfig<any, any, any, any, any, any, any, any>>
->(tableConfigs: S, databaseName: string, version: number): TypedDexie<S>;
+export function dexieFactory<S extends Record<string, TableConfigAny>>(
+  tableConfigs: S,
+  databaseName: string,
+  version: number
+): TypedDexie<S>;
 
-export function dexieFactory<
-  S extends Record<string, TableConfig<any, any, any, any, any, any, any, any>>
->(tableConfigs: S, databaseName: string, options: DexieOptions): TypedDexie<S>;
+export function dexieFactory<S extends Record<string, TableConfigAny>>(
+  tableConfigs: S,
+  databaseName: string,
+  options: DexieOptions
+): TypedDexie<S>;
 
-export function dexieFactory<
-  S extends Record<string, TableConfig<any, any, any, any, any, any, any, any>>
->(
+export function dexieFactory<S extends Record<string, TableConfigAny>>(
   tableConfigs: S,
   databaseName: string,
   version: number,
   options: DexieOptions
 ): TypedDexie<S>;
 
-export function dexieFactory<
-  S extends Record<string, TableConfig<any, any, any, any, any, any, any, any>>
->(
+export function dexieFactory<S extends Record<string, TableConfigAny>>(
   tableConfigs: S,
   databaseName: string,
   versionOrOptions?: number | DexieOptions,

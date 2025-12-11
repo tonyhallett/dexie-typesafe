@@ -10,7 +10,7 @@ import type {
   Transaction,
   TransactionMode,
 } from "dexie";
-import type { TableConfig } from "./tableBuilder";
+import type { TableConfigAny } from "./tableBuilder";
 import type { DBTables } from "./DBTables";
 import type { StringKeyOf } from "./utilitytypes";
 
@@ -18,41 +18,6 @@ import type { StringKeyOf } from "./utilitytypes";
 type TableArg<TTablesMap extends Record<string, any>> =
   | StringKeyOf<TTablesMap>
   | TTablesMap[StringKeyOf<TTablesMap>];
-
-// Extract the literal name for a single TableArg:
-// - If it's a table object with 'name' literal -> use that literal
-// - Otherwise if it's a string literal key -> use it
-type NameOfArg<TTablesMap extends Record<string, any>, A> =
-  // Require a literal string for name, not just string
-  A extends { name: infer N }
-    ? N extends StringKeyOf<TTablesMap>
-      ? N
-      : never
-    : A extends StringKeyOf<TTablesMap>
-    ? A
-    : never;
-
-// Get the union of names present in the TTables array/tuple
-type TableNamesFromArgs<
-  TTablesMap extends Record<string, any>,
-  TTables extends readonly TableArg<TTablesMap>[]
-> = NameOfArg<TTablesMap, TTables[number]>;
-
-// Map a table name (key) to the proper table instance from the DB mapping
-type TableInstanceForName<
-  TTablesMap extends Record<string, any>,
-  Name extends string
-> = Name extends StringKeyOf<TTablesMap> ? TTablesMap[Name] : never;
-
-// Selected names limited to actual string keys
-type SelectedNames<
-  TConfig extends Record<
-    string,
-    TableConfig<any, any, any, any, any, any, any, any>
-  >,
-  TTables extends readonly TableArg<DBTables<TConfig>>[]
-> = TableNamesFromArgs<DBTables<TConfig>, TTables> &
-  StringKeyOf<DBTables<TConfig>>;
 
 // Extract name from a single arg
 type ArgName<A> = A extends { readonly name: infer N extends string }
@@ -66,22 +31,14 @@ type ArgNames<TTables extends readonly any[]> = ArgName<TTables[number]>;
 
 // The result: TransactionWithTables exposes only the named tables from the DBTables mapping
 type TransactionWithTables<
-  TConfig extends Record<
-    string,
-    TableConfig<any, any, any, any, any, any, any, any>
-  >,
+  TConfig extends Record<string, TableConfigAny>,
   TTables extends readonly TableArg<DBTables<TConfig>>[]
 > = Omit<Transaction, "table"> &
   Pick<DBTables<TConfig>, ArgNames<TTables> & StringKeyOf<DBTables<TConfig>>>;
 
 type DexieWithoutTransactions = Omit<Dexie, "transaction" | "on">;
 
-type TypedOn<
-  TConfig extends Record<
-    string,
-    TableConfig<any, any, any, any, any, any, any, any>
-  >
-> = {
+type TypedOn<TConfig extends Record<string, TableConfigAny>> = {
   on: DexieEventSet & {
     // DbEventFns with typed transaction for 'populate' event
     (
@@ -113,12 +70,7 @@ type TypedOn<
 };
 
 // todo - suppport table array, table, table array args
-type TypedTransaction<
-  TConfig extends Record<
-    string,
-    TableConfig<any, any, any, any, any, any, any, any>
-  >
-> = {
+type TypedTransaction<TConfig extends Record<string, TableConfigAny>> = {
   // Array form: transaction(mode, [tables], scope)
   transaction<U, TTables extends readonly TableArg<DBTables<TConfig>>[]>(
     mode: TransactionMode,
@@ -138,8 +90,5 @@ type TypedTransaction<
   ): PromiseExtended<U>;
 };
 export type DexieTypedTransaction<
-  TConfig extends Record<
-    string,
-    TableConfig<any, any, any, any, any, any, any, any>
-  >
+  TConfig extends Record<string, TableConfigAny>
 > = DexieWithoutTransactions & TypedTransaction<TConfig> & TypedOn<TConfig>;

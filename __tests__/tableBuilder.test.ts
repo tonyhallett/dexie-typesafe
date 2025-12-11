@@ -3,6 +3,7 @@ import {
   duplicateKeysErrorInstance,
   tableBuilder,
   TableConfig,
+  TableConfigAny,
 } from "../src/tableBuilder";
 
 describe("tableBuilder", () => {
@@ -54,15 +55,13 @@ describe("tableBuilder", () => {
     });
 
     function expectHiddenNoIndices(
-      tableConfig: TableConfig<any, any, any, any, any, any, any, any>,
+      tableConfig: TableConfigAny,
       expectedAuto: boolean
     ) {
       expect(tableConfig.pk).toEqual({ key: null, auto: expectedAuto });
       expectNoSchemaOrMapToClass(tableConfig);
     }
-    function expectNoSchemaOrMapToClass(
-      tableConfig: TableConfig<any, any, any, any, any, any, any, any>
-    ) {
+    function expectNoSchemaOrMapToClass(tableConfig: TableConfigAny) {
       expect(tableConfig.indicesSchema).toBe("");
       expect(tableConfig.mapToClass).toBeUndefined();
     }
