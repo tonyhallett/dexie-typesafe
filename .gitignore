@@ -1,11 +1,8 @@
 # Contains all your dependencies
 node_modules/
 
-# parcel
-.parcel-cache/
-
-# Replace as required with your build location
 /dist
+/types
 
 # Deal with environment files
 .env
