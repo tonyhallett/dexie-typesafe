@@ -1,16 +1,17 @@
 import type {
-  TableSchema,
   DBCoreTable,
   PromiseExtended,
+  TableSchema,
   ThenShortcut,
 } from "dexie";
+import type { BulkUpdate } from "./BulkUpdate";
 import type { ChangeCallback, Collection } from "./Collection";
 import type {
   DexieIndexPaths,
   IndexPath,
-  KeyForIndexPath,
   IndexPathForPath,
   IndexPathRegistry,
+  KeyForIndexPath,
 } from "./indexpaths";
 import type {
   PrimaryKey,
@@ -19,10 +20,9 @@ import type {
 } from "./primarykey";
 import type { TableHooks } from "./TableHooks";
 import type { UpdateSpec } from "./UpdateSpec";
-import type { BulkUpdate } from "./BulkUpdate";
 import type { UpsertSpec } from "./UpsertSpec";
-import type { WherePaths, WhereEquality } from "./where";
-import type { PathKeyTypes, PathKeyType, NoDescend } from "./utilitytypes";
+import type { NoDescend, PathKeyType, PathKeyTypes } from "./utilitytypes";
+import type { WhereEquality, WherePaths } from "./where";
 import type {
   EqualityRegistryLookup,
   IsValidEquality,

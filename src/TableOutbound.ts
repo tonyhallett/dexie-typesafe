@@ -1,8 +1,8 @@
 import type { IndexableType, PromiseExtended } from "dexie";
 import type { DexieIndexPaths } from "./indexpaths";
-import type { NoExcessDataProperties } from "./utilitytypes";
-import type { TableOutboundBase } from "./TableOutboundBase";
 import type { TableOutboundBulkTuple } from "./TableBulkTupleAddOn";
+import type { TableOutboundBase } from "./TableOutboundBase";
+import type { NoExcessDataProperties } from "./utilitytypes";
 
 export type TableOutbound<
   TName extends string,

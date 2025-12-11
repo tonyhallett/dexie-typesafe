@@ -1,7 +1,7 @@
+import { configureStores } from "../src/configureStores";
 import { dexieFactory } from "../src/index";
 import { mapToClass } from "../src/mapToClass";
-import { configureStores } from "../src/configureStores";
-import { TableConfig, TableConfigAny } from "../src/tableBuilder";
+import { TableConfigAny } from "../src/tableBuilder";
 
 jest.mock("../src/configureStores", () => {
   return {

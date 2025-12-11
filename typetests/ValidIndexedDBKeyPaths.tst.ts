@@ -1,4 +1,4 @@
-import { expect, describe, it } from "tstyche";
+import { describe, expect, it } from "tstyche";
 import type { ValidIndexedDBKeyPath } from "../src/ValidIndexedDBKeyPaths";
 import type { NoDescend } from "../src/utilitytypes";
 

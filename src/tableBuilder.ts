@@ -1,17 +1,13 @@
-import type { KeyPathValue, InsertType, IndexableType } from "dexie";
+import type { IndexableType, InsertType, KeyPathValue } from "dexie";
 import type {
-  DexieIndexPaths,
-  SingleIndexPath,
-  MultiIndexPath,
   CompoundIndexPaths,
   CompoundKeyPathsAsStr,
+  DexieIndexPaths,
+  MultiIndexPath,
+  SingleIndexPath,
 } from "./indexpaths";
-import type {
-  AllowedKeyLeaf,
-  CompoundKeyPaths,
-  ValidIndexedDBKeyPath,
-} from "./ValidIndexedDBKeyPaths";
 import type { DeletePrimaryKeys, OptionalPrimaryKeys } from "./primarykey";
+import type { Level2 } from "./UpdateSpec";
 import type {
   ConstructorOf,
   IncludesNumber,
@@ -20,7 +16,11 @@ import type {
   NoDuplicates,
   TuplesEqual,
 } from "./utilitytypes";
-import type { Level2 } from "./UpdateSpec";
+import type {
+  AllowedKeyLeaf,
+  CompoundKeyPaths,
+  ValidIndexedDBKeyPath,
+} from "./ValidIndexedDBKeyPaths";
 
 interface PkConfig<TAuto extends boolean> {
   key: string | null;

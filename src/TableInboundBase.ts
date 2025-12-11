@@ -2,8 +2,8 @@ import type { PromiseExtended } from "dexie";
 import type { DexieIndexPaths } from "./indexpaths";
 import type { PrimaryKey } from "./primarykey";
 import type { TableBase } from "./TableBase";
-import type { NoExcessDataProperties } from "./utilitytypes";
 import type { TableInboundBaseBulkTuple } from "./TableBulkTupleAddOn";
+import type { NoExcessDataProperties } from "./utilitytypes";
 
 export type TableInboundBase<
   TName extends string,

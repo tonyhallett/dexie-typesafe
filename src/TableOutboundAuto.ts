@@ -1,9 +1,9 @@
 import type { IndexableType, PromiseExtended } from "dexie";
 import type { DexieIndexPaths } from "./indexpaths";
-import type { NoExcessDataProperties } from "./utilitytypes";
-import type { TableOutboundBase } from "./TableOutboundBase";
 import type { PromiseExtendedPKeyOrKeys } from "./primarykey";
 import type { TableOutboundAutoBulkTuple } from "./TableBulkTupleAddOn";
+import type { TableOutboundBase } from "./TableOutboundBase";
+import type { NoExcessDataProperties } from "./utilitytypes";
 
 export type TableOutboundAuto<
   TName extends string,

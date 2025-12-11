@@ -1,8 +1,8 @@
+import type { TableInboundAutoAdd } from "./AddAutoReturnObjectAddOn";
 import type { DexieIndexPaths } from "./indexpaths";
 import type { PrimaryKey, PromiseExtendedPKeyOrKeys } from "./primarykey";
-import type { TableInboundBase } from "./TableInboundBase";
-import type { TableInboundAutoAdd } from "./AddAutoReturnObjectAddOn";
 import type { TableInboundAutoBulkTuple } from "./TableBulkTupleAddOn";
+import type { TableInboundBase } from "./TableInboundBase";
 
 export type TableInboundAuto<
   TName extends string,

@@ -1,8 +1,8 @@
 import {
-  PropModification as DexiePropModification,
-  replacePrefix as dexiereplacePrefix,
   add as dexieadd,
+  PropModification as DexiePropModification,
   remove as dexieremove,
+  replacePrefix as dexiereplacePrefix,
 } from "dexie";
 
 export type AddRemoveNumberType = number | bigint;

@@ -1,10 +1,10 @@
 import type { Transaction } from "dexie";
-import type { TableConfig, TableConfigAny } from "./tableBuilder";
-import type { StringKeyOf } from "./utilitytypes";
 import type { DBTables } from "./DBTables";
 import type { TypedDexie } from "./TypedDexie";
 import { configureStores } from "./configureStores";
 import { mapToClass } from "./mapToClass";
+import type { TableConfig, TableConfigAny } from "./tableBuilder";
+import type { StringKeyOf } from "./utilitytypes";
 
 type KeepOldNotInNew<
   TOldConfig extends Record<string, TableConfigAny>,

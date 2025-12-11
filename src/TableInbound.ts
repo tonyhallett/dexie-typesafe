@@ -1,9 +1,9 @@
 import { type PromiseExtended } from "dexie";
 import type { ChangeCallback } from "./Collection";
 import type { DexieIndexPaths } from "./indexpaths";
-import type { UpdateSpec } from "./UpdateSpec";
 import type { PrimaryKey } from "./primarykey";
 import type { TableInboundBase } from "./TableInboundBase";
+import type { UpdateSpec } from "./UpdateSpec";
 
 export type TableInbound<
   TName extends string,

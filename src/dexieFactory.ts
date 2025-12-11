@@ -1,11 +1,11 @@
 import { Dexie, type DexieOptions } from "dexie";
-import { configureStores } from "./configureStores";
-import type { TableConfigAny } from "./tableBuilder";
 import { AddAutoReturnObjectAddon } from "./AddAutoReturnObjectAddOn";
 import { TableBulkTupleAddOn } from "./TableBulkTupleAddOn";
-import { WhereEqualityAddOn } from "./WhereEqualityAddOn";
 import type { TypedDexie } from "./TypedDexie";
+import { WhereEqualityAddOn } from "./WhereEqualityAddOn";
+import { configureStores } from "./configureStores";
 import { mapToClass } from "./mapToClass";
+import type { TableConfigAny } from "./tableBuilder";
 
 Dexie.addons.push(TableBulkTupleAddOn);
 Dexie.addons.push(AddAutoReturnObjectAddon);

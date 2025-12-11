@@ -2,7 +2,6 @@ import {
   compoundIndexErrorInstance,
   duplicateKeysErrorInstance,
   tableBuilder,
-  TableConfig,
   TableConfigAny,
 } from "../src/tableBuilder";
 

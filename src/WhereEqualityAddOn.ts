@@ -1,8 +1,8 @@
 import type { Dexie, Table, ThenShortcut } from "dexie";
 import type { TableGetEquality } from "./TableBase";
-import type { WhereEquality } from "./where";
 import type { ExcludeKeysTuple } from "./utilitytypes";
 import { aliasMethodsTs } from "./utils";
+import type { WhereEquality } from "./where";
 
 type GetEqualityMethods = ExcludeKeysTuple<
   TableGetEquality<any, any, any>,
