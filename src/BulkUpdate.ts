@@ -1,5 +1,5 @@
 import type { PrimaryKey, PrimaryKeyPaths } from "./primarykey";
-import type { Level2, UpdateSpec } from "./UpdateSpec";
+import type { UpdateSpec } from "./UpdateSpec";
 
 /*
   Dexie does not allow updating primary key paths in bulkUpdate

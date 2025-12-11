@@ -10,14 +10,14 @@ import type {
   Transaction,
   TransactionMode,
 } from "dexie";
-import type { TableConfigAny } from "./tableBuilder";
 import type { DBTables } from "./DBTables";
-import type { StringKeyOf } from "./utilitytypes";
 
-// Helper: the union of allowed argument shapes (either a table name key or a table instance)
-type TableArg<TTablesMap extends Record<string, any>> =
-  | StringKeyOf<TTablesMap>
-  | TTablesMap[StringKeyOf<TTablesMap>];
+type TableArg<TDbTables extends DBTables<any>> =
+  | keyof TDbTables
+  | TDbTables[keyof TDbTables];
+
+type TablesArg<TDbTables extends DBTables<any>> =
+  readonly TableArg<TDbTables>[];
 
 // Extract name from a single arg
 type ArgName<A> = A extends { readonly name: infer N extends string }
@@ -31,19 +31,18 @@ type ArgNames<TTables extends readonly any[]> = ArgName<TTables[number]>;
 
 // The result: TransactionWithTables exposes only the named tables from the DBTables mapping
 type TransactionWithTables<
-  TConfig extends Record<string, TableConfigAny>,
-  TTables extends readonly TableArg<DBTables<TConfig>>[]
-> = Omit<Transaction, "table"> &
-  Pick<DBTables<TConfig>, ArgNames<TTables> & StringKeyOf<DBTables<TConfig>>>;
+  TDbTables extends DBTables<any>,
+  TTables extends TablesArg<TDbTables>
+> = Omit<Transaction, "table"> & Pick<TDbTables, ArgNames<TTables>>;
 
 type DexieWithoutTransactions = Omit<Dexie, "transaction" | "on">;
 
-type TypedOn<TConfig extends Record<string, TableConfigAny>> = {
+type TypedOn<TDbTables extends DBTables<any>> = {
   on: DexieEventSet & {
     // DbEventFns with typed transaction for 'populate' event
     (
       eventName: "populate",
-      subscriber: (trans: Transaction & DBTables<TConfig>) => any
+      subscriber: (trans: Transaction & TDbTables) => any
     ): void;
     (
       eventName: "blocked",
@@ -70,25 +69,25 @@ type TypedOn<TConfig extends Record<string, TableConfigAny>> = {
 };
 
 // todo - suppport table array, table, table array args
-type TypedTransaction<TConfig extends Record<string, TableConfigAny>> = {
+type TypedTransaction<TDbTable extends DBTables<any>> = {
   // Array form: transaction(mode, [tables], scope)
-  transaction<U, TTables extends readonly TableArg<DBTables<TConfig>>[]>(
+  transaction<U, TTables extends TablesArg<TDbTable>>(
     mode: TransactionMode,
     tables: TTables,
     scope: (
-      trans: TransactionWithTables<TConfig, TTables>
+      trans: TransactionWithTables<TDbTable, TTables>
     ) => PromiseLike<U> | U
   ): PromiseExtended<U>;
 
   // Rest parameters form: transaction(mode, table1, table2, ..., scope)
-  transaction<U, TTables extends readonly TableArg<DBTables<TConfig>>[]>(
+  transaction<U, TTables extends TablesArg<TDbTable>>(
     mode: TransactionMode,
     ...tablesAndScope: [
       ...TTables,
-      (trans: TransactionWithTables<TConfig, TTables>) => PromiseLike<U> | U
+      (trans: TransactionWithTables<TDbTable, TTables>) => PromiseLike<U> | U
     ]
   ): PromiseExtended<U>;
 };
-export type DexieTypedTransaction<
-  TConfig extends Record<string, TableConfigAny>
-> = DexieWithoutTransactions & TypedTransaction<TConfig> & TypedOn<TConfig>;
+
+export type DexieTypedTransaction<TDbTables extends DBTables<any>> =
+  DexieWithoutTransactions & TypedTransaction<TDbTables> & TypedOn<TDbTables>;
