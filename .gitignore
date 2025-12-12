@@ -13,6 +13,7 @@ coverage
 
 # Visual Studio Code configuration
 .vscode/
+.vs/
 
 
 # npm and yarn debug logs

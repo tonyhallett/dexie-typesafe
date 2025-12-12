@@ -1,3 +1,4 @@
+import Dexie from "dexie";
 import { configureStores } from "../src/configureStores";
 import { dexieFactory } from "../src/index";
 import { mapToClass } from "../src/mapToClass";
@@ -27,6 +28,7 @@ describe("dexieFactory", () => {
       },
     };
     const db = dexieFactory(tableConfigs, "TestDB");
+    expect(db).toBeInstanceOf(Dexie);
     expect(db.name).toBe("TestDB");
     expect(configureStores).toHaveBeenCalledWith(db, 1, tableConfigs);
     expect(mapToClass).toHaveBeenCalledWith(db, tableConfigs);

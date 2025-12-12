@@ -49,7 +49,7 @@ describe("tableBuilder", () => {
         fileValue: File;
         arrayValue: string[];
       }
-      const builder = tableBuilder<TableItem, NoDescend, NoDescend, true>();
+        const builder = tableBuilder<TableItem, NoDescend, NoDescend, true>();
       expect(builder.primaryKey).type.toBeCallableWith("stringValue.length");
       expect(builder.primaryKey).type.toBeCallableWith("blobValue.size");
       expect(builder.primaryKey).type.toBeCallableWith("blobValue.type");
