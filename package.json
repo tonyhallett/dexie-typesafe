@@ -20,10 +20,16 @@
       }
     }
   },
+  "files": [
+    "dist",
+    "types",
+    "package.json"
+  ],
   "scripts": {
     "build": "npm run build:tsup && npm run build:types",
     "build:tsup": "tsup",
-    "build:types": "tsc --declarationMap false --verbatimModuleSyntax false --outFile types/index.d.ts"
+    "build:types": "tsc --declarationMap false --verbatimModuleSyntax false --outFile types/index.d.ts",
+    "packfordemo": "npm run build && npm pack"
   },
   "tsup": {
     "entry": [

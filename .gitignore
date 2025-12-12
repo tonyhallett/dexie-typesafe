@@ -14,9 +14,13 @@ coverage
 # Visual Studio Code configuration
 .vscode/
 .vs/
+*.tgz
 
 
 # npm and yarn debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+demo/.parcel-cache/
+demo/dist/
