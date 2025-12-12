@@ -16,18 +16,16 @@ import type { NoDescend } from "../src/utilitytypes";
 
 describe("tableBuilder", () => {
   describe("primary key selection", () => {
-    it("should allow singular primaryKey of T", () => {
+    it("should allow singular primary key of T", () => {
       const builder = tableBuilder<{ id: string }>();
-      expect(builder.primaryKey).type.toBeCallableWith("id");
-      expect(builder.primaryKey).type.not.toBeCallableWith("doesnotexist");
+      expect(builder.pkey).type.toBeCallableWith("id");
+      expect(builder.pkey).type.not.toBeCallableWith("doesnotexist");
     });
 
     it("should allow nested primary key when opt in", () => {
       const builder = tableBuilder<{ nested: { id: string } }, "II", "I">();
-      expect(builder.primaryKey).type.toBeCallableWith("nested.id");
-      expect(builder.primaryKey).type.not.toBeCallableWith(
-        "nested.doesnotexist"
-      );
+      expect(builder.pkey).type.toBeCallableWith("nested.id");
+      expect(builder.pkey).type.not.toBeCallableWith("nested.doesnotexist");
     });
 
     it("should not allow null or optional", () => {
@@ -37,9 +35,9 @@ describe("tableBuilder", () => {
         optional1?: number;
         optional2: number | undefined;
       }>();
-      expect(builder.primaryKey).type.not.toBeCallableWith("nullable");
-      expect(builder.primaryKey).type.not.toBeCallableWith("optional1");
-      expect(builder.primaryKey).type.not.toBeCallableWith("optional2");
+      expect(builder.pkey).type.not.toBeCallableWith("nullable");
+      expect(builder.pkey).type.not.toBeCallableWith("optional1");
+      expect(builder.pkey).type.not.toBeCallableWith("optional2");
     });
 
     it("should allow primary key to be allowed properties of leaf object when specified", () => {
@@ -49,20 +47,18 @@ describe("tableBuilder", () => {
         fileValue: File;
         arrayValue: string[];
       }
-        const builder = tableBuilder<TableItem, NoDescend, NoDescend, true>();
-      expect(builder.primaryKey).type.toBeCallableWith("stringValue.length");
-      expect(builder.primaryKey).type.toBeCallableWith("blobValue.size");
-      expect(builder.primaryKey).type.toBeCallableWith("blobValue.type");
-      expect(builder.primaryKey).type.toBeCallableWith("fileValue.size");
-      expect(builder.primaryKey).type.toBeCallableWith("fileValue.type");
-      expect(builder.primaryKey).type.toBeCallableWith("fileValue.name");
-      expect(builder.primaryKey).type.toBeCallableWith(
-        "fileValue.lastModified"
-      );
-      expect(builder.primaryKey).type.toBeCallableWith("arrayValue.length");
+      const builder = tableBuilder<TableItem, NoDescend, NoDescend, true>();
+      expect(builder.pkey).type.toBeCallableWith("stringValue.length");
+      expect(builder.pkey).type.toBeCallableWith("blobValue.size");
+      expect(builder.pkey).type.toBeCallableWith("blobValue.type");
+      expect(builder.pkey).type.toBeCallableWith("fileValue.size");
+      expect(builder.pkey).type.toBeCallableWith("fileValue.type");
+      expect(builder.pkey).type.toBeCallableWith("fileValue.name");
+      expect(builder.pkey).type.toBeCallableWith("fileValue.lastModified");
+      expect(builder.pkey).type.toBeCallableWith("arrayValue.length");
 
       const builderNotAllowed = tableBuilder<TableItem>();
-      expect(builderNotAllowed.primaryKey).type.not.toBeCallableWith(
+      expect(builderNotAllowed.pkey).type.not.toBeCallableWith(
         "stringValue.length"
       );
     });
@@ -78,17 +74,17 @@ describe("tableBuilder", () => {
         };
       }
       const builder = tableBuilder<TableItem>();
-      expect(builder.primaryKey).type.not.toBeCallableWith(
+      expect(builder.pkey).type.not.toBeCallableWith(
         "levelDefault.levelI.levelII.id"
       );
 
       const builderDeeper = tableBuilder<TableItem, "I">();
-      expect(builderDeeper.primaryKey).type.not.toBeCallableWith(
+      expect(builderDeeper.pkey).type.not.toBeCallableWith(
         "levelDefault.levelI.levelII.id"
       );
 
       const builderIncludes = tableBuilder<TableItem, "II">();
-      expect(builderIncludes.primaryKey).type.not.toBeCallableWith(
+      expect(builderIncludes.pkey).type.not.toBeCallableWith(
         "levelDefault.levelI.levelII.id"
       );
     });
@@ -99,9 +95,9 @@ describe("tableBuilder", () => {
         "I",
         "I"
       >();
-      expect(builder.compoundKey).type.toBeCallableWith("id", "nested.id2");
-      expect(builder.compoundKey).type.not.toBeCallableWith("id");
-      expect(builder.compoundKey).type.not.toBeCallableWith();
+      expect(builder.compoundPkey).type.toBeCallableWith("id", "nested.id2");
+      expect(builder.compoundPkey).type.not.toBeCallableWith("id");
+      expect(builder.compoundPkey).type.not.toBeCallableWith();
     });
 
     it("should allow compound primary key to be allowed properties of leaf object when specified", () => {
@@ -111,7 +107,7 @@ describe("tableBuilder", () => {
         NoDescend,
         true
       >();
-      expect(builder.compoundKey).type.toBeCallableWith(
+      expect(builder.compoundPkey).type.toBeCallableWith(
         "leaf1.length",
         "leaf2.length"
       );
@@ -120,7 +116,7 @@ describe("tableBuilder", () => {
         leaf1: string;
         leaf2: string;
       }>();
-      expect(builderNotAllowed.compoundKey).type.not.toBeCallableWith(
+      expect(builderNotAllowed.compoundPkey).type.not.toBeCallableWith(
         "leaf1.length",
         "leaf2.length"
       );
@@ -134,15 +130,15 @@ describe("tableBuilder", () => {
         optional1?: number;
         optional2: number | undefined;
       }>();
-      expect(builder.compoundKey).type.not.toBeCallableWith(
+      expect(builder.compoundPkey).type.not.toBeCallableWith(
         "index1",
         "nullable"
       );
-      expect(builder.compoundKey).type.not.toBeCallableWith(
+      expect(builder.compoundPkey).type.not.toBeCallableWith(
         "index1",
         "optional1"
       );
-      expect(builder.compoundKey).type.not.toBeCallableWith(
+      expect(builder.compoundPkey).type.not.toBeCallableWith(
         "index1",
         "optional2"
       );
@@ -150,46 +146,48 @@ describe("tableBuilder", () => {
 
     it("should not be possible to complete the chain when duplicate keys are used", () => {
       const builder = tableBuilder<{ id: string; nested: { id2: number } }>();
-      expect(builder.compoundKey("id", "id")).type.toBe<DuplicateKeysError>();
+      expect(builder.compoundPkey("id", "id")).type.toBe<DuplicateKeysError>();
     });
   });
 
-  describe("autoIncrement typing", () => {
+  describe("auto increment typing", () => {
     it("should not allow autoincrement on leaf type specific property", () => {
       const builder = tableBuilder<{ stringValue: string }>();
-      expect(builder.autoIncrement).type.not.toBeCallableWith(
+      expect(builder.autoIncrementPkey).type.not.toBeCallableWith(
         "stringValue.length"
       );
     });
 
-    it("should not allow null or optional properties for autoIncrement", () => {
+    it("should not allow null or optional properties for auto increment", () => {
       const builder = tableBuilder<{
         id: number;
         optional1?: number;
         optional2: number | undefined;
         nullable: number | undefined;
       }>();
-      expect(builder.autoIncrement).type.toBeCallableWith("id");
-      expect(builder.autoIncrement).type.not.toBeCallableWith("optional1");
-      expect(builder.autoIncrement).type.not.toBeCallableWith("optional2");
-      expect(builder.autoIncrement).type.not.toBeCallableWith("nullable");
+      expect(builder.autoIncrementPkey).type.toBeCallableWith("id");
+      expect(builder.autoIncrementPkey).type.not.toBeCallableWith("optional1");
+      expect(builder.autoIncrementPkey).type.not.toBeCallableWith("optional2");
+      expect(builder.autoIncrementPkey).type.not.toBeCallableWith("nullable");
     });
 
     // otherwise have to supply the key every time as key generator is number
     it("should only allow primary key type number or includes number in a union", () => {
       const builder = tableBuilder<{ stringPkey: string }>();
-      expect(builder.autoIncrement).type.not.toBeCallableWith("stringPkey");
+      expect(builder.autoIncrementPkey).type.not.toBeCallableWith("stringPkey");
 
       const builderNumber = tableBuilder<{ numberPkey: number }>();
-      expect(builderNumber.autoIncrement).type.toBeCallableWith("numberPkey");
+      expect(builderNumber.autoIncrementPkey).type.toBeCallableWith(
+        "numberPkey"
+      );
 
       const builderUnion = tableBuilder<{ unionPkey: string | number }>();
-      expect(builderUnion.autoIncrement).type.toBeCallableWith("unionPkey");
+      expect(builderUnion.autoIncrementPkey).type.toBeCallableWith("unionPkey");
 
       const builderBadUnion = tableBuilder<{
         badUnion: string | { obj: number };
       }>();
-      expect(builderBadUnion.autoIncrement).type.not.toBeCallableWith(
+      expect(builderBadUnion.autoIncrementPkey).type.not.toBeCallableWith(
         "badUnion"
       );
     });
@@ -198,36 +196,36 @@ describe("tableBuilder", () => {
   describe("hidden auto", () => {
     const builder = tableBuilder<{ prop: string }>();
     it("should default to primary key type number", () => {
-      expect(builder.hiddenAuto).type.toBeCallableWith();
+      expect(builder.hiddenAutoPkey).type.toBeCallableWith();
     });
 
     it("should allow specifying a primary key type that is number", () => {
-      expect(builder.hiddenAuto<number>).type.toBeCallableWith();
+      expect(builder.hiddenAutoPkey<number>).type.toBeCallableWith();
     });
 
     it("should allow specifying a primary key that is am IndexableType union with number", () => {
-      expect(builder.hiddenAuto<string | number>).type.toBeCallableWith();
+      expect(builder.hiddenAutoPkey<string | number>).type.toBeCallableWith();
     });
 
     it("should not allow specifying a primary key that does not include number in a union", () => {
-      expect(builder.hiddenAuto<string | Date>).type.not.toBeCallableWith();
+      expect(builder.hiddenAutoPkey<string | Date>).type.not.toBeCallableWith();
     });
   });
 
   describe("hidden explicit", () => {
     const builder = tableBuilder<{ prop: string }>();
     it("should allow specifying a primary key type that is an IndexableType", () => {
-      builder.hiddenExplicit(); // default to number
+      builder.hiddenExplicitPkey(); // default to number
 
-      builder.hiddenExplicit<string>();
-      builder.hiddenExplicit<number>();
-      builder.hiddenExplicit<Date>();
-      builder.hiddenExplicit<ArrayBuffer>();
-      builder.hiddenExplicit<string | Date>();
+      builder.hiddenExplicitPkey<string>();
+      builder.hiddenExplicitPkey<number>();
+      builder.hiddenExplicitPkey<Date>();
+      builder.hiddenExplicitPkey<ArrayBuffer>();
+      builder.hiddenExplicitPkey<string | Date>();
       // @ts-expect-error Type 'boolean' does not satisfy the constraint 'IndexableType'.
-      builder.hiddenExplicit<boolean>();
+      builder.hiddenExplicitPkey<boolean>();
       // @ts-expect-error Type 'string | boolean' does not satisfy the constraint 'IndexableType'....
-      builder.hiddenExplicit<string | boolean>();
+      builder.hiddenExplicitPkey<string | boolean>();
     });
   });
 
@@ -259,7 +257,7 @@ describe("tableBuilder", () => {
       },
       "I",
       "I"
-    >().primaryKey("id");
+    >().pkey("id");
 
     it("should allow valid index path", () => {
       expect(builder.index).type.toBeCallableWith("index");
@@ -278,17 +276,19 @@ describe("tableBuilder", () => {
         id: string;
         nested: { index: string; multi: string[] };
       }
-      const builder = tableBuilder<Nested, "I", "">().primaryKey("id");
-      const builderDefault = tableBuilder<Nested, "I">().primaryKey("id");
-      const builderLevel1 = tableBuilder<Nested, "I", "I">().primaryKey("id");
+      const builder = tableBuilder<Nested, "I", "">().pkey("id");
+      const builderDefault = tableBuilder<Nested, "I">().pkey("id");
+      const builderLevel1 = tableBuilder<Nested, "I", "I">().pkey("id");
 
       expect(builder.index).type.not.toBeCallableWith("nested.index");
       expect(builderDefault.index).type.not.toBeCallableWith("nested.index");
-      expect(builder.multi).type.not.toBeCallableWith("nested.multi");
-      expect(builderDefault.multi).type.not.toBeCallableWith("nested.multi");
+      expect(builder.multiIndex).type.not.toBeCallableWith("nested.multi");
+      expect(builderDefault.multiIndex).type.not.toBeCallableWith(
+        "nested.multi"
+      );
 
       expect(builderLevel1.index).type.toBeCallableWith("nested.index");
-      expect(builderLevel1.multi).type.toBeCallableWith("nested.multi");
+      expect(builderLevel1.multiIndex).type.toBeCallableWith("nested.multi");
     });
 
     it("should allow index key to be allowed properties of leaf object when specified", () => {
@@ -304,7 +304,7 @@ describe("tableBuilder", () => {
         NoDescend,
         NoDescend,
         true
-      >().primaryKey("id");
+      >().pkey("id");
       expect(builder.index).type.toBeCallableWith("stringValue.length");
       expect(builder.index).type.toBeCallableWith("blobValue.size");
       expect(builder.index).type.toBeCallableWith("blobValue.type");
@@ -314,7 +314,7 @@ describe("tableBuilder", () => {
       expect(builder.index).type.toBeCallableWith("fileValue.lastModified");
       expect(builder.index).type.toBeCallableWith("arrayValue.length");
 
-      const builderNotAllowed = tableBuilder<TableItem>().primaryKey("id");
+      const builderNotAllowed = tableBuilder<TableItem>().pkey("id");
       expect(builderNotAllowed.index).type.not.toBeCallableWith(
         "stringValue.length"
       );
@@ -333,8 +333,8 @@ describe("tableBuilder", () => {
         NoDescend,
         NoDescend,
         true
-      >().primaryKey("id");
-      expect(builder.compound).type.toBeCallableWith(
+      >().pkey("id");
+      expect(builder.compoundIndex).type.toBeCallableWith(
         "stringValue.length",
         "blobValue.size",
         "blobValue.type",
@@ -344,8 +344,8 @@ describe("tableBuilder", () => {
         "fileValue.lastModified",
         "arrayValue.length"
       );
-      const builderNotAllowed = tableBuilder<TableItem>().primaryKey("id");
-      expect(builderNotAllowed.compound).type.not.toBeCallableWith(
+      const builderNotAllowed = tableBuilder<TableItem>().pkey("id");
+      expect(builderNotAllowed.compoundIndex).type.not.toBeCallableWith(
         "stringValue.length",
         "blobValue.size",
         "blobValue.type",
@@ -370,7 +370,7 @@ describe("tableBuilder", () => {
         id: string;
         id2: number;
         index: string;
-      }>().compoundKey("id", "id2");
+      }>().compoundPkey("id", "id2");
 
       expect(builder.index).type.toBeCallableWith("id");
       expect(builder.index).type.toBeCallableWith("id2");
@@ -385,10 +385,10 @@ describe("tableBuilder", () => {
         },
         "II",
         "I"
-      >().compoundKey("id", "id2");
-      expect(builder.compound).type.toBeCallableWith("id2", "id");
-      expect(builder.compound).type.toBeCallableWith("id", "id2", "index");
-      expect(builder.compound).type.not.toBeCallableWith("id", "id2");
+      >().compoundPkey("id", "id2");
+      expect(builder.compoundIndex).type.toBeCallableWith("id2", "id");
+      expect(builder.compoundIndex).type.toBeCallableWith("id", "id2", "index");
+      expect(builder.compoundIndex).type.not.toBeCallableWith("id", "id2");
     });
 
     it("should allow valid key types", () => {
@@ -406,61 +406,66 @@ describe("tableBuilder", () => {
       expect(builder.index).type.toBeCallableWith("indexableArray3");
     });
 
-    it("should type multiEntry correctly", () => {
-      expect(builder.multi).type.toBeCallableWith("multiEntry");
-      expect(builder.multi).type.not.toBeCallableWith("notAMultiEntry");
-      expect(builder.multi).type.not.toBeCallableWith("notAMultiEntryArray");
+    it("should type multi entry correctly", () => {
+      expect(builder.multiIndex).type.toBeCallableWith("multiEntry");
+      expect(builder.multiIndex).type.not.toBeCallableWith("notAMultiEntry");
+      expect(builder.multiIndex).type.not.toBeCallableWith(
+        "notAMultiEntryArray"
+      );
     });
 
     it("should not allow multi on primary key", () => {
       const builder = tableBuilder<{
         id: string[];
-      }>().primaryKey("id");
-      expect(builder.multi).type.not.toBeCallableWith("id");
+      }>().pkey("id");
+      expect(builder.multiIndex).type.not.toBeCallableWith("id");
     });
 
     it("should allow compound keys", () => {
-      expect(builder.compound).type.toBeCallableWith("index", "nested.index");
-      expect(builder.compound).type.not.toBeCallableWith(
+      expect(builder.compoundIndex).type.toBeCallableWith(
+        "index",
+        "nested.index"
+      );
+      expect(builder.compoundIndex).type.not.toBeCallableWith(
         "index",
         "doesnotexist"
       );
-      expect(builder.compound).type.not.toBeCallableWith("index");
-      expect(builder.compound).type.not.toBeCallableWith();
+      expect(builder.compoundIndex).type.not.toBeCallableWith("index");
+      expect(builder.compoundIndex).type.not.toBeCallableWith();
     });
 
     it("should not be possible to build when duplicate parts in compound keys", () => {
       expect(
-        builder.compound("index", "index")
+        builder.compoundIndex("index", "index")
       ).type.toBe<CompoundIndexError>();
     });
 
     it("should not be possible to input duplicate indexes", () => {
       expect(builder.index("index").index).type.not.toBeCallableWith("index");
       expect(
-        builder.index("index").compound("index", "date").index
+        builder.index("index").compoundIndex("index", "date").index
       ).type.not.toBeCallableWith("index");
       expect(builder.index("index").uniqueIndex).type.not.toBeCallableWith(
         "index"
       );
-      expect(builder.multi("multiEntry").index).type.not.toBeCallableWith(
+      expect(builder.multiIndex("multiEntry").index).type.not.toBeCallableWith(
         "multiEntry"
       );
-      expect(builder.index("multiEntry").multi).type.not.toBeCallableWith(
+      expect(builder.index("multiEntry").multiIndex).type.not.toBeCallableWith(
         "multiEntry"
       );
     });
 
     it("should not be possible to build when duplicate compound keys", () => {
       expect(
-        builder.compound("index", "date").compound("index", "date")
+        builder.compoundIndex("index", "date").compoundIndex("index", "date")
       ).type.toBe<CompoundIndexError>();
     });
 
     it("should work with hiddenAuto and hiddenExplicit primary keys", () => {
       const builder = tableBuilder<{ prop: string }>();
-      builder.hiddenAuto().index("prop");
-      builder.hiddenExplicit<number>().index("prop");
+      builder.hiddenAutoPkey().index("prop");
+      builder.hiddenExplicitPkey<number>().index("prop");
     });
   });
 
@@ -480,8 +485,8 @@ describe("tableBuilder", () => {
         tableClassBuilderExcluded(EntityClass).excludedKeys<"str">(/* [
         "str",
       ] */);
-      expect(builder.primaryKey).type.not.toBeCallableWith("str");
-      expect(builder.primaryKey("id").index).type.not.toBeCallableWith("str");
+      expect(builder.pkey).type.not.toBeCallableWith("str");
+      expect(builder.pkey("id").index).type.not.toBeCallableWith("str");
     });
   });
 });
@@ -489,9 +494,9 @@ describe("tableBuilder", () => {
 describe("database typed transaction", () => {
   const db = dexieFactory(
     {
-      string: tableBuilder<{ id: string }>().primaryKey("id").build(),
-      number: tableBuilder<{ id: number }>().primaryKey("id").build(),
-      date: tableBuilder<{ id: Date }>().primaryKey("id").build(),
+      string: tableBuilder<{ id: string }>().pkey("id").build(),
+      number: tableBuilder<{ id: number }>().pkey("id").build(),
+      date: tableBuilder<{ id: Date }>().pkey("id").build(),
     },
     "DemoDexie"
   );
@@ -574,14 +579,14 @@ interface Compound {
 describe("table base", () => {
   const db = dexieFactory(
     {
-      string: tableBuilder<StringId>().primaryKey("id").build(),
-      stringMapped: tableClassBuilder(MappedStringId).primaryKey("id").build(),
-      number: tableBuilder<NumberId>().primaryKey("id").build(),
+      string: tableBuilder<StringId>().pkey("id").build(),
+      stringMapped: tableClassBuilder(MappedStringId).pkey("id").build(),
+      number: tableBuilder<NumberId>().pkey("id").build(),
       compound: tableBuilder<Compound>()
-        .compoundKey("stringPart", "numberPart")
+        .compoundPkey("stringPart", "numberPart")
         .build(),
       leafPropertyTable: tableBuilder<StringId, NoDescend, NoDescend, true>()
-        .primaryKey("id.length")
+        .pkey("id.length")
         .build(),
     },
     "DemoDexie"
@@ -643,11 +648,11 @@ describe("table base", () => {
     const db = dexieFactory(
       {
         table: tableBuilder<TableItem>()
-          .primaryKey("id")
-          .compound("compound1", "compound2", "compound3")
+          .pkey("id")
+          .compoundIndex("compound1", "compound2", "compound3")
           .build(),
         tableCompoundPk: tableBuilder<TableCompoundPKeyItem>()
-          .compoundKey("pkString", "pkNumber")
+          .compoundPkey("pkString", "pkNumber")
           .build(),
       },
       ""
@@ -812,11 +817,11 @@ describe("table base", () => {
           "I",
           "II"
         >()
-          .primaryKey("id")
+          .pkey("id")
           .index("stringIndex")
           .index("numberIndex")
           .index("nestedIndex.subIndex")
-          .compound("stringIndex", "numberIndex")
+          .compoundIndex("stringIndex", "numberIndex")
           .build(),
       },
       ""
@@ -842,18 +847,18 @@ describe("table base", () => {
         stringIdTable: tableBuilder<{
           id: string;
         }>()
-          .primaryKey("id")
+          .pkey("id")
           .build(),
         numberIdTable: tableBuilder<{
           id: number;
         }>()
-          .primaryKey("id")
+          .pkey("id")
           .build(),
         compoundIdTable: tableBuilder<{
           id1: number;
           id2: string;
         }>()
-          .compoundKey("id1", "id2")
+          .compoundPkey("id1", "id2")
           .build(),
       },
       ""
@@ -899,16 +904,16 @@ describe("table base", () => {
     const db = dexieFactory(
       {
         table: tableBuilder<TableItem, "I", "II">()
-          .primaryKey("id")
+          .pkey("id")
           .index("stringIndex")
           .index("numberIndex")
           .index("nestedIndex.subIndex")
           .index("unionIndex")
-          .compound("compound1", "compound2")
-          .multi("multiEntry")
+          .compoundIndex("compound1", "compound2")
+          .multiIndex("multiEntry")
           .build(),
         mappedTable: tableClassBuilder(MappedStringId)
-          .primaryKey("id")
+          .pkey("id")
           .index("other")
           .build(),
       },
@@ -936,9 +941,9 @@ describe("table base", () => {
     it("should accept the pkey", () => {
       const db = dexieFactory(
         {
-          pkTable: tableBuilder<{ id: number }>().primaryKey("id").build(),
+          pkTable: tableBuilder<{ id: number }>().pkey("id").build(),
           pkCompoundTable: tableBuilder<{ id1: number; id2: string }>()
-            .compoundKey("id1", "id2")
+            .compoundPkey("id1", "id2")
             .build(),
         },
         ""
@@ -956,8 +961,8 @@ describe("table base", () => {
             index2: string;
             index3: Date;
           }>()
-            .primaryKey("id")
-            .compound("index1", "index2", "index3")
+            .pkey("id")
+            .compoundIndex("index1", "index2", "index3")
             .build(),
         },
         ""
@@ -990,7 +995,7 @@ describe("table base", () => {
       const db = dexieFactory(
         {
           table: tableBuilder<{ id1: number; id2: string; id3: Date }>()
-            .compoundKey("id1", "id2", "id3")
+            .compoundPkey("id1", "id2", "id3")
             .build(),
         },
         ""
@@ -1089,8 +1094,8 @@ describe("table base", () => {
             index2: string;
             index3: Date;
           }>()
-            .primaryKey("id")
-            .compound("index1", "index2", "index3")
+            .pkey("id")
+            .compoundIndex("index1", "index2", "index3")
             .build(),
         },
         ""
@@ -1165,7 +1170,7 @@ describe("table base", () => {
         const db = dexieFactory(
           {
             table: tableBuilder<TableItem, "I">()
-              .primaryKey("id")
+              .pkey("id")
               .index("stringIndex")
               .index("numberIndex")
               .build(),
@@ -1199,8 +1204,8 @@ describe("table base", () => {
         const db = dexieFactory(
           {
             table: tableBuilder<TableItem, "I">()
-              .primaryKey("id")
-              .compound("compound1", "compound2", "compound3")
+              .pkey("id")
+              .compoundIndex("compound1", "compound2", "compound3")
               .build(),
           },
           ""
@@ -1387,9 +1392,11 @@ describe("table base", () => {
       }
       const db = dexieFactory(
         {
-          compound: tableBuilder<TableItem>().compoundKey("id1", "id2").build(),
+          compound: tableBuilder<TableItem>()
+            .compoundPkey("id1", "id2")
+            .build(),
           outbound: tableBuilder<TableItem>()
-            .hiddenAuto()
+            .hiddenAutoPkey()
             .index("id1")
             .index("id2")
             .build(),
@@ -1465,15 +1472,15 @@ describe("table base", () => {
     const db = dexieFactory(
       {
         table: tableBuilder<TableItem, "I", "II">()
-          .primaryKey("id")
+          .pkey("id")
           .index("stringIndex")
           .index("numberIndex")
           .index("nestedIndex.subIndex")
-          .compound("compound1", "compound2")
-          .multi("multiEntry")
+          .compoundIndex("compound1", "compound2")
+          .multiIndex("multiEntry")
           .build(),
         mappedTabled: tableClassBuilder(MappedStringId)
-          .primaryKey("id")
+          .pkey("id")
           .index("other")
           .build(),
       },
@@ -1483,7 +1490,7 @@ describe("table base", () => {
     it("should return the first TGet or undefined", () => {
       const db = dexieFactory(
         {
-          table: tableClassBuilder(MappedStringId).primaryKey("id").build(),
+          table: tableClassBuilder(MappedStringId).pkey("id").build(),
         },
         "DemoDexie"
       );
@@ -1495,7 +1502,7 @@ describe("table base", () => {
     it("should return the last TGet or undefined", () => {
       const db = dexieFactory(
         {
-          table: tableClassBuilder(MappedStringId).primaryKey("id").build(),
+          table: tableClassBuilder(MappedStringId).pkey("id").build(),
         },
         "DemoDexie"
       );
@@ -1507,7 +1514,7 @@ describe("table base", () => {
     it("should be sortable with property path on TGet, returning TGet[]", async () => {
       const db = dexieFactory(
         {
-          table: tableClassBuilder(MappedStringId).primaryKey("id").build(),
+          table: tableClassBuilder(MappedStringId).pkey("id").build(),
         },
         "DemoDexie"
       );
@@ -1547,10 +1554,8 @@ describe("table base", () => {
     describe("filtering", () => {
       const db = dexieFactory(
         {
-          string: tableBuilder<StringId>().primaryKey("id").build(),
-          stringMapped: tableClassBuilder(MappedStringId)
-            .primaryKey("id")
-            .build(),
+          string: tableBuilder<StringId>().pkey("id").build(),
+          stringMapped: tableClassBuilder(MappedStringId).pkey("id").build(),
         },
         "DemoDexie"
       );
@@ -1654,10 +1659,10 @@ describe("Inbound - non auto", () => {
 
   const db = dexieFactory(
     {
-      table: tableBuilder<TableItem, Level2>().primaryKey("id").build(),
+      table: tableBuilder<TableItem, Level2>().pkey("id").build(),
       mappedTable: tableClassBuilderExcluded(EntityClass)
         .excludedKeys<"excluded">()
-        .primaryKey("id")
+        .pkey("id")
         .build(),
     },
     "DemoDexie"
@@ -1743,7 +1748,7 @@ describe("Inbound - non auto", () => {
         {
           table: tableClassBuilderExcluded(EntityClass)
             .excludedKeys<"excluded">()
-            .primaryKey("id")
+            .pkey("id")
             .build(),
         },
         "DemoDexieEntityExclude"
@@ -1834,21 +1839,21 @@ describe("Inbound - non auto", () => {
     it("should update using max depth type parameter", () => {
       const noDescend = dexieFactory(
         {
-          noDescend: tableBuilder<TableItem, "">().primaryKey("id").build(),
+          noDescend: tableBuilder<TableItem, "">().pkey("id").build(),
         },
         "NoDescend"
       ).noDescend;
 
       const level1 = dexieFactory(
         {
-          level1: tableBuilder<TableItem, "I">().primaryKey("id").build(),
+          level1: tableBuilder<TableItem, "I">().pkey("id").build(),
         },
         "Level1"
       ).level1;
 
       const level2 = dexieFactory(
         {
-          level2: tableBuilder<TableItem, "II">().primaryKey("id").build(),
+          level2: tableBuilder<TableItem, "II">().pkey("id").build(),
         },
         "Level2"
       ).level2;
@@ -1877,7 +1882,7 @@ describe("Inbound - non auto", () => {
 
       const allDepths = dexieFactory(
         {
-          allDepths: tableBuilder<TableItem, "All">().primaryKey("id").build(),
+          allDepths: tableBuilder<TableItem, "All">().pkey("id").build(),
         },
         "AllDepths"
       ).allDepths;
@@ -1967,7 +1972,7 @@ describe("Inbound - non auto", () => {
       const db = dexieFactory(
         {
           table: tableBuilder<TableItem, "I", "II">()
-            .primaryKey("primaryKeyParent.pkey")
+            .pkey("primaryKeyParent.pkey")
             .build(),
         },
         "DemoDexie"
@@ -1995,9 +2000,9 @@ describe("Inbound - non auto", () => {
       }
       const db = dexieFactory(
         {
-          table: tableBuilder<UpsertItem>().primaryKey("id").build(),
+          table: tableBuilder<UpsertItem>().pkey("id").build(),
           compoundTable: tableBuilder<CompoundUpsertItem>()
-            .compoundKey("part1", "part2")
+            .compoundPkey("part1", "part2")
             .build(),
         },
         "DemoDexie"
@@ -2062,7 +2067,7 @@ describe("Inbound auto", () => {
   }
   const db = dexieFactory(
     {
-      table: tableBuilder<TableItem>().autoIncrement("id").build(),
+      table: tableBuilder<TableItem>().autoIncrementPkey("id").build(),
     },
     ""
   );
@@ -2117,13 +2122,13 @@ describe("Outbound - non auto", () => {
   const db = dexieFactory(
     {
       stringPKeyTable: tableBuilder<TableItem>()
-        .hiddenExplicit<string>()
+        .hiddenExplicitPkey<string>()
         .build(),
       numberPKeyTable: tableBuilder<TableItem>()
-        .hiddenExplicit<number>()
+        .hiddenExplicitPkey<number>()
         .build(),
       unionPKeyTable: tableBuilder<TableItem>()
-        .hiddenExplicit<number | string>()
+        .hiddenExplicitPkey<number | string>()
         .build(),
     },
     ""
@@ -2228,9 +2233,9 @@ describe("Outbound auto", () => {
 
   const db = dexieFactory(
     {
-      numberPKeyTable: tableBuilder<TableItem>().hiddenAuto().build(),
+      numberPKeyTable: tableBuilder<TableItem>().hiddenAutoPkey().build(),
       unionPKeyTable: tableBuilder<TableItem>()
-        .hiddenAuto<number | string>()
+        .hiddenAutoPkey<number | string>()
         .build(),
     },
     ""
@@ -2340,15 +2345,15 @@ describe("upgrade", () => {
     const db = dexieFactory(
       {
         tableRemain: tableBuilder<TableRemain>()
-          .primaryKey("id")
+          .pkey("id")
           .index("stringIndex")
           .build(),
         tableRemoved: tableBuilder<TableRemoved>()
-          .primaryKey("id")
+          .pkey("id")
           .index("other")
           .build(),
         tableUpdate: tableBuilder<TableUpdate1>()
-          .primaryKey("id")
+          .pkey("id")
           .index("v1")
           .build(),
       },
@@ -2363,7 +2368,7 @@ describe("upgrade", () => {
       {
         tableRemoved: null,
         tableUpdate: tableBuilder<TableUpdate2>()
-          .primaryKey("id")
+          .pkey("id")
           .index("v2")
           .build(),
       },

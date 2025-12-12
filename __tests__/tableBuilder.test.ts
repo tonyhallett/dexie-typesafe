@@ -8,16 +8,14 @@ import {
 describe("tableBuilder", () => {
   describe("primary key only", () => {
     it("should build with just primary key", () => {
-      const tableConfig = tableBuilder<{ id: number }>()
-        .primaryKey("id")
-        .build();
+      const tableConfig = tableBuilder<{ id: number }>().pkey("id").build();
       expect(tableConfig.pk).toEqual({ key: "id", auto: false });
       expectNoSchemaOrMapToClass(tableConfig);
     });
 
     it("should build with just auto primary key", () => {
       const tableConfig = tableBuilder<{ id: number }>()
-        .autoIncrement("id")
+        .autoIncrementPkey("id")
         .build();
       expect(tableConfig.pk).toEqual({ key: "id", auto: true });
       expectNoSchemaOrMapToClass(tableConfig);
@@ -25,27 +23,29 @@ describe("tableBuilder", () => {
 
     it("should build with just compound primary key", () => {
       const tableConfig = tableBuilder<{ id1: number; id2: number }>()
-        .compoundKey("id1", "id2")
+        .compoundPkey("id1", "id2")
         .build();
 
       expect(tableConfig.pk).toEqual({ key: "[id1+id2]", auto: false });
       expectNoSchemaOrMapToClass(tableConfig);
     });
 
-    it("should build with just hiddenAuto", () => {
-      const tableConfig = tableBuilder<{ id1: number }>().hiddenAuto().build();
+    it("should build with just hidden auto", () => {
+      const tableConfig = tableBuilder<{ id1: number }>()
+        .hiddenAutoPkey()
+        .build();
       expectHiddenNoIndices(tableConfig, true);
     });
 
-    it("should build with just hiddenExplicit", () => {
+    it("should build with just hidden explicit", () => {
       const tableConfig = tableBuilder<{ id1: number }>()
-        .hiddenExplicit()
+        .hiddenExplicitPkey()
         .build();
       expectHiddenNoIndices(tableConfig, false);
     });
 
     it("should error on duplicate compound part", () => {
-      const error = tableBuilder<{ id: number; index: string }>().compoundKey(
+      const error = tableBuilder<{ id: number; index: string }>().compoundPkey(
         "id",
         "id"
       );
@@ -69,7 +69,7 @@ describe("tableBuilder", () => {
   describe("should build with indexes", () => {
     it("should do single index", () => {
       const tableConfig = tableBuilder<{ id: number; theindex: string }>()
-        .primaryKey("id")
+        .pkey("id")
         .index("theindex")
         .build();
       expect(tableConfig.indicesSchema).toBe("theindex");
@@ -77,7 +77,7 @@ describe("tableBuilder", () => {
 
     it("should do unique single index", () => {
       const tableConfig = tableBuilder<{ id: number; theindex: string }>()
-        .primaryKey("id")
+        .pkey("id")
         .uniqueIndex("theindex")
         .build();
       expect(tableConfig.indicesSchema).toBe("&theindex");
@@ -85,16 +85,16 @@ describe("tableBuilder", () => {
 
     it("should do multi index", () => {
       const tableConfig = tableBuilder<{ id: number; multi: string[] }>()
-        .primaryKey("id")
-        .multi("multi")
+        .pkey("id")
+        .multiIndex("multi")
         .build();
       expect(tableConfig.indicesSchema).toBe("*multi");
     });
 
     it("should do unique multi index", () => {
       const tableConfig = tableBuilder<{ id: number; multi: string[] }>()
-        .primaryKey("id")
-        .uniqueMulti("multi")
+        .pkey("id")
+        .uniqueMultiIndex("multi")
         .build();
       expect(tableConfig.indicesSchema).toBe("&*multi");
     });
@@ -105,8 +105,8 @@ describe("tableBuilder", () => {
         compoundIndex1: string;
         compoundIndex2: string;
       }>()
-        .primaryKey("id")
-        .compound("compoundIndex1", "compoundIndex2")
+        .pkey("id")
+        .compoundIndex("compoundIndex1", "compoundIndex2")
         .build();
       expect(tableConfig.indicesSchema).toBe("[compoundIndex1+compoundIndex2]");
     });
@@ -117,8 +117,8 @@ describe("tableBuilder", () => {
         compoundIndex1: string;
         compoundIndex2: string;
       }>()
-        .primaryKey("id")
-        .uniqueCompound("compoundIndex1", "compoundIndex2")
+        .pkey("id")
+        .uniqueCompoundIndex("compoundIndex1", "compoundIndex2")
         .build();
       expect(tableConfig.indicesSchema).toBe(
         "&[compoundIndex1+compoundIndex2]"
@@ -134,11 +134,11 @@ describe("tableBuilder", () => {
         compoundIndex2: string;
         multi: string[];
       }>()
-        .primaryKey("id")
+        .pkey("id")
         .uniqueIndex("uniqueIndex")
         .index("index2")
-        .compound("compoundIndex1", "compoundIndex2")
-        .multi("multi")
+        .compoundIndex("compoundIndex1", "compoundIndex2")
+        .multiIndex("multi")
         .build();
       expect(tableConfig.indicesSchema).toBe(
         "&uniqueIndex,index2,[compoundIndex1+compoundIndex2],*multi"
@@ -152,8 +152,8 @@ describe("tableBuilder", () => {
           index1: string;
           index2: string;
         }>()
-          .primaryKey("id")
-          .compound("index1", "index1");
+          .pkey("id")
+          .compoundIndex("index1", "index1");
 
         expect(error).toBe(compoundIndexErrorInstance);
       });
@@ -164,9 +164,9 @@ describe("tableBuilder", () => {
           index1: string;
           index2: string;
         }>()
-          .primaryKey("id")
-          .compound("index1", "index2")
-          .compound("index1", "index2");
+          .pkey("id")
+          .compoundIndex("index1", "index2")
+          .compoundIndex("index1", "index2");
 
         expect(error).toBe(compoundIndexErrorInstance);
       });

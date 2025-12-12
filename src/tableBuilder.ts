@@ -209,7 +209,7 @@ interface IndexMethods<
     }
   >;
   uniqueIndex: this["index"];
-  multi<TIndexPath extends TAvailableIndexMethods["multi"]>(
+  multiIndex<TIndexPath extends TAvailableIndexMethods["multi"]>(
     indexPath: TIndexPath
   ): IndexMethods<
     TDatabase,
@@ -228,8 +228,8 @@ interface IndexMethods<
       compound: TAvailableIndexMethods["compound"];
     }
   >;
-  uniqueMulti: this["multi"];
-  compound<
+  uniqueMultiIndex: this["multiIndex"];
+  compoundIndex<
     const TCompoundIndexPaths extends TAvailableIndexMethods["compound"]
   >(
     ...indexPaths: CompoundMatchesPK<
@@ -257,7 +257,7 @@ interface IndexMethods<
           compound: TAvailableIndexMethods["compound"];
         }
       >;
-  uniqueCompound: this["compound"];
+  uniqueCompoundIndex: this["compoundIndex"];
   build(): TableConfig<
     TDatabase,
     PkPathOrPaths,
@@ -300,7 +300,7 @@ type TableBuilder<
   TKeyMaxDepth extends string,
   TMaxDepth extends string
 > = {
-  autoIncrement<
+  autoIncrementPkey<
     TPKeyPath extends InboundAutoIncrementKeyPath<TDatabase, TKeyMaxDepth>
   >(
     key: TPKeyPath
@@ -317,7 +317,7 @@ type TableBuilder<
     TMaxDepth
   >;
 
-  primaryKey<
+  pkey<
     TPKeyPath extends ValidIndexedDBKeyPath<
       TDatabase,
       TAllowTypeSpecificProperties,
@@ -338,7 +338,7 @@ type TableBuilder<
     TKeyMaxDepth,
     TMaxDepth
   >;
-  compoundKey<
+  compoundPkey<
     const TCompoundKeyPaths extends CompoundKeyPaths<
       TDatabase,
       TAllowTypeSpecificProperties,
@@ -362,7 +362,7 @@ type TableBuilder<
         TMaxDepth
       >;
 
-  hiddenAuto<PKey extends IndexableType = number>(
+  hiddenAutoPkey<PKey extends IndexableType = number>(
     ...args: IncludesNumberInUnion<PKey> extends false
       ? PKey extends number
         ? []
@@ -380,7 +380,7 @@ type TableBuilder<
     TKeyMaxDepth,
     TMaxDepth
   >;
-  hiddenExplicit<PKey extends IndexableType = number>(): IndexMethods<
+  hiddenExplicitPkey<PKey extends IndexableType = number>(): IndexMethods<
     TDatabase,
     null,
     false,
@@ -614,16 +614,16 @@ function createTableBuilder<
       uniqueIndex(indexKey) {
         return doIndex(indexKey, true);
       },
-      multi(indexKey) {
+      multiIndex(indexKey) {
         return doMulti(indexKey, false);
       },
-      uniqueMulti(indexKey) {
+      uniqueMultiIndex(indexKey) {
         return doMulti(indexKey, true);
       },
-      compound(...keys) {
+      compoundIndex(...keys) {
         return doCompound(false, ...keys);
       },
-      uniqueCompound(...keys) {
+      uniqueCompoundIndex(...keys) {
         return doCompound(true, ...keys);
       },
       build() {
@@ -666,12 +666,12 @@ function createTableBuilder<
   }
 
   return {
-    autoIncrement<
+    autoIncrementPkey<
       TPKeyPath extends InboundAutoIncrementKeyPath<TDatabase, TKeyMaxDepth>
     >(key: TPKeyPath) {
       return createIndexMethods(key, true, [] as const, true, null as never);
     },
-    primaryKey<
+    pkey<
       TPKeyPath extends ValidIndexedDBKeyPath<
         TDatabase,
         TAllowTypeSpecificProperties,
@@ -681,7 +681,7 @@ function createTableBuilder<
     >(key: TPKeyPath) {
       return createIndexMethods(key, false, [] as const, true, null as never);
     },
-    compoundKey<
+    compoundPkey<
       const TCompoundKeyPaths extends CompoundKeyPaths<
         TDatabase,
         TAllowTypeSpecificProperties,
@@ -715,7 +715,7 @@ function createTableBuilder<
       ) as any;
     },
 
-    hiddenAuto<PKey extends IndexableType = number>(
+    hiddenAutoPkey<PKey extends IndexableType = number>(
       ...args: IncludesNumberInUnion<PKey> extends false
         ? PKey extends number
           ? []
@@ -730,7 +730,7 @@ function createTableBuilder<
         null as unknown as PKey
       );
     },
-    hiddenExplicit<PKey extends IndexableType = number>() {
+    hiddenExplicitPkey<PKey extends IndexableType = number>() {
       return createIndexMethods(
         null,
         false,
