@@ -4,11 +4,11 @@ import type { ChangeCallback } from "../src/Collection";
 import { dexieFactory } from "../src/dexieFactory";
 import { add, PropModification } from "../src/propmodifications";
 import {
-  type CompoundIndexError,
-  type DuplicateKeysError,
   tableBuilder,
   tableClassBuilder,
   tableClassBuilderExcluded,
+  type CompoundIndexError,
+  type DuplicateKeysError,
 } from "../src/tableBuilder";
 import type { Level2 } from "../src/UpdateSpec";
 import { upgrade } from "../src/upgrade";
@@ -153,9 +153,7 @@ describe("tableBuilder", () => {
   describe("auto increment typing", () => {
     it("should not allow autoincrement on leaf type specific property", () => {
       const builder = tableBuilder<{ stringValue: string }>();
-      expect(builder.autoIncrementPkey).type.not.toBeCallableWith(
-        "stringValue.length"
-      );
+      expect(builder.autoPkey).type.not.toBeCallableWith("stringValue.length");
     });
 
     it("should not allow null or optional properties for auto increment", () => {
@@ -165,31 +163,27 @@ describe("tableBuilder", () => {
         optional2: number | undefined;
         nullable: number | undefined;
       }>();
-      expect(builder.autoIncrementPkey).type.toBeCallableWith("id");
-      expect(builder.autoIncrementPkey).type.not.toBeCallableWith("optional1");
-      expect(builder.autoIncrementPkey).type.not.toBeCallableWith("optional2");
-      expect(builder.autoIncrementPkey).type.not.toBeCallableWith("nullable");
+      expect(builder.autoPkey).type.toBeCallableWith("id");
+      expect(builder.autoPkey).type.not.toBeCallableWith("optional1");
+      expect(builder.autoPkey).type.not.toBeCallableWith("optional2");
+      expect(builder.autoPkey).type.not.toBeCallableWith("nullable");
     });
 
     // otherwise have to supply the key every time as key generator is number
     it("should only allow primary key type number or includes number in a union", () => {
       const builder = tableBuilder<{ stringPkey: string }>();
-      expect(builder.autoIncrementPkey).type.not.toBeCallableWith("stringPkey");
+      expect(builder.autoPkey).type.not.toBeCallableWith("stringPkey");
 
       const builderNumber = tableBuilder<{ numberPkey: number }>();
-      expect(builderNumber.autoIncrementPkey).type.toBeCallableWith(
-        "numberPkey"
-      );
+      expect(builderNumber.autoPkey).type.toBeCallableWith("numberPkey");
 
       const builderUnion = tableBuilder<{ unionPkey: string | number }>();
-      expect(builderUnion.autoIncrementPkey).type.toBeCallableWith("unionPkey");
+      expect(builderUnion.autoPkey).type.toBeCallableWith("unionPkey");
 
       const builderBadUnion = tableBuilder<{
         badUnion: string | { obj: number };
       }>();
-      expect(builderBadUnion.autoIncrementPkey).type.not.toBeCallableWith(
-        "badUnion"
-      );
+      expect(builderBadUnion.autoPkey).type.not.toBeCallableWith("badUnion");
     });
   });
 
@@ -2067,7 +2061,7 @@ describe("Inbound auto", () => {
   }
   const db = dexieFactory(
     {
-      table: tableBuilder<TableItem>().autoIncrementPkey("id").build(),
+      table: tableBuilder<TableItem>().autoPkey("id").build(),
     },
     ""
   );

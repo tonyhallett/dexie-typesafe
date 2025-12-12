@@ -300,7 +300,7 @@ type TableBuilder<
   TKeyMaxDepth extends string,
   TMaxDepth extends string
 > = {
-  autoIncrementPkey<
+  autoPkey<
     TPKeyPath extends InboundAutoIncrementKeyPath<TDatabase, TKeyMaxDepth>
   >(
     key: TPKeyPath
@@ -666,7 +666,7 @@ function createTableBuilder<
   }
 
   return {
-    autoIncrementPkey<
+    autoPkey<
       TPKeyPath extends InboundAutoIncrementKeyPath<TDatabase, TKeyMaxDepth>
     >(key: TPKeyPath) {
       return createIndexMethods(key, true, [] as const, true, null as never);
