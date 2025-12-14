@@ -20,9 +20,13 @@ For inbound use `pkey`, `compoundPkey` or `autoPkey` and receive type safety for
 
 ![pkey selection](/readme-assets/PkeyDemo.gif)
 
+![compound pkey selection](/readme-assets/CompoundPkeyDemo.gif)
+
 After choosing your table type, choose all the indexes that you require with the same path type safety and `build()`.
 
 ## Demo index path choices
+
+![compound pkey selection](/readme-assets/IndexDemo.gif)
 
 Now that the paths have been chosen, dexie methods that have parameters that depend on a primary key or index type will be typed correctly. **link todo**
 

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Dexie_typesafe_recorder.Demos;
+using System.Windows;
 
 namespace Dexie_typesafe_recorder
 {
@@ -12,6 +13,6 @@ namespace Dexie_typesafe_recorder
             InitializeComponent();
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e) => await Recorder.RecordAsync(new PkeyDemo());
+        private async void Button_Click(object sender, RoutedEventArgs e) => await Recorder.RecordAsync(new IndexDemo());
     }
 }

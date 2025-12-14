@@ -55,9 +55,18 @@ namespace Dexie_typesafe_recorder
             return Type(")", delay);
         }
 
-        public static Task TypeQuote(int? delay = null)
+        private  static Task TypeQuote(int? delay = null)
         {
             return Type("\"", delay);
+        }
+
+        public static Task TypeOpeningQuote(int? delay = null)
+        {
+            return TypeQuote(delay);
+        }
+        public static Task TypeClosingQuote(int? delay = null)
+        {
+            return TypeQuote(delay);
         }
 
         public static Task ShowIntellisense(int? delay = null)
@@ -65,7 +74,7 @@ namespace Dexie_typesafe_recorder
             return Type(".", delay);
         }
 
-        public static async Task SelectIntellisense(int? delay = null)
+        public static async Task SelectSelectedIntellisenseOption(int? delay = null)
         {
             Keyboard.TypeVirtualKeyCode((ushort)VirtualKeyShort.ENTER);
             await Task.Delay(GetTypeDelay(delay));
@@ -74,7 +83,7 @@ namespace Dexie_typesafe_recorder
         public static async Task IntellisenseDownAndSelect(int times, int? delay = null)
         {
             await IntellisenseDown(times, delay);
-            await SelectIntellisense(delay);
+            await SelectSelectedIntellisenseOption(delay);
         }
 
         public static async Task ShowIntellisenseDownAndSelect(int times,int? intellisensePause = null, int? delay = null)
@@ -104,9 +113,14 @@ namespace Dexie_typesafe_recorder
             await Task.Delay(TypeDelay);
         }
 
-        internal static async Task Tab()
+        public static async Task Tab()
         {
             Keyboard.TypeVirtualKeyCode((ushort)VirtualKeyShort.TAB);
+        }
+
+        internal static Task Comma()
+        {
+            return Type(", ");
         }
     }
 }

@@ -31,8 +31,6 @@ namespace Dexie_typesafe_recorder
             }
             var recordingDetails = EditorVideoRecorderToReadmeAssets.Stop();
             
-            recordingDetails.ReadmeAssetsDirectory.OpenInWindowsExplorer();
-
             ConvertVideoToGif(recordingDetails.VideoPath, demo.GifName);
         }
 
