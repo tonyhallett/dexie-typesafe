@@ -7,5 +7,3 @@ interface TableItem {
   boolean: boolean;
   numberOpt?: number;
 }
-
-tableBuilder<TableItem>().primaryKey("date");
