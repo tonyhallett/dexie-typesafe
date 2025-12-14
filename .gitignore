@@ -16,6 +16,9 @@ coverage
 .vs/
 *.tgz
 
+**/bin/
+**/obj/
+
 
 # npm and yarn debug logs
 npm-debug.log*

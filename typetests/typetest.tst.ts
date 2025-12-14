@@ -2065,11 +2065,13 @@ describe("Inbound auto", () => {
     },
     ""
   );
+
   it("should add without the primary key TInsert, no keys ", () => {
     expect(db.table.add).type.toBeCallableWith({ numberValue: 42 });
     expect(db.table.add).type.not.toBeCallableWith({ numberValue: 42 }, [1]);
   });
 
+  ("");
   it("should add with the primary key argument TInsert, no keys", () => {
     expect(db.table.add).type.toBeCallableWith({ id: 2, numberValue: 42 });
   });
