@@ -21,7 +21,7 @@ namespace Dexie_typesafe_recorder
             editor.Focus();
             if (!dryRun)
             {
-                EditorVideoRecorderToTempDirectory.Start(editor, ffmpegPath);
+                EditorVideoRecorderToReadmeAssets.Start(editor, ffmpegPath);
             }
             await demo.TypeAsync();
             automation.Dispose();
@@ -29,24 +29,25 @@ namespace Dexie_typesafe_recorder
             {
                 return;
             }
-            var recordingDetails = EditorVideoRecorderToTempDirectory.Stop();
+            var recordingDetails = EditorVideoRecorderToReadmeAssets.Stop();
             
-            recordingDetails.TempDirectory.OpenInWindowsExplorer();
+            recordingDetails.ReadmeAssetsDirectory.OpenInWindowsExplorer();
 
-            ConvertVideoToGif(recordingDetails.VideoPath);
+            ConvertVideoToGif(recordingDetails.VideoPath, demo.GifName);
         }
 
-        private static void ConvertVideoToGif(string videoPath)
+        private static void ConvertVideoToGif(string videoPath, string gifName)
         {
-            var gifPath = GetGifPath(videoPath);
+            var gifPath = GetGifPath(videoPath, gifName);
             AviToGifConverter.ConvertAviToGif(ffmpegPath, videoPath, gifPath);
+            File.Delete(videoPath);
         }
 
-        private static string GetGifPath(string aviPath)
+        private static string GetGifPath(string aviPath, string gifName)
         {
             string? videoDirectory = Path.GetDirectoryName(aviPath);
-            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(aviPath);
-            return Path.Combine(videoDirectory!, $"{fileNameWithoutExtension}.gif");
+            
+            return Path.Combine(videoDirectory!, $"{gifName}.gif");
         }
     }
 }

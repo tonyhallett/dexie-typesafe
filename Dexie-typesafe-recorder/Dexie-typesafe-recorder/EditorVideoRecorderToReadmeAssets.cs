@@ -5,16 +5,16 @@ using FlauVideoRecorder = FlaUI.Core.Capturing.VideoRecorder;
 
 namespace Dexie_typesafe_recorder
 {
-    internal static class  EditorVideoRecorderToTempDirectory
+    internal static class  EditorVideoRecorderToReadmeAssets
     {
         private static FlauVideoRecorder? s_videoRecorder;
         private static RecordingDetails? s_recordingDetails;
 
         public static void Start(AutomationElement editor, string ffmpegPath)
         {
-            var temp = Directory.CreateTempSubdirectory();
-            var videoPath = Path.Combine(temp.FullName, "recording.avi");
-            s_recordingDetails = new RecordingDetails(temp, videoPath);
+            var readmeAssetsDirectory = RepoRootDirectoryFinder.FindTopDirectory("readme-assets");
+            var videoPath = Path.Combine(readmeAssetsDirectory.FullName, "recording.avi");
+            s_recordingDetails = new RecordingDetails(readmeAssetsDirectory, videoPath);
 
             var videoRecorderSettings = new VideoRecorderSettings
             {

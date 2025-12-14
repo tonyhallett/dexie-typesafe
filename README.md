@@ -18,6 +18,8 @@ For inbound use `pkey`, `compoundPkey` or `autoPkey` and receive type safety for
 
 ## Demo primary key path choices
 
+![pkey selection](/readme-assets/PkeyDemo.gif)
+
 After choosing your table type, choose all the indexes that you require with the same path type safety and `build()`.
 
 ## Demo index path choices

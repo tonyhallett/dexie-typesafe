@@ -3,13 +3,13 @@
 namespace Dexie_typesafe_recorder
 {
     internal class RecordingDetails { 
-        public RecordingDetails(DirectoryInfo tempDirectory, string videoPath)
+        public RecordingDetails(DirectoryInfo readmeAssetsDirectory, string videoPath)
         {
-            TempDirectory = tempDirectory;
+            ReadmeAssetsDirectory = readmeAssetsDirectory;
             VideoPath = videoPath;
         }
 
-        public DirectoryInfo TempDirectory { get; }
+        public DirectoryInfo ReadmeAssetsDirectory { get; }
         public string VideoPath { get; }
     }
 }

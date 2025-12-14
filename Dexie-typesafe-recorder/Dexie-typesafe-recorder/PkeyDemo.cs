@@ -2,6 +2,8 @@
 {
     class PkeyDemo : IDemo
     {
+        public string GifName { get; set; } = "PkeyDemo";
+
         public async Task TypeAsync()
         {
             // this can be in vscode initially
