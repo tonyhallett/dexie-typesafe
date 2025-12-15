@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
 
-namespace Dexie_typesafe_recorder
+namespace Dexie_typesafe_recorder.Utils
 {
     internal static class DirectoryExtensions {
         extension(DirectoryInfo dirInfo)
@@ -17,5 +17,4 @@ namespace Dexie_typesafe_recorder
             }
         }
     }
-
 }

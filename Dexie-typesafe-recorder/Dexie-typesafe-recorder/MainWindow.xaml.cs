@@ -13,6 +13,7 @@ namespace Dexie_typesafe_recorder
             InitializeComponent();
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e) => await Recorder.RecordAsync(new IndexDemo());
+        private async void Button_Click(object sender, RoutedEventArgs e) 
+            => await Recorder.RecordAsync(new TableBuilderMaxDepthDemo());
     }
 }

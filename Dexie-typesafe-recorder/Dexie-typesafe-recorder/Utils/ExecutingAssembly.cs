@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Reflection;
 
-namespace Dexie_typesafe_recorder
+namespace Dexie_typesafe_recorder.Utils
 {
     internal static class ExecutingAssembly
     {

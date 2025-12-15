@@ -1,9 +1,8 @@
 ﻿using FlaUI.Core;
-using FlaUI.Core.AutomationElements;
 using FlaUI.UIA3;
 using System.Diagnostics;
 
-namespace Dexie_typesafe_recorder
+namespace Dexie_typesafe_recorder.VsCode
 {
     internal static class VsCodeAutomation {
         private static Application GetVsCodeApplication()
@@ -15,13 +14,13 @@ namespace Dexie_typesafe_recorder
             return Application.Attach(mainProcess);
         }
 
-        public static (AutomationElement, UIA3Automation) GetVsCodeEditor()
+        public static IVsCodeEditor GetVsCodeEditor()
         {
             var vsCode = GetVsCodeApplication();
             var automation = new UIA3Automation();
             var mainWindow = vsCode.GetMainWindow(automation);
             var editor =  mainWindow!.FindFirstDescendant(cf => cf.ByClassName("monaco-editor no-user-select  showUnused showDeprecated vs-dark"))!;
-            return (editor, automation);
+            return new VsCodeEditor(editor, automation);
         }
     }
 }

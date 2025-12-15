@@ -1,4 +1,4 @@
-﻿namespace Dexie_typesafe_recorder
+﻿namespace Dexie_typesafe_recorder.Demos
 {
     interface IDemo {
         string GifName { get; }

@@ -1,4 +1,6 @@
-﻿namespace Dexie_typesafe_recorder.Demos
+﻿using Dexie_typesafe_recorder.Typers;
+
+namespace Dexie_typesafe_recorder.Demos
 {
     /*
         In vscode initially
@@ -14,12 +16,9 @@
     {
         public override string GifName { get; } = "PkeyDemo";
         
-        public override int MethodIntellisenseIndex { get; } = 4;
+        public override int MethodIntellisenseIndex { get; } = TableBuilderIndexes.PkeyMethodIndex;
 
-        protected override async Task PickParameters()
-        {
-            await Typer.SelectSelectedIntellisenseOption();
-            await Typer.TypeClosingQuote();
-        }
+        protected override Task PickParameters() =>  FunctionTyper.PickIntellisenseStringArgument(0);
+        
     }
 }

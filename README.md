@@ -34,6 +34,8 @@ If you need to choose nested paths then you will need to pass a max depth parame
 
 ## Demo max depth type parameter
 
+![tableBuilder max depth type parameter](/readme-assets/TableBuilderMaxDepthDemo.gif)
+
 # Table type specific table properties
 
 Use the return value from `build` with the `dexieFactory` to get

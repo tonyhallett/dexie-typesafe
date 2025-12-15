@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Dexie_typesafe_recorder
+namespace Dexie_typesafe_recorder.Utils
 {
     internal static class RepoRootDirectoryFinder {
         public static DirectoryInfo FindTopDirectory(string rootDirectoryName)

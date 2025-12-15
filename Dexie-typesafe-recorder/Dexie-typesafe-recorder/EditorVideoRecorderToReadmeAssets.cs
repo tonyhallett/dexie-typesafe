@@ -1,4 +1,4 @@
-﻿using FlaUI.Core.AutomationElements;
+﻿using Dexie_typesafe_recorder.Utils;
 using FlaUI.Core.Capturing;
 using System.IO;
 using FlauVideoRecorder = FlaUI.Core.Capturing.VideoRecorder;
@@ -10,7 +10,7 @@ namespace Dexie_typesafe_recorder
         private static FlauVideoRecorder? s_videoRecorder;
         private static RecordingDetails? s_recordingDetails;
 
-        public static void Start(AutomationElement editor, string ffmpegPath)
+        public static void Start(System.Drawing.Rectangle editorBoundingRectangle, string ffmpegPath)
         {
             var readmeAssetsDirectory = RepoRootDirectoryFinder.FindTopDirectory("readme-assets");
             var videoPath = Path.Combine(readmeAssetsDirectory.FullName, "recording.avi");
@@ -27,7 +27,7 @@ namespace Dexie_typesafe_recorder
 
             s_videoRecorder = new FlauVideoRecorder(
                 videoRecorderSettings,
-                (_) => Capture.Rectangle(editor.BoundingRectangle));
+                (_) => Capture.Rectangle(editorBoundingRectangle));
         }
 
         public static RecordingDetails Stop()

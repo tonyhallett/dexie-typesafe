@@ -1,4 +1,6 @@
-﻿namespace Dexie_typesafe_recorder.Demos
+﻿using Dexie_typesafe_recorder.Typers;
+
+namespace Dexie_typesafe_recorder.Demos
 {
     /*
         interface TableItem {
@@ -11,14 +13,13 @@
     class CompoundPkeyDemo : PKeyDemoBase
     {
         public override string GifName { get; } = "CompoundPkeyDemo";
-        public override int MethodIntellisenseIndex { get; } = 1;
+
+        public override int MethodIntellisenseIndex { get; } = TableBuilderIndexes.CompoundPkeyMethodIndex;
 
         protected override async Task PickParameters()
         {
-            await Typer.SelectSelectedIntellisenseOption();
-            await Typer.TypeClosingQuote();
-
-            await FunctionTyper.PickAdditionalParameter(1);
+            await FunctionTyper.PickIntellisenseStringArgument(0);
+            await FunctionTyper.PickAdditionalIntellisenseStringArgument(1);
         }
     }
 }
