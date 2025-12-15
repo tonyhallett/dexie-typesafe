@@ -305,7 +305,7 @@ type UpgradeFunction<
 
 It is not necessary to understand the typescript except to know that
 
-TransactionWithTables is as before, a Dexie transaction with properties that are dexie-typesafe table properties, except this time the tables are typed to "get" the old table items and add / update with the new table items.
+TransactionWithTables is as before, a Dexie transaction with properties that are dexie-typesafe tables, except this time the tables are typed to "get" the old table items and add / update with the new table items.
 
 The upgrade function is best explained via a demo
 
