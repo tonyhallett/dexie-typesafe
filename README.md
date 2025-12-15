@@ -121,7 +121,9 @@ whereCompositeEquality
 whereSingleEquality
 whereSingleFilterEquality
 
-# demo of typesafe methods
+# equality demo
+
+![Table.where demo](/readme-assets/EqualityDemo.gif)
 
 # prop modification
 
