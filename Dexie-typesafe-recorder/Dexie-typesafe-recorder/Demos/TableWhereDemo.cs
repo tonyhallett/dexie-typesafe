@@ -17,7 +17,7 @@ namespace Dexie_typesafe_recorder.Demos
             await Intellisense.DownAndSelect(1);
             await Typer.TypeQuote();
             await FunctionTyper.TypeParameterClosingBracket();
-            await Intellisense.ShowDownAndSelect(3,1000);
+            await Intellisense.ShowWithDotDownAndSelect(3,1000);
             await Typer.Type($"(5){tableInboundEach}");
             await HoverCursorArgument();
             await HoverTableItem();
@@ -48,13 +48,13 @@ namespace Dexie_typesafe_recorder.Demos
             await HoverTableItem();
         }
 
-        private async Task HoverCursorArgument()
+        private static async Task HoverCursorArgument()
         {
             await Typer.MoveLeft(9);
             await Intellisense.ShowHover(1500);
         }
 
-        private async Task HoverTableItem()
+        private static async Task HoverTableItem()
         {
             await Typer.MoveLeft(9);
             await Intellisense.ShowHover(1500);

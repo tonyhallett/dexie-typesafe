@@ -16,13 +16,13 @@ namespace Dexie_typesafe_recorder.Demos
             await Typer.MoveUp(2);
             await Typer.Tab();
             await Typer.Type("tx.table1.add({");
-            await Intellisense.CtrlSpace(500);
+            await Intellisense.ShowCtrlSpace(500);
             await Intellisense.DownAndSelect(0);
             await Typer.Type(":\"\"});");
             await Task.Delay(1000);
             await Typer.MoveLeft(3);
             await Typer.Type(", ");
-            await Intellisense.CtrlSpace();
+            await Intellisense.ShowCtrlSpace();
             await Intellisense.DownAndSelect(0);
             await Typer.Type(":\"\", bad:true");
             await Task.Delay(1000);
@@ -31,7 +31,7 @@ namespace Dexie_typesafe_recorder.Demos
             await Typer.NewLine();
             await Typer.Tab();
             await Typer.Type("tx.table2.add({");
-            await Intellisense.CtrlSpace(500);
+            await Intellisense.ShowCtrlSpace(500);
             await Intellisense.DownAndSelect(0);
             await Typer.Type(":1});");
             await Task.Delay(1000);

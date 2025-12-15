@@ -18,7 +18,7 @@
 
         public static async Task PickIntellisenseMethodSuggestFirstStringParameter(int functionIndex)
         {
-            await Intellisense.ShowDownAndSelect(functionIndex, 1000);
+            await Intellisense.ShowWithDotDownAndSelect(functionIndex, 1000);
             await TypeParameterOpeningBracket();
             await Typer.TypeQuote();
             await Task.Delay(1000);

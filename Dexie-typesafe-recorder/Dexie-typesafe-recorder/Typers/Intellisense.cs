@@ -14,7 +14,13 @@ namespace Dexie_typesafe_recorder.Typers
             return delay ?? IntellisenseMoveDelay;
         }
 
-        public static Task ShowIntellisense(int? delay = null)
+        public static Task ShowCtrlSpace(int delay = 0)
+        {
+            Keyboard.TypeSimultaneously(VirtualKeyShort.CONTROL, VirtualKeyShort.SPACE);
+            return Task.Delay(delay);
+        }
+
+        public static Task ShowWithDot(int? delay = null)
         {
             return Typer.Type(".", delay);
         }
@@ -31,9 +37,9 @@ namespace Dexie_typesafe_recorder.Typers
             await SelectSelectedOption(delay);
         }
 
-        public static async Task ShowDownAndSelect(int times, int? intellisensePause = null, int? delay = null)
+        public static async Task ShowWithDotDownAndSelect(int times, int? intellisensePause = null, int? delay = null)
         {
-            await ShowIntellisense(intellisensePause);
+            await ShowWithDot(intellisensePause);
             await DownAndSelect(times, delay);
 
         }
@@ -41,13 +47,6 @@ namespace Dexie_typesafe_recorder.Typers
         {
             var d = GetIntellisenseMoveDelay(delay);
             return Typer.MoveDown(times, d);
-        }
-
-        public static async Task CtrlSpace(int? delay = null)
-        {
-            var d = GetIntellisenseMoveDelay(delay);
-            Keyboard.TypeSimultaneously(VirtualKeyShort.CONTROL, VirtualKeyShort.SPACE);
-            await Task.Delay(d);
         }
 
         public static async Task Rename(string renameTo, int? delay = null)

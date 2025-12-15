@@ -64,6 +64,12 @@ namespace Dexie_typesafe_recorder.Typers
 
         public static Task NewLine(int times=1) => Enter(times);
 
+        public static async Task NewLineAndTab()
+        {
+            await NewLine();
+            await Tab();
+        }
+
         public static Task Enter(int times = 1)
         {
             return Repeat(VirtualKeyShort.RETURN, times);
@@ -90,6 +96,17 @@ namespace Dexie_typesafe_recorder.Typers
         public static Task CtrlRightArrow(int times = 1, int? delay = null)
         {
             return Repeat(() => Keyboard.TypeSimultaneously(VirtualKeyShort.CONTROL, VirtualKeyShort.RIGHT),
+                times, delay);
+        }
+
+        /*
+            This cannot used by VsCode CtrlRightArrowShift
+            Can see vscode logging https://code.visualstudio.com/docs/configure/keybindings
+        */
+
+        public static Task CtrlLeftArrow(int times = 1, int? delay = null)
+        {
+            return Repeat(() => Keyboard.TypeSimultaneously(VirtualKeyShort.CONTROL, VirtualKeyShort.LEFT),
                 times, delay);
         }
 
