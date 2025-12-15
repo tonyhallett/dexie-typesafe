@@ -101,7 +101,7 @@ Table where / Collection.or
 
 # Table.where examples
 
-\*\* todo - :id too
+![Table.where demo](/readme-assets/TableWhereDemo.gif)
 
 # get/where equality
 

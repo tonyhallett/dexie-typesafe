@@ -58,7 +58,7 @@ namespace Dexie_typesafe_recorder.Typers
             await Typer.Enter();
         }
 
-        public static async Task ShowProblem()
+        public static async Task ShowHover(int duration)
         {
             Keyboard.TypeSimultaneously(
                 VirtualKeyShort.CONTROL,
@@ -69,6 +69,8 @@ namespace Dexie_typesafe_recorder.Typers
                 VirtualKeyShort.CONTROL,
                 VirtualKeyShort.KEY_I
             );
+            await Task.Delay(duration);
+            await Typer.Escape();
         }
     }
 }

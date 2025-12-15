@@ -1,7 +1,4 @@
 ﻿using Dexie_typesafe_recorder.Typers;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Dexie_typesafe_recorder.Demos
 {
@@ -13,9 +10,7 @@ namespace Dexie_typesafe_recorder.Demos
         {
             await Typer.Type("db.table1.get(1)");
             await Task.Delay(1000);
-            await Intellisense.ShowProblem();
-            await Task.Delay(1000);
-            await Typer.Escape();
+            await Intellisense.ShowHover(1000);
             await Typer.Backspace(2);
             await Typer.Type("\"1\").then(table1Item => table1Item?.propStr);");
             await Typer.NewLine();

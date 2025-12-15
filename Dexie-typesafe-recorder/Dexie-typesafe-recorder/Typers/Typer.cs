@@ -1,6 +1,5 @@
 ﻿using FlaUI.Core.Input;
 using FlaUI.Core.WindowsAPI;
-using System.Windows.Forms;
 
 namespace Dexie_typesafe_recorder.Typers
 {
@@ -48,22 +47,26 @@ namespace Dexie_typesafe_recorder.Typers
         public static Task MoveUp(int times, int? delay = null) => Repeat(VirtualKeyShort.UP, times, delay);
 
 
-        private static async Task Repeat(VirtualKeyShort virtualKey, int times, int? delay = null)
+        private static  Task Repeat(VirtualKeyShort virtualKey, int times, int? delay = null)
+        {
+            return Repeat(() => Keyboard.TypeVirtualKeyCode((ushort)virtualKey), times, delay);
+        }
+
+        private static async Task Repeat(Action action, int times, int? delay = null)
         {
             var d = GetTypeDelay(delay);
             for (var i = 0; i < times; i++)
             {
-                Keyboard.TypeVirtualKeyCode((ushort)virtualKey);
+                action();
                 await Task.Delay(d);
             }
         }
 
-        public static Task NewLine() => Enter();
+        public static Task NewLine(int times=1) => Enter(times);
 
-        public static async Task Enter()
+        public static Task Enter(int times = 1)
         {
-            Keyboard.TypeVirtualKeyCode((ushort)VirtualKeyShort.RETURN);
-            await Task.Delay(TypeDelay);
+            return Repeat(VirtualKeyShort.RETURN, times);
         }
 
         public static async Task Tab()
@@ -82,6 +85,12 @@ namespace Dexie_typesafe_recorder.Typers
                 Keyboard.TypeVirtualKeyCode((ushort)VirtualKeyShort.BACK);
                 await Task.Delay(TypeDelay);
             }
+        }
+
+        public static Task CtrlRightArrow(int times = 1, int? delay = null)
+        {
+            return Repeat(() => Keyboard.TypeSimultaneously(VirtualKeyShort.CONTROL, VirtualKeyShort.RIGHT),
+                times, delay);
         }
 
         public static  Task MoveLeft(int times, int? delay = null) => Repeat(VirtualKeyShort.LEFT, times, delay);
