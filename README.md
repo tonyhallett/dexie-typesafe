@@ -48,6 +48,8 @@ Table type specific methods enabled properly defined `add`/`bulkAdd`/`put`/`bulk
 
 ## Demo dexieFactory, table properties
 
+![Dexie factory](/readme-assets/DexieFactoryDemo.gif)
+
 # Table type specific methods
 
 # Primary key / index value typing

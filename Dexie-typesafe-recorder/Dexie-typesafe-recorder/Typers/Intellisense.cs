@@ -1,5 +1,7 @@
 ﻿using FlaUI.Core.Input;
 using FlaUI.Core.WindowsAPI;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Dexie_typesafe_recorder.Typers
 {
@@ -39,6 +41,21 @@ namespace Dexie_typesafe_recorder.Typers
         {
             var d = GetIntellisenseMoveDelay(delay);
             return Typer.MoveDown(times, d);
+        }
+
+        public static async Task CtrlSpace(int? delay = null)
+        {
+            var d = GetIntellisenseMoveDelay(delay);
+            Keyboard.TypeSimultaneously(VirtualKeyShort.CONTROL, VirtualKeyShort.SPACE);
+            await Task.Delay(d);
+        }
+
+        public static async Task Rename(string renameTo, int? delay = null)
+        {
+            Keyboard.TypeVirtualKeyCode((ushort)VirtualKeyShort.F2);
+            await Task.Delay(1000);
+            await Typer.Type(renameTo, delay);
+            await Typer.Enter();
         }
     }
 }
