@@ -261,4 +261,52 @@ The `PropModification<T>` with its executor can be used to update any property t
 
 # upgrade
 
-# mapToClass
+Dexie database schemas are changed using [database versioning](https://dexie.org/docs/Tutorial/Design#database-versioning).
+
+Dexie-typesafe works differently, it has a standalone overloaded upgrade function.
+Below is the implementation signature.
+
+```ts
+export function upgrade<
+  TTypedDexie extends TypedDexie<any, any>,
+  TNewConfig extends Record<string, TableConfigAny | null>
+>(
+  db: TTypedDexie,
+  tableConfigs: TNewConfig,
+  versionOrUpgrade?: number | UpgradeFunction<TTypedDexie, TNewConfig>,
+  upgradeFunction?: UpgradeFunction<TTypedDexie, TNewConfig>
+): UpgradedDexie<GetDexieConfig<TTypedDexie>, TNewConfig>;
+```
+
+`TTypedDexie` is what you received from the dexie factory.
+
+The schema is updated using table builders as used by the dexie factory.
+
+A different "db" type is returned as this reflects the new config.
+
+1. Tables can be deleted
+2. There is no `on("populate")` for an upgraded database.
+
+Most importantly, if your schema mandates updating existing tables then you will need to supply the upgradeFunction.
+
+```ts
+type UpgradeTransaction<
+  TOldConfig extends Record<string, TableConfigAny>,
+  TNewConfig extends Record<string, TableConfigAny | null>
+> = TransactionWithTables<UpgradeConfig<TOldConfig, TNewConfig>>;
+
+type UpgradeFunction<
+  TTypedDexie extends TypedDexie<any, any>,
+  TNewConfig extends Record<string, TableConfigAny | null>
+> = (
+  trans: UpgradeTransaction<GetDexieConfig<TTypedDexie>, TNewConfig>
+) => PromiseLike<any> | void;
+```
+
+It is not necessary to understand the typescript except to know that
+
+TransactionWithTables is as before, a Dexie transaction with properties that are dexie-typesafe table properties, except this time the tables are typed to "get" the old table items and add / update with the new table items.
+
+The upgrade function is best explained via a demo
+
+# upgrade function demo
