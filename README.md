@@ -310,3 +310,5 @@ TransactionWithTables is as before, a Dexie transaction with properties that are
 The upgrade function is best explained via a demo
 
 # upgrade function demo
+
+# link to demo app
