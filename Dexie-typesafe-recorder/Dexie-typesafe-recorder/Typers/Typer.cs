@@ -70,6 +70,10 @@ namespace Dexie_typesafe_recorder.Typers
         {
             Keyboard.TypeVirtualKeyCode((ushort)VirtualKeyShort.TAB);
         }
+        public static async Task Escape()
+        {
+            Keyboard.TypeVirtualKeyCode((ushort)VirtualKeyShort.ESCAPE);
+        }
 
         public static async Task Backspace(int count = 1)
         {

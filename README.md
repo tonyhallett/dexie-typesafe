@@ -44,16 +44,85 @@ Tables **typed specifically** to what you choose, inbound / outbound, auto / not
 
 These tables will be available on db and transactions as properties, the property names are taken from the keys of the object you supply as first argument.
 
-Table type specific methods enabled properly defined `add`/`bulkAdd`/`put`/`bulkPut` as well as typing the "insert" method parameters differently to the "get" method return values for when the table type is inbound auto.
-
 ## Demo dexieFactory, table properties
 
 ![Dexie factory](/readme-assets/DexieFactoryDemo.gif)
 
 # Table type specific methods
 
+Table type specific methods enable :
+
+1. Properly defined `add`/`bulkAdd`/`put`/`bulkPut` with respect to the key/keys argument and necessary overloads.
+
+# Dexie docs
+
+[add ](<https://dexie.org/docs/Table/Table.add()>)
+[bulkAdd](<https://dexie.org/docs/Table/Table.bulkAdd()>)
+[put](<https://dexie.org/docs/Table/Table.put()>)
+[bulkPut](<https://dexie.org/docs/Table/Table.bulkPut()>)
+
+Note that there are bulkAddTuple, bulkPutTuple alias methods for stricter typing when you have the parameter as a tuple rather than an array.
+
+For table inbound auto there is an alias addObject that will return the added object with the primary key from the database applied ( as this is what dexie does for you. )
+
+2. With Table inbound the update method is overloaded to allowing providing the primary key using your table item type.
+
+3. Typing the "insert" method parameters differently to the "get" method return values for when the table type is inbound auto.
+
 # Primary key / index value typing
 
-## Virtual index typing.
+By choosing your primary key / indexes it is possible to use the property types in different methods.
+
+In Collection method callbacks
+
+each
+
+eachKey
+
+eachUniqueKey
+
+eachPrimaryKey
+
+keys
+
+uniqueKeys
+
+primaryKeys
+
+**parameter types**
+
+Table get, bulkGet,
+
+# Table.get example
+
+![Table.get demo](/readme-assets/TableGetDemo.gif)
+
+Table where / Collection.or
+
+# Table.where examples
+
+\*\* todo - :id too
+
+# get/where equality
+
+To improve the typescript there are alias methods that you should probably use.
+
+getEquality - prefer being explicit and use one of
+
+getCompositeEquality - using a composite index in full or virtually
+getSingleEquality - using a single index
+getSingleFilterEquality - using an index and performing a filter ( given that you have not set up a composite index)
+
+Similarly there is
+
+whereEquality
+
+whereCompositeEquality
+whereSingleEquality
+whereSingleFilterEquality
+
+# demo of typesafe methods
+
+# prop modification
 
 # upgrade

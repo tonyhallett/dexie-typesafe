@@ -57,5 +57,18 @@ namespace Dexie_typesafe_recorder.Typers
             await Typer.Type(renameTo, delay);
             await Typer.Enter();
         }
+
+        public static async Task ShowProblem()
+        {
+            Keyboard.TypeSimultaneously(
+                VirtualKeyShort.CONTROL,
+                VirtualKeyShort.KEY_K
+            );
+            await Task.Delay(75);
+            Keyboard.TypeSimultaneously(
+                VirtualKeyShort.CONTROL,
+                VirtualKeyShort.KEY_I
+            );
+        }
     }
 }

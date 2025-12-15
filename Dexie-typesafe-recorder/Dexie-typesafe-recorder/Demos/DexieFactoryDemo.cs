@@ -1,5 +1,4 @@
 ﻿using Dexie_typesafe_recorder.Typers;
-using System.Windows.Input;
 
 namespace Dexie_typesafe_recorder.Demos
 {

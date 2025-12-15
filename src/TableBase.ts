@@ -41,7 +41,6 @@ type PathRegistry<
 ];
 
 export interface TableGetEquality<
-  TDatabase,
   TGet,
   TEqualityRegistryLookup extends EqualityRegistryLookup
 > {
@@ -182,12 +181,10 @@ export interface TableGetKey<TGet, TPKey> {
 }
 
 type TableGet<
-  TDatabase,
   TGet,
   TPKey,
   TEqualityRegistryLookup extends EqualityRegistryLookup
-> = TableGetKey<TGet, TPKey> &
-  TableGetEquality<TDatabase, TGet, TEqualityRegistryLookup>;
+> = TableGetKey<TGet, TPKey> & TableGetEquality<TGet, TEqualityRegistryLookup>;
 
 export interface TableCore<
   TName extends string,
@@ -344,7 +341,7 @@ export type TableBase<
     TPKeyPathOrPaths,
     TMaxDepth
   > &
-  TableGet<TDatabase, TGet, TPKey, TEqualityRegistryLookup>;
+  TableGet<TGet, TPKey, TEqualityRegistryLookup>;
 
 type TableWhere<
   TGet,
