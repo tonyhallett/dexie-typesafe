@@ -51,6 +51,62 @@ export function tableBuilder<
 This is the last parameter as it is unlikely to be used but to adhere to the IndexedDb spec key paths can use
 [type-specific properties](https://www.w3.org/TR/IndexedDB/#key-path-construct).
 
+# mapToClass
+
+Dexie tables have the [mapToClass method](<https://dexie.org/docs/Table/Table.mapToClass()>).
+Dexie-typesafe does not as it will do this internally if you use either of
+
+```ts
+export function tableClassBuilder<
+  TGetCtor extends new (...args: any) => any,
+  TMaxDepth extends string = Level2,
+  TKeyMaxDepth extends string = NoDescend,
+  TAllowTypeSpecificProperties extends boolean = false
+>(
+  ctor: TGetCtor
+)
+
+export function tableClassBuilderExcluded<
+  TGetCtor extends new (...args: any) => any,
+  TMaxDepth extends string = Level2,
+  TKeyMaxDepth extends string = NoDescend,
+  TAllowTypeSpecificProperties extends boolean = false
+>(
+  ctor: TGetCtor
+) {
+  return {
+    excludedKeys<
+      TExcludeProps extends keyof InstanceType<TGetCtor> & string
+    >()...}
+}
+
+```
+
+Provide the ctor to either tableClassBuilder, if you have any properties that should not appear in the database then use tableClassBuilderExcluded.
+
+e.g
+
+```ts
+class EntityClass {
+    constructor(id: number) {
+        this.id = id;
+    }
+    id: number;
+    excluded: string = "";
+    other: string = "";
+    method() {}
+}
+
+
+tableClassBuilderExcluded(EntityClass).excludedKeys<"excluded">().
+
+// choose your pkey, indexes as normal
+
+
+```
+
+The table will have its "getting" methods, such as `get`, typed to the provided type.
+
 # Table type specific table properties
 
 Use the return value from `build` with the `dexieFactory` to get
