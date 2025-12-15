@@ -28,13 +28,28 @@ After choosing your table type, choose all the indexes that you require with the
 
 ![compound pkey selection](/readme-assets/IndexDemo.gif)
 
-Now that the paths have been chosen, dexie methods that have parameters that depend on a primary key or index type will be typed correctly. **link todo**
+Now that the paths have been chosen, dexie methods that accept paths will be typed correctly and parameters or return types that depend on a primary key or index type, will be too.
 
-If you need to choose nested paths then you will need to pass a max depth parameter of the form I,II,III, etc or anything other than "" for all depths.
+If you need to choose nested paths then you will need to pass a TKeyMaxDepth type parameter of the form I,II,III, etc or anything other than "" for all depths. Note that this is the second "max depth" parameter. The first is used for Table.update / Collection.modify / Table get and where equality - it has default of II and works in the same manner.
 
-## Demo max depth type parameter
+```ts
+export function tableBuilder<
+  TDatabase,
+  TMaxDepth extends string = Level2,
+  TKeyMaxDepth extends string = NoDescend,
+  TAllowTypeSpecificProperties extends boolean = false
+>
+
+```
+
+## Demo TKeyMaxDepth type parameter
 
 ![tableBuilder max depth type parameter](/readme-assets/TableBuilderMaxDepthDemo.gif)
+
+# TAllowTypeSpecificProperties
+
+This is the last parameter as it is unlikely to be used but to adhere to the IndexedDb spec key paths can use
+[type-specific properties](https://www.w3.org/TR/IndexedDB/#key-path-construct).
 
 # Table type specific table properties
 
@@ -189,3 +204,5 @@ The `PropModification<T>` with its executor can be used to update any property t
 ![Table.where demo](/readme-assets/PropModificationDemo.gif)
 
 # upgrade
+
+# mapToClass
