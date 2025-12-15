@@ -116,5 +116,12 @@ namespace Dexie_typesafe_recorder.Typers
 
         public static  Task Delete(int times, int? delay = null) => Repeat(VirtualKeyShort.BACK, times, delay);
 
+        public static void Save()
+        {
+            using (Keyboard.Pressing(VirtualKeyShort.CONTROL))
+            {
+                Keyboard.Type(VirtualKeyShort.KEY_S);
+            }
+        }
     }
 }

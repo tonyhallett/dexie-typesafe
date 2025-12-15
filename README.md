@@ -127,4 +127,65 @@ whereSingleFilterEquality
 
 # prop modification
 
+Dexie tables can be updated / upserted and collections modified with PropModification.
+Dexie provides three methods that produce a PropModification
+[add](<https://dexie.org/docs/PropModification/add()>)
+
+example code
+
+```
+import { replacePrefix } from 'dexie';
+
+db.files
+  .where('filePath')
+  .startsWith('foo/')
+  .modify({
+    filePath: replacePrefix('foo/', 'bar/')
+  });
+
+```
+
+[remove](<https://dexie.org/docs/PropModification/remove()>)
+[replacePrefix](<https://dexie.org/docs/PropModification/replacePrefix()>)
+
+Although this works it is not suitable for string typing.
+Their typescript
+
+```ts
+export class PropModification {
+  ["@@propmod"]: PropModSpec;
+  constructor(spec: PropModSpec);
+  execute<T>(value: T): T;
+}
+```
+
+Instead, dexie-typesafe provides its own
+
+```ts
+export abstract class PropModificationBase<T> {
+  private readonly __brand!: T;
+  abstract execute(value: T): T;
+}
+
+export class PropModification<T> extends PropModificationBase<T> {
+  executor: (value: T) => T;
+  constructor(executor: (value: T) => T) {
+    super();
+    this.executor = executor;
+  }
+  override execute(value: T): T {
+    return this.executor(value);
+  }
+}
+```
+
+Although PropModificationBase does not appear to have Dexie's PropModification in its prototype chain it does but is not exposed to typescript. For PropModification derivations to work that need to be `instanceof`.
+Dexie-typesafe has its own `add`, `remove` and `replacePrefix` methods that call dexie's but return ` PropModificationBase<T>` instead.
+
+The `PropModification<T>` with its executor can be used to update any property type safely.
+
+# demo
+
+![Table.where demo](/readme-assets/PropModificationDemo.gif)
+
 # upgrade
