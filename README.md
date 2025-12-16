@@ -1,8 +1,8 @@
 # dexie-typesafe
 
-A Very Minimalistic Type Safe Wrapper for IndexedDB
+A Very Minimalistic Type Safe Wrapper for Dexie
 
-# type safe dexie schema
+# Type safe dexie schema
 
 The "tableBuilder" functions ensure that the schema does represent what you see in the database.
 
@@ -16,15 +16,17 @@ For outbound tables use `hiddenExplicitPkey` or `hiddenAutoPkey`.
 
 For inbound use `pkey`, `compoundPkey` or `autoPkey` and receive type safety for the path that you choose as well as filtering out invalid paths.
 
-## Demo primary key path choices
+## Demo - primary key path choices
 
+pkey
 ![pkey selection](/readme-assets/PkeyDemo.gif)
 
+compound
 ![compound pkey selection](/readme-assets/CompoundPkeyDemo.gif)
 
 After choosing your table type, choose all the indexes that you require with the same path type safety and `build()`.
 
-## Demo index path choices
+## Demo - index path choices
 
 ![compound pkey selection](/readme-assets/IndexDemo.gif)
 
@@ -42,7 +44,7 @@ export function tableBuilder<
 
 ```
 
-## Demo TKeyMaxDepth type parameter
+## Demo - TKeyMaxDepth type parameter
 
 ![tableBuilder max depth type parameter](/readme-assets/TableBuilderMaxDepthDemo.gif)
 
@@ -107,7 +109,7 @@ tableClassBuilderExcluded(EntityClass).excludedKeys<"excluded">().
 
 The table will have its "getting" methods, such as `get`, typed to the provided type.
 
-# Table type specific table properties
+# Table properties
 
 Use the return value from `build` with the `dexieFactory` to get
 
@@ -115,17 +117,17 @@ Tables **typed specifically** to what you choose, inbound / outbound, auto / not
 
 These tables will be available on db and transactions as properties, the property names are taken from the keys of the object you supply as first argument.
 
-## Demo dexieFactory, table properties
+## Demo - dexieFactory, table properties
 
 ![Dexie factory](/readme-assets/DexieFactoryDemo.gif)
 
 # Table type specific methods
 
-Table type specific methods enable :
+Different Table types, as specified by your table builder "pkey" method choices, enable :
 
 1. Properly defined `add`/`bulkAdd`/`put`/`bulkPut` with respect to the key/keys argument and necessary overloads.
 
-# Dexie docs
+Dexie docs
 
 [add ](<https://dexie.org/docs/Table/Table.add()>)
 [bulkAdd](<https://dexie.org/docs/Table/Table.bulkAdd()>)
@@ -164,17 +166,17 @@ primaryKeys
 
 Table get, bulkGet,
 
-# Table.get example
+## Demo - Table.get
 
 ![Table.get demo](/readme-assets/TableGetDemo.gif)
 
 Table where / Collection.or
 
-# Table.where examples
+## Demo - Table.where
 
 ![Table.where demo](/readme-assets/TableWhereDemo.gif)
 
-# get/where equality
+# get / where equality
 
 To improve the typescript there are alias methods that you should probably use.
 
@@ -192,11 +194,11 @@ whereCompositeEquality
 whereSingleEquality
 whereSingleFilterEquality
 
-# equality demo
+## Demo - equality
 
 ![Table.where demo](/readme-assets/EqualityDemo.gif)
 
-# prop modification
+# PropModification
 
 Dexie tables can be updated / upserted and collections modified with PropModification.
 Dexie provides three methods that produce a PropModification
@@ -255,11 +257,11 @@ Dexie-typesafe has its own `add`, `remove` and `replacePrefix` methods that call
 
 The `PropModification<T>` with its executor can be used to update any property type safely.
 
-# demo
+# Demo - PropModification
 
-![Table.where demo](/readme-assets/PropModificationDemo.gif)
+![PropModification demo](/readme-assets/PropModificationDemo.gif)
 
-# upgrade
+# Database upgrade
 
 Dexie database schemas are changed using [database versioning](https://dexie.org/docs/Tutorial/Design#database-versioning).
 
@@ -309,7 +311,7 @@ TransactionWithTables is as before, a Dexie transaction with properties that are
 
 The upgrade function is best explained via a demo
 
-# upgrade function demo
+## Demo - upgrade function
 
 ![upgrade demo](/readme-assets/UpgradeDemo.gif)
 
