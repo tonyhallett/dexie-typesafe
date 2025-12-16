@@ -4,6 +4,11 @@
   "author": "Tony Hallett",
   "license": "ISC",
   "description": "Typesafe schema building producing typesafe dexie Table, Collection and Where",
+  "keywords": [
+    "dexie",
+    "indexeddb",
+    "typescript"
+  ],
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
