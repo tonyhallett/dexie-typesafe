@@ -98,6 +98,14 @@ type UpgradeFunction<
 > = (
   trans: UpgradeTransaction<GetDexieConfig<TTypedDexie>, TNewConfig>
 ) => PromiseLike<any> | void;
+/**
+ * Upgrade a typed Dexie instance to a new schema without an explicit version.
+ * Computes the next version from `db.verno` and applies `tableConfigs`.
+ *
+ * @param db The dexie-typesafe database instance to upgrade.
+ * @param tableConfigs New table configurations.
+ * @returns The upgraded typed Dexie instance.
+ */
 export function upgrade<
   TTypedDexie extends TypedDexie<any, any>,
   TNewConfig extends Record<string, TableConfigAny | null>
@@ -106,6 +114,13 @@ export function upgrade<
   tableConfigs: TNewConfig
 ): UpgradedDexie<GetDexieConfig<TTypedDexie>, TNewConfig>;
 
+/**
+ * Upgrade and run a migration using an upgrade function (no explicit version).
+ * Computes the next version and runs `upgradeFunction` in Dexie's upgrade
+ * transaction with typed table access.
+ *
+ * @param upgradeFunction The migration function to run during upgrade.
+ */
 export function upgrade<
   TTypedDexie extends TypedDexie<any, any>,
   TNewConfig extends Record<string, TableConfigAny | null>
@@ -115,6 +130,11 @@ export function upgrade<
   upgradeFunction: UpgradeFunction<TTypedDexie, TNewConfig>
 ): UpgradedDexie<GetDexieConfig<TTypedDexie>, TNewConfig>;
 
+/**
+ * Upgrade with an explicit `version` (no migration function).
+ *
+ * @param version The target schema version number.
+ */
 export function upgrade<
   TTypedDexie extends TypedDexie<any, any>,
   TNewConfig extends Record<string, TableConfigAny | null>
@@ -124,6 +144,12 @@ export function upgrade<
   version: number
 ): UpgradedDexie<GetDexieConfig<TTypedDexie>, TNewConfig>;
 
+/**
+ * Upgrade with explicit `version` and a migration function.
+ *
+ * @param version The target schema version number.
+ * @param upgradeFunction The migration function to run during upgrade.
+ */
 export function upgrade<
   TTypedDexie extends TypedDexie<any, any>,
   TNewConfig extends Record<string, TableConfigAny | null>

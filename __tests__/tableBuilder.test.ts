@@ -14,9 +14,7 @@ describe("tableBuilder", () => {
     });
 
     it("should build with just auto primary key", () => {
-      const tableConfig = tableBuilder<{ id: number }>()
-        .autoIncrementPkey("id")
-        .build();
+      const tableConfig = tableBuilder<{ id: number }>().autoPkey("id").build();
       expect(tableConfig.pk).toEqual({ key: "id", auto: true });
       expectNoSchemaOrMapToClass(tableConfig);
     });

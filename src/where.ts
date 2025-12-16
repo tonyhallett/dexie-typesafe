@@ -22,6 +22,10 @@ export interface WherePaths<
   TCollectionKey,
   TMaxDepth extends string
 > {
+  /**
+   * Start a where-clause on an indexed or primary key path.
+   * Dexie: https://dexie.org/docs/Table/Table.where()
+   */
   where<
     TPath extends TWherePathKeyTypes[number]["path"],
     TKey extends KeyTypeForPath<TWherePathKeyTypes, TPath>
@@ -53,6 +57,7 @@ export interface WhereEquality<
   TPKeyPathOrPaths,
   TMaxDepth extends string
 > {
+  /** Alias of `where` using equality tokens. Dexie: https://dexie.org/docs/Table/Table.where() */
   where<
     TEquality extends TEqualityRegistryLookup["all"][number]["equality"],
     TKey = KeyTypeForEquality<
@@ -76,6 +81,7 @@ export interface WhereEquality<
         TPKeyPathOrPaths,
         TMaxDepth
       >;
+  /** Alias of `where`. Dexie: https://dexie.org/docs/Table/Table.where() */
   whereEquality<
     TEquality extends TEqualityRegistryLookup["all"][number]["equality"],
     TKey = KeyTypeForEquality<
@@ -99,6 +105,7 @@ export interface WhereEquality<
         TPKeyPathOrPaths,
         TMaxDepth
       >;
+  /** Alias of `where` for composite equality. Dexie: https://dexie.org/docs/Table/Table.where() */
   whereCompositeEquality<
     TEquality extends TEqualityRegistryLookup["composite"][number]["equality"],
     TKey = KeyTypeForEquality<
@@ -122,6 +129,7 @@ export interface WhereEquality<
         TPKeyPathOrPaths,
         TMaxDepth
       >;
+  /** Alias of `where` for single equality. Dexie: https://dexie.org/docs/Table/Table.where() */
   whereSingleEquality<
     TEquality extends TEqualityRegistryLookup["single"][number]["equality"],
     TKey = KeyTypeForEquality<
@@ -146,6 +154,7 @@ export interface WhereEquality<
         TMaxDepth
       >;
 
+  /** Alias of `where` with an equality filter. Dexie: https://dexie.org/docs/Table/Table.where() */
   whereSingleFilterEquality<
     TEquality extends TEqualityRegistryLookup["single"][number]["equality"],
     TKey = KeyTypeForEquality<
@@ -253,6 +262,10 @@ export interface WhereClauseNonStrings<
     https://w3c.github.io/IndexedDB/#compare-two-keys
   */
   // https://dexie.org/docs/WhereClause/WhereClause.between()
+  /**
+   * Match keys between `lower` and `upper` (inclusive/exclusive by flags).
+   * Dexie: https://dexie.org/docs/WhereClause/WhereClause.between()
+   */
   between(
     lower: TKey,
     upper: TKey,
@@ -271,6 +284,10 @@ export interface WhereClauseNonStrings<
     TMaxDepth
   >;
   // https://dexie.org/docs/WhereClause/WhereClause.above()
+  /**
+   * Match keys strictly greater than `value`.
+   * Dexie: https://dexie.org/docs/WhereClause/WhereClause.above()
+   */
   above(
     value: TKey
   ): Collection<
@@ -286,6 +303,10 @@ export interface WhereClauseNonStrings<
     TMaxDepth
   >;
   // https://dexie.org/docs/WhereClause/WhereClause.aboveOrEqual()
+  /**
+   * Match keys greater than or equal to `value`.
+   * Dexie: https://dexie.org/docs/WhereClause/WhereClause.aboveOrEqual()
+   */
   aboveOrEqual(
     value: TKey
   ): Collection<
@@ -301,6 +322,10 @@ export interface WhereClauseNonStrings<
     TMaxDepth
   >;
   // https://dexie.org/docs/WhereClause/WhereClause.below()
+  /**
+   * Match keys strictly less than `value`.
+   * Dexie: https://dexie.org/docs/WhereClause/WhereClause.below()
+   */
   below(
     value: TKey
   ): Collection<
@@ -316,6 +341,10 @@ export interface WhereClauseNonStrings<
     TMaxDepth
   >;
   // https://dexie.org/docs/WhereClause/WhereClause.belowOrEqual()
+  /**
+   * Match keys less than or equal to `key`.
+   * Dexie: https://dexie.org/docs/WhereClause/WhereClause.belowOrEqual()
+   */
   belowOrEqual(
     key: TKey
   ): Collection<
@@ -331,6 +360,10 @@ export interface WhereClauseNonStrings<
     TMaxDepth
   >;
   // https://dexie.org/docs/WhereClause/WhereClause.equals()
+  /**
+   * Match keys equal to `value`.
+   * Dexie: https://dexie.org/docs/WhereClause/WhereClause.equals()
+   */
   equals(
     value: TKey
   ): Collection<
@@ -346,7 +379,10 @@ export interface WhereClauseNonStrings<
     TMaxDepth
   >;
   // https://dexie.org/docs/WhereClause/WhereClause.anyOf()
-
+  /**
+   * Match keys equal to any of the provided values.
+   * Dexie: https://dexie.org/docs/WhereClause/WhereClause.anyOf()
+   */
   anyOf: ValuesOf<
     TGet,
     TDatabase,
@@ -361,6 +397,10 @@ export interface WhereClauseNonStrings<
     TMaxDepth
   >;
   // https://dexie.org/docs/WhereClause/WhereClause.notEqual()
+  /**
+   * Match keys not equal to `value`.
+   * Dexie: https://dexie.org/docs/WhereClause/WhereClause.notEqual()
+   */
   notEqual(
     value: TKey
   ): Collection<
@@ -376,6 +416,10 @@ export interface WhereClauseNonStrings<
     TMaxDepth
   >;
   // https://dexie.org/docs/WhereClause/WhereClause.noneOf()
+  /**
+   * Exclude keys equal to any of the provided values.
+   * Dexie: https://dexie.org/docs/WhereClause/WhereClause.noneOf()
+   */
   noneOf: ValuesOf<
     TGet,
     TDatabase,
@@ -391,6 +435,10 @@ export interface WhereClauseNonStrings<
   >;
 
   // https://dexie.org/docs/WhereClause/WhereClause.inAnyRange()
+  /**
+   * Match keys falling within any of the given ranges.
+   * Dexie: https://dexie.org/docs/WhereClause/WhereClause.inAnyRange()
+   */
   inAnyRange(
     ranges: ReadonlyArray<[TKey, TKey]>,
     options?: {
@@ -501,6 +549,10 @@ interface WhereStringClause<
   TMaxDepth extends string
 > {
   //https://dexie.org/docs/WhereClause/WhereClause.anyOfIgnoreCase()
+  /**
+   * Case-insensitive match on any of the provided strings.
+   * Dexie: https://dexie.org/docs/WhereClause/WhereClause.anyOfIgnoreCase()
+   */
   anyOfIgnoreCase: ValuesOf<
     TGet,
     TDatabase,
@@ -516,6 +568,10 @@ interface WhereStringClause<
   >;
 
   // https://dexie.org/docs/WhereClause/WhereClause.equalsIgnoreCase()
+  /**
+   * Case-insensitive equality match for a single string.
+   * Dexie: https://dexie.org/docs/WhereClause/WhereClause.equalsIgnoreCase()
+   */
   equalsIgnoreCase(
     value: string
   ): Collection<
@@ -532,6 +588,10 @@ interface WhereStringClause<
   >;
   // https://dexie.org/docs/WhereClause/WhereClause.startsWith()
   // goes throug between(str, str + maxString, true, true); where maxString = String.fromCharCode(65535);
+  /**
+   * Match strings starting with `prefix`.
+   * Dexie: https://dexie.org/docs/WhereClause/WhereClause.startsWith/
+   */
   startsWith(
     prefix: string
   ): Collection<
@@ -547,6 +607,10 @@ interface WhereStringClause<
     TMaxDepth
   >;
   // https://dexie.org/docs/WhereClause/WhereClause.startsWithIgnoreCase()
+  /**
+   * Case-insensitive startsWith match for `prefix`.
+   * Dexie: https://dexie.org/docs/WhereClause/WhereClause.startsWithIgnoreCase()
+   */
   startsWithIgnoreCase(
     prefix: string
   ): Collection<
@@ -562,6 +626,10 @@ interface WhereStringClause<
     TMaxDepth
   >;
   // https://dexie.org/docs/WhereClause/WhereClause.startsWithAnyOf()
+  /**
+   * Match strings starting with any of the given prefixes.
+   * Dexie: https://dexie.org/docs/WhereClause/WhereClause.startsWithAnyOf()
+   */
   startsWithAnyOf: Prefixes<
     TGet,
     TDatabase,
@@ -576,6 +644,10 @@ interface WhereStringClause<
   >;
 
   // https://dexie.org/docs/WhereClause/WhereClause.startsWithAnyOfIgnoreCase()
+  /**
+   * Case-insensitive startsWith for any of the given prefixes.
+   * Dexie: https://dexie.org/docs/WhereClause/WhereClause.startsWithAnyOfIgnoreCase()
+   */
   startsWithAnyOfIgnoreCase: Prefixes<
     TGet,
     TDatabase,

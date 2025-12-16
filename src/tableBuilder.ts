@@ -189,6 +189,16 @@ interface IndexMethods<
     >
   >
 > {
+  /**
+   * Add a single-field index for the given key path.
+   *
+   * Excludes the primary key path(s) from candidates to avoid redundant
+   * indexing. Returns a new fluent builder state reflecting the added index
+   * and removing the chosen key from available single/multi candidates.
+   *
+   * @template TIndexPath A valid non-PK key path in `TDatabase`.
+   * @param indexPath Key path to index (e.g., "title" or "author.name").
+   */
   index<TIndexPath extends TAvailableIndexMethods["single"]>(
     indexPath: TIndexPath
   ): IndexMethods<
@@ -208,7 +218,24 @@ interface IndexMethods<
       compound: TAvailableIndexMethods["compound"];
     }
   >;
+  /**
+   * Add a unique single-field index for the given key path.
+   *
+   * Behaves like `index()` but enforces uniqueness on the indexed key.
+   * Returns a new builder state reflecting the unique index.
+   *
+   * @see index
+   */
   uniqueIndex: this["index"];
+  /**
+   * Add a multi-entry index for an array-valued key path.
+   *
+   * The path must resolve to an array type; Dexie will index each element.
+   * Returns a new builder state reflecting the added multi-entry index.
+   *
+   * @template TIndexPath A valid array-valued key path in `TDatabase`.
+   * @param indexPath Array-valued key path to multi-index.
+   */
   multiIndex<TIndexPath extends TAvailableIndexMethods["multi"]>(
     indexPath: TIndexPath
   ): IndexMethods<
@@ -228,7 +255,26 @@ interface IndexMethods<
       compound: TAvailableIndexMethods["compound"];
     }
   >;
+  /**
+   * Add a unique multi-entry index for an array-valued key path.
+   *
+   * Behaves like `multiIndex()` but enforces uniqueness across the indexed
+   * entries.
+   *
+   * @see multiIndex
+   */
   uniqueMultiIndex: this["multiIndex"];
+  /**
+   * Add a compound index composed of multiple key paths.
+   *
+   * Automatically rejects duplicates, and disallows creating a compound index
+   * identical to an existing one. The compound index cannot exactly match the
+   * defined primary key.
+   *
+   * @template TCompoundIndexPaths An array of valid non-PK key paths.
+   * @param indexPaths The key paths composing the compound index.
+   * @returns Either a new builder state or a `CompoundIndexError` when invalid.
+   */
   compoundIndex<
     const TCompoundIndexPaths extends TAvailableIndexMethods["compound"]
   >(
@@ -257,7 +303,23 @@ interface IndexMethods<
           compound: TAvailableIndexMethods["compound"];
         }
       >;
+  /**
+   * Add a unique compound index composed of multiple key paths.
+   *
+   * Behaves like `compoundIndex()` but enforces uniqueness on the combined
+   * key.
+   *
+   * @see compoundIndex
+   */
   uniqueCompoundIndex: this["compoundIndex"];
+  /**
+   * Finalize the configuration and produce a `TableConfig`.
+   *
+   * The result can be passed to `dexieFactory()` or `upgrade()` to configure
+   * object stores and indexes.
+   *
+   * @returns A complete table configuration reflecting the fluent setup.
+   */
   build(): TableConfig<
     TDatabase,
     PkPathOrPaths,
@@ -742,6 +804,20 @@ function createTableBuilder<
   };
 }
 
+/**
+ * Start a strongly-typed table configuration for plain objects.
+ *
+ * Use the returned fluent API to define primary keys, single/multi/compound
+ * indexes, and whether the primary key is inbound or hidden. The final
+ * configuration is produced by calling `build()` and can be passed to
+ * `dexieFactory()`.
+ *
+ * @template TDatabase The shape of the stored objects (insert type).
+ * @template TMaxDepth Max traversal depth for key-path validation.
+ * @template TKeyMaxDepth Max traversal depth for key-path types.
+ * @template TAllowTypeSpecificProperties Allow type-specific properties in key paths.
+ * @returns A builder for configuring keys and indexes.
+ */
 export function tableBuilder<
   TDatabase,
   TMaxDepth extends string = Level2,
@@ -763,6 +839,20 @@ export function tableBuilder<
   >();
 }
 
+/**
+ * Start a table configuration mapped to a class for read operations.
+ *
+ * When reading from the table, entities are mapped to instances of `ctor`.
+ * Insert/update types are inferred from the class instance type while
+ * allowing Dexie to handle missing fields according to your key config.
+ *
+ * @template TGetCtor A constructor whose instances represent read entities.
+ * @template TMaxDepth Max traversal depth for key-path validation.
+ * @template TKeyMaxDepth Max traversal depth for key-path types.
+ * @template TAllowTypeSpecificProperties Allow type-specific properties in key paths.
+ * @param ctor The constructor used to map results to class instances.
+ * @returns A builder for configuring keys and indexes.
+ */
 export function tableClassBuilder<
   TGetCtor extends new (...args: any) => any,
   TMaxDepth extends string = Level2,
@@ -806,6 +896,20 @@ type TableClassBuilderExcluded<
   >;
 };
 
+/**
+ * Start a class-mapped table builder while excluding class keys from insert type.
+ *
+ * Use when certain class members should not be part of the stored/inserted
+ * data (e.g., computed properties, methods, or transient fields). Call
+ * `excludedKeys<...>()` to specify the keys to omit before configuring keys
+ * and indexes; finalize with `build()` on the returned builder.
+ *
+ * @template TGetCtor A constructor whose instances represent read entities.
+ * @template TMaxDepth Max traversal depth for key-path validation.
+ * @template TKeyMaxDepth Max traversal depth for key-path types.
+ * @template TAllowTypeSpecificProperties Allow type-specific properties in key paths.
+ * @param ctor The constructor used to map results to class instances.
+ */
 export function tableClassBuilderExcluded<
   TGetCtor extends new (...args: any) => any,
   TMaxDepth extends string = Level2,

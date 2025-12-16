@@ -25,10 +25,18 @@ export type TableInbound<
   TMaxDepth
 > & {
   // note that docs do not mention this ( as the key must exist on the object - so ok for this table type )
+  /**
+   * Update fields on a single record where the object's primary key is provided by the `object` itself.
+   * Dexie reference: https://dexie.org/docs/Table/Table.update/
+   */
   update(
     object: TDatabase,
     changes: UpdateSpec<TDatabase, TMaxDepth>
   ): PromiseExtended<0 | 1>;
+  /**
+   * Update via change-callback on a single record; the `object` carries its primary key.
+   * Dexie reference: https://dexie.org/docs/Table/Table.update/
+   */
   update(
     object: TDatabase,
     changes: ChangeCallback<
