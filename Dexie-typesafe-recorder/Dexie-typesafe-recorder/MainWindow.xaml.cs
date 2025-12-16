@@ -14,6 +14,6 @@ namespace Dexie_typesafe_recorder
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e) 
-            => await Recorder.RecordAsync(new PropModificationDemo());
+            => await Recorder.RecordAsync(new UpgradeDemo());
     }
 }

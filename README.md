@@ -219,7 +219,7 @@ db.files
 [remove](<https://dexie.org/docs/PropModification/remove()>)
 [replacePrefix](<https://dexie.org/docs/PropModification/replacePrefix()>)
 
-Although this works it is not suitable for string typing.
+Although this works it is not suitable for strong typing.
 Their typescript
 
 ```ts
@@ -310,5 +310,7 @@ TransactionWithTables is as before, a Dexie transaction with properties that are
 The upgrade function is best explained via a demo
 
 # upgrade function demo
+
+![upgrade demo](/readme-assets/UpgradeDemo.gif)
 
 # link to demo app
