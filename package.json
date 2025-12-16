@@ -29,7 +29,8 @@
     "build": "npm run build:tsup && npm run build:types",
     "build:tsup": "tsup",
     "build:types": "tsc --declarationMap false --verbatimModuleSyntax false --outFile types/index.d.ts",
-    "packfordemo": "npm run build && npm pack"
+    "packfordemo": "npm run build && npm pack",
+    "test": "npx jest && npx tstyche"
   },
   "tsup": {
     "entry": [
