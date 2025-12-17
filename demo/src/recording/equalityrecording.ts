@@ -1,4 +1,4 @@
-import { tableBuilder, dexieFactory } from "dexie-typesafe";
+import { dexieFactory, tableBuilder } from "dexie-typesafe";
 
 interface TableItem {
   pkey: string;
@@ -13,7 +13,7 @@ interface TableItem {
 
 const db = dexieFactory(
   {
-    demo: tableBuilder<TableItem, "", "I">()
+    demo: tableBuilder<TableItem, { KeyMaxDepth: "I" }>()
       .pkey("pkey")
       .index("nested.index")
       .compoundIndex("compoundIndex1", "compoundIndex2", "compoundIndex3")
