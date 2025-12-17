@@ -1,7 +1,7 @@
 import type { IndexableType, PromiseExtended } from "dexie";
 import type { DexieIndexPaths } from "./indexpaths";
 import type { TableBase } from "./TableBase";
-import type { NoExcessDataProperties } from "./utilitytypes";
+import type { MaybeNoExcess } from "./utilitytypes";
 
 /**
  * Outbound table operations requiring explicit keys on write.
@@ -18,7 +18,9 @@ export type TableOutboundBase<
   TIndexPaths extends DexieIndexPaths<TDatabase>,
   TGet,
   TDexie,
-  TMaxDepth extends string
+  TMaxDepth extends string,
+  TExcessDisabled extends boolean,
+  TExcessLeaves
 > = TableBase<
   TName,
   TGet,
@@ -41,7 +43,7 @@ export type TableOutboundBase<
    * https://dexie.org/docs/Table/Table.put()
    */
   put<T extends TInsert>(
-    item: NoExcessDataProperties<T, TInsert>,
+    item: MaybeNoExcess<T, TInsert, TExcessLeaves, TExcessDisabled>,
     key: TPKey
   ): PromiseExtended<TPKey>;
 };

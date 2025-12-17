@@ -3,7 +3,7 @@ import type { DexieIndexPaths } from "./indexpaths";
 import type { PrimaryKey } from "./primarykey";
 import type { TableBase } from "./TableBase";
 import type { TableInboundBaseBulkTuple } from "./TableBulkTupleAddOn";
-import type { NoExcessDataProperties } from "./utilitytypes";
+import type { MaybeNoExcess } from "./utilitytypes";
 
 /**
  * Inbound table operations where primary keys are derived from data.
@@ -22,7 +22,9 @@ export type TableInboundBase<
   TGet,
   TInsert,
   TDexie,
-  TMaxDepth extends string
+  TMaxDepth extends string,
+  TExcessDisabled extends boolean,
+  TExcessLeaves
 > = TableBase<
   TName,
   TGet,
@@ -34,13 +36,18 @@ export type TableInboundBase<
   TDexie,
   TMaxDepth
 > &
-  TableInboundBaseBulkTuple<TDatabase, TPKeyPathOrPaths, TInsert> & {
+  TableInboundBaseBulkTuple<
+    TDatabase,
+    TPKeyPathOrPaths,
+    TInsert,
+    TExcessLeaves
+  > & {
     /**
      * Insert a single record and return the derived primary key.
      * https://dexie.org/docs/Table/Table.add()
      */
     add<T extends TInsert>(
-      item: NoExcessDataProperties<T, TInsert>
+      item: MaybeNoExcess<T, TInsert, TExcessLeaves, TExcessDisabled>
     ): PromiseExtended<PrimaryKey<TDatabase, TPKeyPathOrPaths>>;
     /**
      * Insert multiple records; returns the last key (Dexie behavior).
@@ -58,7 +65,7 @@ export type TableInboundBase<
      * https://dexie.org/docs/Table/Table.put()
      */
     put<T extends TDatabase>(
-      item: NoExcessDataProperties<T, TDatabase>
+      item: MaybeNoExcess<T, TDatabase, TExcessLeaves, TExcessDisabled>
     ): PromiseExtended<PrimaryKey<TDatabase, TPKeyPathOrPaths>>;
     /**
      * Insert or update multiple records; returns the last key.

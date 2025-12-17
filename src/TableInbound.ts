@@ -13,7 +13,9 @@ export type TableInbound<
   TGet,
   TInsert,
   TDexie,
-  TMaxDepth extends string
+  TMaxDepth extends string,
+  TExcessDisabled extends boolean,
+  TExcessLeaves
 > = TableInboundBase<
   TName,
   TDatabase,
@@ -22,7 +24,9 @@ export type TableInbound<
   TGet,
   TInsert,
   TDexie,
-  TMaxDepth
+  TMaxDepth,
+  TExcessDisabled,
+  TExcessLeaves
 > & {
   // note that docs do not mention this ( as the key must exist on the object - so ok for this table type )
   /**

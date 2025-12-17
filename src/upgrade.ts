@@ -45,7 +45,9 @@ type ReplaceInsert<
   infer TGet,
   any, // old insert ignored
   infer TOutboundPKey,
-  infer TMaxDepth
+  infer TMaxDepth,
+  infer TExcessDisabled extends boolean,
+  infer TExcessLeaves
 >
   ? TableConfig<
       TDatabase,
@@ -55,7 +57,9 @@ type ReplaceInsert<
       TGet,
       TNewInsert,
       TOutboundPKey,
-      TMaxDepth
+      TMaxDepth,
+      TExcessDisabled,
+      TExcessLeaves
     >
   : never;
 
@@ -71,6 +75,8 @@ type UpgradeConfig<
         any,
         any,
         infer TNewInsert,
+        any,
+        any,
         any,
         any
       >

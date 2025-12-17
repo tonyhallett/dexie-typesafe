@@ -12,6 +12,7 @@ import type {
   ConstructorOf,
   IncludesNumber,
   IncludesNumberInUnion,
+  IndexedDBSafeLeaf,
   NoDescend,
   NoDuplicates,
   TuplesEqual,
@@ -35,6 +36,8 @@ export type TableConfigAny = TableConfig<
   any,
   any,
   any,
+  any,
+  any,
   any
 >;
 
@@ -46,7 +49,9 @@ export interface TableConfig<
   TGet = TDatabase,
   TInsert = TDatabase,
   TOutboundPKey extends IndexableType = never,
-  TMaxDepth extends string = NoDescend
+  TMaxDepth extends string = NoDescend,
+  TExcessDisabled extends boolean = false,
+  TExcessLeaves = IndexedDBSafeLeaf
 > {
   readonly pk: PkConfig<TAuto>;
   readonly indicesSchema: string;
@@ -169,6 +174,8 @@ interface IndexMethods<
   TAllowTypeSpecificProperties extends boolean = false,
   TKeyMaxDepth extends string = NoDescend,
   TMaxDepth extends string = Level2,
+  TExcessDisabled extends boolean = false,
+  TExcessLeaves = IndexedDBSafeLeaf,
   TAvailableIndexMethods extends AvailableIndexMethods<
     any,
     any,
@@ -212,6 +219,8 @@ interface IndexMethods<
     TAllowTypeSpecificProperties,
     TKeyMaxDepth,
     TMaxDepth,
+    TExcessDisabled,
+    TExcessLeaves,
     {
       single: Exclude<TAvailableIndexMethods["single"], TIndexPath>;
       multi: Exclude<TAvailableIndexMethods["multi"], TIndexPath>;
@@ -249,6 +258,8 @@ interface IndexMethods<
     TAllowTypeSpecificProperties,
     TKeyMaxDepth,
     TMaxDepth,
+    TExcessDisabled,
+    TExcessLeaves,
     {
       single: Exclude<TAvailableIndexMethods["single"], TIndexPath>;
       multi: Exclude<TAvailableIndexMethods["multi"], TIndexPath>;
@@ -297,6 +308,8 @@ interface IndexMethods<
         TAllowTypeSpecificProperties,
         TKeyMaxDepth,
         TMaxDepth,
+        TExcessDisabled,
+        TExcessLeaves,
         {
           single: TAvailableIndexMethods["single"];
           multi: TAvailableIndexMethods["multi"];
@@ -332,7 +345,9 @@ interface IndexMethods<
         : TDatabase
       : TDatabase,
     TPKeyOutbound,
-    TMaxDepth
+    TMaxDepth,
+    TExcessDisabled,
+    TExcessLeaves
   >;
 }
 
@@ -360,7 +375,9 @@ type TableBuilder<
   TGet,
   TAllowTypeSpecificProperties extends boolean,
   TKeyMaxDepth extends string,
-  TMaxDepth extends string
+  TMaxDepth extends string,
+  TExcessDisabled extends boolean,
+  TExcessLeaves
 > = {
   autoPkey<
     TPKeyPath extends InboundAutoIncrementKeyPath<TDatabase, TKeyMaxDepth>
@@ -376,7 +393,9 @@ type TableBuilder<
     never,
     TAllowTypeSpecificProperties,
     TKeyMaxDepth,
-    TMaxDepth
+    TMaxDepth,
+    TExcessDisabled,
+    TExcessLeaves
   >;
 
   pkey<
@@ -398,7 +417,9 @@ type TableBuilder<
     never,
     TAllowTypeSpecificProperties,
     TKeyMaxDepth,
-    TMaxDepth
+    TMaxDepth,
+    TExcessDisabled,
+    TExcessLeaves
   >;
   compoundPkey<
     const TCompoundKeyPaths extends CompoundKeyPaths<
@@ -421,7 +442,9 @@ type TableBuilder<
         never,
         TAllowTypeSpecificProperties,
         TKeyMaxDepth,
-        TMaxDepth
+        TMaxDepth,
+        TExcessDisabled,
+        TExcessLeaves
       >;
 
   hiddenAutoPkey<PKey extends IndexableType = number>(
@@ -440,7 +463,9 @@ type TableBuilder<
     PKey,
     TAllowTypeSpecificProperties,
     TKeyMaxDepth,
-    TMaxDepth
+    TMaxDepth,
+    TExcessDisabled,
+    TExcessLeaves
   >;
   hiddenExplicitPkey<PKey extends IndexableType = number>(): IndexMethods<
     TDatabase,
@@ -452,7 +477,9 @@ type TableBuilder<
     PKey,
     TAllowTypeSpecificProperties,
     TKeyMaxDepth,
-    TMaxDepth
+    TMaxDepth,
+    TExcessDisabled,
+    TExcessLeaves
   >;
 };
 
@@ -461,7 +488,9 @@ function createTableBuilder<
   TGet,
   TAllowTypeSpecificProperties extends boolean,
   TKeyMaxDepth extends string,
-  TMaxDepth extends string
+  TMaxDepth extends string,
+  TExcessDisabled extends boolean,
+  TExcessLeaves
 >(
   mapToClass?: ConstructorOf<TDatabase>
 ): TableBuilder<
@@ -469,7 +498,9 @@ function createTableBuilder<
   TGet,
   TAllowTypeSpecificProperties,
   TKeyMaxDepth,
-  TMaxDepth
+  TMaxDepth,
+  TExcessDisabled,
+  TExcessLeaves
 > {
   const indexParts: string[] = [];
 
@@ -519,6 +550,8 @@ function createTableBuilder<
     TAllowTypeSpecificProperties,
     TKeyMaxDepth,
     TMaxDepth,
+    TExcessDisabled,
+    TExcessLeaves,
     TAvailableIndexMethods
   > {
     const addIndexPart = (part: string, unique: boolean) => {
@@ -554,6 +587,8 @@ function createTableBuilder<
         TAllowTypeSpecificProperties,
         TKeyMaxDepth,
         TMaxDepth,
+        TExcessDisabled,
+        TExcessLeaves,
         {
           single: Exclude<TAvailableIndexMethods["single"], TIndexPath>;
           multi: TAvailableIndexMethods["multi"];
@@ -584,6 +619,8 @@ function createTableBuilder<
         TAllowTypeSpecificProperties,
         TKeyMaxDepth,
         TMaxDepth,
+        TExcessDisabled,
+        TExcessLeaves,
         {
           single: TAvailableIndexMethods["single"];
           multi: Exclude<TAvailableIndexMethods["multi"], TIndexPath>;
@@ -615,6 +652,8 @@ function createTableBuilder<
           TAllowTypeSpecificProperties,
           TKeyMaxDepth,
           TMaxDepth,
+          TExcessDisabled,
+          TExcessLeaves,
           {
             single: TAvailableIndexMethods["single"];
             multi: TAvailableIndexMethods["multi"];
@@ -660,6 +699,8 @@ function createTableBuilder<
         TAllowTypeSpecificProperties,
         TKeyMaxDepth,
         TMaxDepth,
+        TExcessDisabled,
+        TExcessLeaves,
         {
           single: TAvailableIndexMethods["single"];
           multi: TAvailableIndexMethods["multi"];
@@ -763,7 +804,10 @@ function createTableBuilder<
           false,
           never,
           TAllowTypeSpecificProperties,
-          TKeyMaxDepth
+          TKeyMaxDepth,
+          TMaxDepth,
+          TExcessDisabled,
+          TExcessLeaves
         > {
       if (isDistinctArray(keys) === false) {
         return duplicateKeysErrorInstance as any;
@@ -805,6 +849,80 @@ function createTableBuilder<
 }
 
 /**
+ * Fine-grained typing options controlling key-path behavior and excess-data checks.
+ *
+ * - MaxDepth: Controls traversal depth for validating key paths on the database type.
+ *   Defaults to `Level2`.
+ * - KeyMaxDepth: Controls traversal depth for deriving key-path types (single/multi/compound paths).
+ *   Defaults to `NoDescend`.
+ * - AllowTypeSpecificProperties: When `true`, allows certain leaf-type-specific properties (e.g., `string.length`,
+ *   `Blob.size`) in key paths. Defaults to `false`.
+ * - ExcessDataProperties: Controls excess-data-property enforcement for single-object `add`/`addObject`/`put`:
+ *   - default (omitted): strict excess-property checking is enabled using IndexedDB-safe leaf types.
+ *   - `true`: disables excess-property checks for single-object `add`/`addObject`/`put`.
+ *   - `{ Leaves: ... }`: extends allowed leaf types while keeping strict checks enabled.
+ *     Tuple aliases (`bulkAddTuple`, `bulkPutTuple`) always enforce strict checks regardless of this option.
+ *
+ * Usage:
+ *   tableBuilder<Entity, { MaxDepth: "II"; KeyMaxDepth: "I" }>()
+ *   tableBuilder<Entity, { ExcessDataProperties: true }>() // disable single-object excess checks
+ *   tableBuilder<Entity, { ExcessDataProperties: { Leaves: MyLeaf } }>() // extend allowed leaves
+ */
+export type Options = {
+  MaxDepth?: string; // default Level2
+  KeyMaxDepth?: string; // default NoDescend
+  AllowTypeSpecificProperties?: boolean; // default false
+  /**
+   * Configure enforcement of excess data properties:
+   * - true: disable enforcement entirely
+   * - object: extend allowed leaf types via `Leaves`
+   * - undefined/false: enforce with default IndexedDB-safe leaves
+   */
+  ExcessDataProperties?:
+    | true
+    | {
+        Leaves?: unknown;
+      };
+};
+
+// Helpers to derive option values with defaults
+type Opt_MaxDepth<TOptions extends Options> = TOptions extends {
+  MaxDepth: infer M extends string;
+}
+  ? M
+  : Level2;
+
+type Opt_KeyMaxDepth<TOptions extends Options> = TOptions extends {
+  KeyMaxDepth: infer K extends string;
+}
+  ? K
+  : NoDescend;
+
+type Opt_AllowTypeSpecificProperties<TOptions extends Options> =
+  TOptions extends {
+    AllowTypeSpecificProperties: infer A extends boolean;
+  }
+    ? A
+    : false;
+
+// Excess data properties options
+type Opt_ExcessDisabled<TOptions extends Options> = TOptions extends {
+  ExcessDataProperties: infer E;
+}
+  ? E extends true
+    ? true
+    : false
+  : false;
+
+type Opt_ExcessLeaves<TOptions extends Options> = TOptions extends {
+  ExcessDataProperties: infer E;
+}
+  ? E extends { Leaves?: infer L }
+    ? L | IndexedDBSafeLeaf
+    : IndexedDBSafeLeaf
+  : IndexedDBSafeLeaf;
+
+/**
  * Start a strongly-typed table configuration for plain objects.
  *
  * Use the returned fluent API to define primary keys, single/multi/compound
@@ -812,30 +930,33 @@ function createTableBuilder<
  * configuration is produced by calling `build()` and can be passed to
  * `dexieFactory()`.
  *
- * @template TDatabase The shape of the stored objects (insert type).
- * @template TMaxDepth Max traversal depth for key-path validation.
- * @template TKeyMaxDepth Max traversal depth for key-path types.
- * @template TAllowTypeSpecificProperties Allow type-specific properties in key paths.
+ * @template TDatabase The shape of the stored objects
+ * @template TOptions Optional typing options. Defaults:
+ * `{ MaxDepth: Level2, KeyMaxDepth: NoDescend, AllowTypeSpecificProperties: false, ExcessDataProperties: (strict single-object checks enabled) }`.
+ * To disable single-object excess-property checks, set `ExcessDataProperties: true`.
+ * Tuple aliases (`bulkAddTuple`, `bulkPutTuple`) always remain strict.
  * @returns A builder for configuring keys and indexes.
  */
 export function tableBuilder<
   TDatabase,
-  TMaxDepth extends string = Level2,
-  TKeyMaxDepth extends string = NoDescend,
-  TAllowTypeSpecificProperties extends boolean = false
+  TOptions extends Options = {}
 >(): TableBuilder<
   TDatabase,
   TDatabase,
-  TAllowTypeSpecificProperties,
-  TKeyMaxDepth,
-  TMaxDepth
+  Opt_AllowTypeSpecificProperties<TOptions>,
+  Opt_KeyMaxDepth<TOptions>,
+  Opt_MaxDepth<TOptions>,
+  Opt_ExcessDisabled<TOptions>,
+  Opt_ExcessLeaves<TOptions>
 > {
   return createTableBuilder<
     TDatabase,
     TDatabase,
-    TAllowTypeSpecificProperties,
-    TKeyMaxDepth,
-    TMaxDepth
+    Opt_AllowTypeSpecificProperties<TOptions>,
+    Opt_KeyMaxDepth<TOptions>,
+    Opt_MaxDepth<TOptions>,
+    Opt_ExcessDisabled<TOptions>,
+    Opt_ExcessLeaves<TOptions>
   >();
 }
 
@@ -847,25 +968,26 @@ export function tableBuilder<
  * allowing Dexie to handle missing fields according to your key config.
  *
  * @template TGetCtor A constructor whose instances represent read entities.
- * @template TMaxDepth Max traversal depth for key-path validation.
- * @template TKeyMaxDepth Max traversal depth for key-path types.
- * @template TAllowTypeSpecificProperties Allow type-specific properties in key paths.
+ * @template TOptions Optional typing options. Defaults:
+ * `{ MaxDepth: Level2, KeyMaxDepth: NoDescend, AllowTypeSpecificProperties: false, ExcessDataProperties: (strict single-object checks enabled) }`.
+ * To disable single-object excess-property checks, set `ExcessDataProperties: true`.
+ * Tuple aliases (`bulkAddTuple`, `bulkPutTuple`) always remain strict.
  * @param ctor The constructor used to map results to class instances.
  * @returns A builder for configuring keys and indexes.
  */
 export function tableClassBuilder<
   TGetCtor extends new (...args: any) => any,
-  TMaxDepth extends string = Level2,
-  TKeyMaxDepth extends string = NoDescend,
-  TAllowTypeSpecificProperties extends boolean = false
+  TOptions extends Options = {}
 >(
   ctor: TGetCtor
 ): TableBuilder<
   InsertType<InstanceType<TGetCtor>, never>,
   InstanceType<TGetCtor>,
-  TAllowTypeSpecificProperties,
-  TKeyMaxDepth,
-  TMaxDepth
+  Opt_AllowTypeSpecificProperties<TOptions>,
+  Opt_KeyMaxDepth<TOptions>,
+  Opt_MaxDepth<TOptions>,
+  Opt_ExcessDisabled<TOptions>,
+  Opt_ExcessLeaves<TOptions>
 > {
   type TEntity = InstanceType<TGetCtor>;
   type TDatabase = InsertType<TEntity, never>;
@@ -873,26 +995,28 @@ export function tableClassBuilder<
   return createTableBuilder<
     TDatabase,
     TEntity,
-    TAllowTypeSpecificProperties,
-    TKeyMaxDepth,
-    TMaxDepth
+    Opt_AllowTypeSpecificProperties<TOptions>,
+    Opt_KeyMaxDepth<TOptions>,
+    Opt_MaxDepth<TOptions>,
+    Opt_ExcessDisabled<TOptions>,
+    Opt_ExcessLeaves<TOptions>
   >(ctor);
 }
 
 type TableClassBuilderExcluded<
   TGetCtor extends new (...args: any) => any,
-  TMaxDepth extends string = Level2,
-  TKeyMaxDepth extends string = NoDescend,
-  TAllowTypeSpecificProperties extends boolean = false
+  TOptions extends Options = {}
 > = {
   excludedKeys<
     TExcludeProps extends keyof InstanceType<TGetCtor> & string
   >(): TableBuilder<
     InsertType<Omit<InstanceType<TGetCtor>, TExcludeProps>, never>,
     InstanceType<TGetCtor>,
-    TAllowTypeSpecificProperties,
-    TKeyMaxDepth,
-    TMaxDepth
+    Opt_AllowTypeSpecificProperties<TOptions>,
+    Opt_KeyMaxDepth<TOptions>,
+    Opt_MaxDepth<TOptions>,
+    Opt_ExcessDisabled<TOptions>,
+    Opt_ExcessLeaves<TOptions>
   >;
 };
 
@@ -905,24 +1029,16 @@ type TableClassBuilderExcluded<
  * and indexes; finalize with `build()` on the returned builder.
  *
  * @template TGetCtor A constructor whose instances represent read entities.
- * @template TMaxDepth Max traversal depth for key-path validation.
- * @template TKeyMaxDepth Max traversal depth for key-path types.
- * @template TAllowTypeSpecificProperties Allow type-specific properties in key paths.
+ * @template TOptions Optional typing options. Defaults:
+ * `{ MaxDepth: Level2, KeyMaxDepth: NoDescend, AllowTypeSpecificProperties: false, ExcessDataProperties: (strict single-object checks enabled) }`.
+ * To disable single-object excess-property checks, set `ExcessDataProperties: true`.
+ * Tuple aliases (`bulkAddTuple`, `bulkPutTuple`) always remain strict.
  * @param ctor The constructor used to map results to class instances.
  */
 export function tableClassBuilderExcluded<
   TGetCtor extends new (...args: any) => any,
-  TMaxDepth extends string = Level2,
-  TKeyMaxDepth extends string = NoDescend,
-  TAllowTypeSpecificProperties extends boolean = false
->(
-  ctor: TGetCtor
-): TableClassBuilderExcluded<
-  TGetCtor,
-  TMaxDepth,
-  TKeyMaxDepth,
-  TAllowTypeSpecificProperties
-> {
+  TOptions extends Options = {}
+>(ctor: TGetCtor): TableClassBuilderExcluded<TGetCtor, TOptions> {
   type TGet = InstanceType<TGetCtor>;
   return {
     excludedKeys<
@@ -934,9 +1050,11 @@ export function tableClassBuilderExcluded<
       return createTableBuilder<
         TDatabase,
         TGet,
-        TAllowTypeSpecificProperties,
-        TKeyMaxDepth,
-        TMaxDepth
+        Opt_AllowTypeSpecificProperties<TOptions>,
+        Opt_KeyMaxDepth<TOptions>,
+        Opt_MaxDepth<TOptions>,
+        Opt_ExcessDisabled<TOptions>,
+        Opt_ExcessLeaves<TOptions>
       >(ctor);
     },
   };

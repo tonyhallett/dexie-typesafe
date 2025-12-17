@@ -19,7 +19,9 @@ export type DBTables<
     infer TGet,
     infer TInsert,
     infer TOutboundKey,
-    infer TMaxDepth
+    infer TMaxDepth,
+    infer TExcessDisabled extends boolean,
+    infer TExcessLeaves
   >
     ? TPKeyPathOrPaths extends null
       ? TAuto extends true
@@ -31,7 +33,9 @@ export type DBTables<
             TIndexPaths,
             TGet,
             TypedDexie<TConfig, TInitialDb>,
-            TMaxDepth
+            TMaxDepth,
+            TExcessDisabled,
+            TExcessLeaves
           >
         : TableOutbound<
             TName & string,
@@ -41,7 +45,9 @@ export type DBTables<
             TIndexPaths,
             TGet,
             TypedDexie<TConfig, TInitialDb>,
-            TMaxDepth
+            TMaxDepth,
+            TExcessDisabled,
+            TExcessLeaves
           >
       : TAuto extends true
       ? TableInboundAuto<
@@ -52,7 +58,9 @@ export type DBTables<
           TGet,
           TInsert,
           TypedDexie<TConfig, TInitialDb>,
-          TMaxDepth
+          TMaxDepth,
+          TExcessDisabled,
+          TExcessLeaves
         >
       : TableInbound<
           TName & string,
@@ -62,7 +70,9 @@ export type DBTables<
           TGet,
           TInsert,
           TypedDexie<TConfig, TInitialDb>,
-          TMaxDepth
+          TMaxDepth,
+          TExcessDisabled,
+          TExcessLeaves
         >
     : never;
 };

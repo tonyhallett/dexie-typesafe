@@ -32,25 +32,26 @@ After choosing your table type, choose all the indexes that you require with the
 
 Now that the paths have been chosen, dexie methods that accept paths will be typed correctly and parameters or return types that depend on a primary key or index type, will be too.
 
-If you need to choose nested paths then you will need to pass a TKeyMaxDepth type parameter of the form I,II,III, etc or anything other than "" for all depths. Note that this is the second "max depth" parameter. The first is used for Table.update / Collection.modify / Table get and where equality - it has default of II and works in the same manner.
+If you need to choose nested paths, use the options-based generics and set `KeyMaxDepth` to values like `"I"`, `"II"`, `"III"`, etc. Use `""` (empty string) to allow all depths. Note there are two depth controls:
+
+- `MaxDepth`: used for update/modify operations and equality helpers (defaults to `Level2`).
+- `KeyMaxDepth`: used for key-path typing on primary keys and indexes (defaults to `NoDescend`).
 
 ```ts
 export function tableBuilder<
   TDatabase,
-  TMaxDepth extends string = Level2,
-  TKeyMaxDepth extends string = NoDescend,
-  TAllowTypeSpecificProperties extends boolean = false
+  TOptions extends Options = {}
 >
 
 ```
 
-## Demo - TKeyMaxDepth type parameter
+## Demo - KeyMaxDepth option
 
 ![tableBuilder max depth type parameter](/readme-assets/TableBuilderMaxDepthDemo.gif)
 
-# TAllowTypeSpecificProperties
+# AllowTypeSpecificProperties
 
-This is the last parameter as it is unlikely to be used but to adhere to the IndexedDb spec key paths can use
+This is an option (default `false`) that adheres to the IndexedDb spec so key paths can use
 [type-specific properties](https://www.w3.org/TR/IndexedDB/#key-path-construct).
 
 # mapToClass
@@ -61,18 +62,14 @@ Dexie-typesafe does not as it will do this internally if you use either of
 ```ts
 export function tableClassBuilder<
   TGetCtor extends new (...args: any) => any,
-  TMaxDepth extends string = Level2,
-  TKeyMaxDepth extends string = NoDescend,
-  TAllowTypeSpecificProperties extends boolean = false
+  TOptions extends Options = {}
 >(
   ctor: TGetCtor
 )
 
 export function tableClassBuilderExcluded<
   TGetCtor extends new (...args: any) => any,
-  TMaxDepth extends string = Level2,
-  TKeyMaxDepth extends string = NoDescend,
-  TAllowTypeSpecificProperties extends boolean = false
+  TOptions extends Options = {}
 >(
   ctor: TGetCtor
 ) {
@@ -134,9 +131,31 @@ Dexie docs
 [put](<https://dexie.org/docs/Table/Table.put()>)
 [bulkPut](<https://dexie.org/docs/Table/Table.bulkPut()>)
 
-Note that there are bulkAddTuple, bulkPutTuple alias methods for stricter typing when you have the parameter as a tuple rather than an array.
+## No excess data properties
 
-For table inbound auto there is an alias addObject that will return the added object with the primary key from the database applied ( as this is what dexie does for you. )
+Dexie-typesafe has excess data properties prevention on by default when adding a single entry or `put`.
+
+In addition to `add`, for table inbound auto there is an alias `addObject` that will return the added object with the primary key from the database applied ( as this is what dexie does for you. )
+
+There are `bulkAddTuple`, `bulkPutTuple` alias methods with no excess data properties checking for when you have the parameter as a tuple rather than an array.
+
+### ExcessDataProperties option
+
+- Turn off (single-object only): set `{ ExcessDataProperties: true }` to disable excess-property checks for single `add`/`addObject`/`put`. Tuple aliases remain strict.
+- Extend leaves: provide additional allowed leaf types for excess checks while remaining strict.
+
+Examples:
+
+```ts
+// Disable excess-property checks for single add/put/addObject (tuple methods stay strict)
+tableBuilder<MyEntity, { ExcessDataProperties: true }>().pkey("id");
+
+// Extend allowed leaf types for excess-property checks (still strict)
+tableBuilder<
+  MyEntity,
+  { ExcessDataProperties: { Leaves: MyCustomLeaf } }
+>().pkey("id");
+```
 
 2. With Table inbound the update method is overloaded to allowing providing the primary key using your table item type.
 

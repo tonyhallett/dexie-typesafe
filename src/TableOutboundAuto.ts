@@ -3,7 +3,7 @@ import type { DexieIndexPaths } from "./indexpaths";
 import type { PromiseExtendedPKeyOrKeys } from "./primarykey";
 import type { TableOutboundAutoBulkTuple } from "./TableBulkTupleAddOn";
 import type { TableOutboundBase } from "./TableOutboundBase";
-import type { NoExcessDataProperties } from "./utilitytypes";
+import type { MaybeNoExcess } from "./utilitytypes";
 
 export type TableOutboundAuto<
   TName extends string,
@@ -13,7 +13,9 @@ export type TableOutboundAuto<
   TIndexPaths extends DexieIndexPaths<TDatabase>,
   TGet,
   TDexie,
-  TMaxDepth extends string
+  TMaxDepth extends string,
+  TExcessDisabled extends boolean,
+  TExcessLeaves
 > = TableOutboundBase<
   TName,
   TDatabase,
@@ -22,15 +24,17 @@ export type TableOutboundAuto<
   TIndexPaths,
   TGet,
   TDexie,
-  TMaxDepth
+  TMaxDepth,
+  TExcessDisabled,
+  TExcessLeaves
 > &
-  TableOutboundAutoBulkTuple<TInsert, TPKey> & {
+  TableOutboundAutoBulkTuple<TInsert, TPKey, TExcessLeaves> & {
     /**
      * Insert a single record with optional explicit key.
      * Dexie reference: https://dexie.org/docs/Table/Table.add()
      */
     add<T extends TInsert>(
-      item: NoExcessDataProperties<T, TInsert>,
+      item: MaybeNoExcess<T, TInsert, TExcessLeaves, TExcessDisabled>,
       key?: TPKey
     ): PromiseExtended<TPKey>;
 

@@ -23,7 +23,10 @@ describe("tableBuilder", () => {
     });
 
     it("should allow nested primary key when opt in", () => {
-      const builder = tableBuilder<{ nested: { id: string } }, "II", "I">();
+      const builder = tableBuilder<
+        { nested: { id: string } },
+        { MaxDepth: "II"; KeyMaxDepth: "I" }
+      >();
       expect(builder.pkey).type.toBeCallableWith("nested.id");
       expect(builder.pkey).type.not.toBeCallableWith("nested.doesnotexist");
     });
@@ -47,7 +50,14 @@ describe("tableBuilder", () => {
         fileValue: File;
         arrayValue: string[];
       }
-      const builder = tableBuilder<TableItem, NoDescend, NoDescend, true>();
+      const builder = tableBuilder<
+        TableItem,
+        {
+          MaxDepth: NoDescend;
+          KeyMaxDepth: NoDescend;
+          AllowTypeSpecificProperties: true;
+        }
+      >();
       expect(builder.pkey).type.toBeCallableWith("stringValue.length");
       expect(builder.pkey).type.toBeCallableWith("blobValue.size");
       expect(builder.pkey).type.toBeCallableWith("blobValue.type");
@@ -78,12 +88,12 @@ describe("tableBuilder", () => {
         "levelDefault.levelI.levelII.id"
       );
 
-      const builderDeeper = tableBuilder<TableItem, "I">();
+      const builderDeeper = tableBuilder<TableItem, { MaxDepth: "I" }>();
       expect(builderDeeper.pkey).type.not.toBeCallableWith(
         "levelDefault.levelI.levelII.id"
       );
 
-      const builderIncludes = tableBuilder<TableItem, "II">();
+      const builderIncludes = tableBuilder<TableItem, { MaxDepth: "II" }>();
       expect(builderIncludes.pkey).type.not.toBeCallableWith(
         "levelDefault.levelI.levelII.id"
       );
@@ -92,8 +102,7 @@ describe("tableBuilder", () => {
     it("should allow compound primary key", () => {
       const builder = tableBuilder<
         { id: string; nested: { id2: number } },
-        "I",
-        "I"
+        { MaxDepth: "I"; KeyMaxDepth: "I" }
       >();
       expect(builder.compoundPkey).type.toBeCallableWith("id", "nested.id2");
       expect(builder.compoundPkey).type.not.toBeCallableWith("id");
@@ -103,9 +112,11 @@ describe("tableBuilder", () => {
     it("should allow compound primary key to be allowed properties of leaf object when specified", () => {
       const builder = tableBuilder<
         { leaf1: string; leaf2: string },
-        NoDescend,
-        NoDescend,
-        true
+        {
+          MaxDepth: NoDescend;
+          KeyMaxDepth: NoDescend;
+          AllowTypeSpecificProperties: true;
+        }
       >();
       expect(builder.compoundPkey).type.toBeCallableWith(
         "leaf1.length",
@@ -249,8 +260,7 @@ describe("tableBuilder", () => {
         nullable: number | null;
         nullableObject: { a: number } | null;
       },
-      "I",
-      "I"
+      { MaxDepth: "I"; KeyMaxDepth: "I" }
     >().pkey("id");
 
     it("should allow valid index path", () => {
@@ -270,9 +280,17 @@ describe("tableBuilder", () => {
         id: string;
         nested: { index: string; multi: string[] };
       }
-      const builder = tableBuilder<Nested, "I", "">().pkey("id");
-      const builderDefault = tableBuilder<Nested, "I">().pkey("id");
-      const builderLevel1 = tableBuilder<Nested, "I", "I">().pkey("id");
+      const builder = tableBuilder<
+        Nested,
+        { MaxDepth: "I"; KeyMaxDepth: "" }
+      >().pkey("id");
+      const builderDefault = tableBuilder<Nested, { MaxDepth: "I" }>().pkey(
+        "id"
+      );
+      const builderLevel1 = tableBuilder<
+        Nested,
+        { MaxDepth: "I"; KeyMaxDepth: "I" }
+      >().pkey("id");
 
       expect(builder.index).type.not.toBeCallableWith("nested.index");
       expect(builderDefault.index).type.not.toBeCallableWith("nested.index");
@@ -295,9 +313,11 @@ describe("tableBuilder", () => {
       }
       const builder = tableBuilder<
         TableItem,
-        NoDescend,
-        NoDescend,
-        true
+        {
+          MaxDepth: NoDescend;
+          KeyMaxDepth: NoDescend;
+          AllowTypeSpecificProperties: true;
+        }
       >().pkey("id");
       expect(builder.index).type.toBeCallableWith("stringValue.length");
       expect(builder.index).type.toBeCallableWith("blobValue.size");
@@ -324,9 +344,11 @@ describe("tableBuilder", () => {
       }
       const builder = tableBuilder<
         TableItem,
-        NoDescend,
-        NoDescend,
-        true
+        {
+          MaxDepth: NoDescend;
+          KeyMaxDepth: NoDescend;
+          AllowTypeSpecificProperties: true;
+        }
       >().pkey("id");
       expect(builder.compoundIndex).type.toBeCallableWith(
         "stringValue.length",
@@ -377,8 +399,7 @@ describe("tableBuilder", () => {
           id2: number;
           index: string;
         },
-        "II",
-        "I"
+        { MaxDepth: "II"; KeyMaxDepth: "I" }
       >().compoundPkey("id", "id2");
       expect(builder.compoundIndex).type.toBeCallableWith("id2", "id");
       expect(builder.compoundIndex).type.toBeCallableWith("id", "id2", "index");
@@ -579,7 +600,14 @@ describe("table base", () => {
       compound: tableBuilder<Compound>()
         .compoundPkey("stringPart", "numberPart")
         .build(),
-      leafPropertyTable: tableBuilder<StringId, NoDescend, NoDescend, true>()
+      leafPropertyTable: tableBuilder<
+        StringId,
+        {
+          MaxDepth: NoDescend;
+          KeyMaxDepth: NoDescend;
+          AllowTypeSpecificProperties: true;
+        }
+      >()
         .pkey("id.length")
         .build(),
     },
@@ -808,8 +836,7 @@ describe("table base", () => {
             nestedIndex: { subIndex: Date };
             notAnIndex: number;
           },
-          "I",
-          "II"
+          { MaxDepth: "I"; KeyMaxDepth: "II" }
         >()
           .pkey("id")
           .index("stringIndex")
@@ -897,7 +924,7 @@ describe("table base", () => {
 
     const db = dexieFactory(
       {
-        table: tableBuilder<TableItem, "I", "II">()
+        table: tableBuilder<TableItem, { MaxDepth: "I"; KeyMaxDepth: "II" }>()
           .pkey("id")
           .index("stringIndex")
           .index("numberIndex")
@@ -1163,7 +1190,7 @@ describe("table base", () => {
 
         const db = dexieFactory(
           {
-            table: tableBuilder<TableItem, "I">()
+            table: tableBuilder<TableItem, { MaxDepth: "I" }>()
               .pkey("id")
               .index("stringIndex")
               .index("numberIndex")
@@ -1197,7 +1224,7 @@ describe("table base", () => {
         }
         const db = dexieFactory(
           {
-            table: tableBuilder<TableItem, "I">()
+            table: tableBuilder<TableItem, { MaxDepth: "I" }>()
               .pkey("id")
               .compoundIndex("compound1", "compound2", "compound3")
               .build(),
@@ -1465,7 +1492,7 @@ describe("table base", () => {
     }
     const db = dexieFactory(
       {
-        table: tableBuilder<TableItem, "I", "II">()
+        table: tableBuilder<TableItem, { MaxDepth: "I"; KeyMaxDepth: "II" }>()
           .pkey("id")
           .index("stringIndex")
           .index("numberIndex")
@@ -1653,7 +1680,7 @@ describe("Inbound - non auto", () => {
 
   const db = dexieFactory(
     {
-      table: tableBuilder<TableItem, Level2>().pkey("id").build(),
+      table: tableBuilder<TableItem, { MaxDepth: Level2 }>().pkey("id").build(),
       mappedTable: tableClassBuilderExcluded(EntityClass)
         .excludedKeys<"excluded">()
         .pkey("id")
@@ -1896,21 +1923,27 @@ describe("Inbound - non auto", () => {
     it("should update using max depth type parameter", () => {
       const noDescend = dexieFactory(
         {
-          noDescend: tableBuilder<TableItem, "">().pkey("id").build(),
+          noDescend: tableBuilder<TableItem, { MaxDepth: "" }>()
+            .pkey("id")
+            .build(),
         },
         "NoDescend"
       ).noDescend;
 
       const level1 = dexieFactory(
         {
-          level1: tableBuilder<TableItem, "I">().pkey("id").build(),
+          level1: tableBuilder<TableItem, { MaxDepth: "I" }>()
+            .pkey("id")
+            .build(),
         },
         "Level1"
       ).level1;
 
       const level2 = dexieFactory(
         {
-          level2: tableBuilder<TableItem, "II">().pkey("id").build(),
+          level2: tableBuilder<TableItem, { MaxDepth: "II" }>()
+            .pkey("id")
+            .build(),
         },
         "Level2"
       ).level2;
@@ -1939,7 +1972,9 @@ describe("Inbound - non auto", () => {
 
       const allDepths = dexieFactory(
         {
-          allDepths: tableBuilder<TableItem, "All">().pkey("id").build(),
+          allDepths: tableBuilder<TableItem, { MaxDepth: "All" }>()
+            .pkey("id")
+            .build(),
         },
         "AllDepths"
       ).allDepths;
@@ -2028,7 +2063,7 @@ describe("Inbound - non auto", () => {
       }
       const db = dexieFactory(
         {
-          table: tableBuilder<TableItem, "I", "II">()
+          table: tableBuilder<TableItem, { MaxDepth: "I"; KeyMaxDepth: "II" }>()
             .pkey("primaryKeyParent.pkey")
             .build(),
         },

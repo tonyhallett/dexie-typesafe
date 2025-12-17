@@ -10,35 +10,37 @@ import { aliasMethodTs } from "./utils";
 export interface TableInboundBaseBulkTuple<
   TDatabase,
   TPKeyPathOrPaths,
-  TInsert
+  TInsert,
+  TExcessLeaves
 > {
   /**
    * Alias of `bulkAdd` that accepts a tuple-array of items.
    * Dexie reference: https://dexie.org/docs/Table/Table.bulkAdd()
    */
   bulkAddTuple<TArr extends readonly [...any[]]>(
-    items: TArr & NoExcessDataPropertiesArray<TArr, TInsert>
+    items: NoExcessDataPropertiesArray<TArr, TInsert, TExcessLeaves>
   ): PromiseExtended<PrimaryKey<TDatabase, TPKeyPathOrPaths>>;
   /**
    * Alias of `bulkPut` that accepts a tuple-array of items.
    * Dexie reference: https://dexie.org/docs/Table/Table.bulkPut()
    */
   bulkPutTuple<TArr extends readonly [...any[]]>(
-    items: TArr & NoExcessDataPropertiesArray<TArr, TInsert>
+    items: NoExcessDataPropertiesArray<TArr, TInsert, TExcessLeaves>
   ): PromiseExtended<PrimaryKey<TDatabase, TPKeyPathOrPaths>>;
 }
 
 export interface TableInboundAutoBulkTuple<
   TDatabase,
   TPKeyPathOrPaths,
-  TInsert
+  TInsert,
+  TExcessLeaves
 > {
   /**
    * Alias of `bulkAdd` with options to return all keys; accepts tuple-array.
    * Dexie reference: https://dexie.org/docs/Table/Table.bulkAdd()
    */
   bulkAddTuple<B extends boolean, TArr extends readonly [...any[]]>(
-    items: TArr & NoExcessDataPropertiesArray<TArr, TInsert>,
+    items: NoExcessDataPropertiesArray<TArr, TInsert, TExcessLeaves>,
     options: {
       allKeys: B;
     }
@@ -48,20 +50,24 @@ export interface TableInboundAutoBulkTuple<
    * Dexie reference: https://dexie.org/docs/Table/Table.bulkPut()
    */
   bulkPutTuple<B extends boolean, TArr extends readonly [...any[]]>(
-    items: TArr & NoExcessDataPropertiesArray<TArr, TInsert>,
+    items: NoExcessDataPropertiesArray<TArr, TInsert, TExcessLeaves>,
     options: {
       allKeys: B;
     }
   ): PromiseExtendedPKeyOrKeys<PrimaryKey<TDatabase, TPKeyPathOrPaths>, B>;
 }
 
-export interface TableOutboundBulkTuple<TInsert, TPKey extends IndexableType> {
+export interface TableOutboundBulkTuple<
+  TInsert,
+  TPKey extends IndexableType,
+  TExcessLeaves
+> {
   /**
    * Alias of `bulkAdd` that accepts a tuple-array of items.
    * Dexie reference: https://dexie.org/docs/Table/Table.bulkAdd()
    */
   bulkAddTuple<TArr extends readonly [...any[]]>(
-    items: TArr & NoExcessDataPropertiesArray<TArr, TInsert>,
+    items: NoExcessDataPropertiesArray<TArr, TInsert, TExcessLeaves>,
     keys: readonly TPKey[]
   ): PromiseExtended<TPKey>;
 
@@ -70,21 +76,22 @@ export interface TableOutboundBulkTuple<TInsert, TPKey extends IndexableType> {
    * Dexie reference: https://dexie.org/docs/Table/Table.bulkPut()
    */
   bulkPutTuple<TArr extends readonly [...any[]]>(
-    items: TArr & NoExcessDataPropertiesArray<TArr, TInsert>,
+    items: NoExcessDataPropertiesArray<TArr, TInsert, TExcessLeaves>,
     keys: readonly TPKey[]
   ): PromiseExtended<TPKey>;
 }
 
 export interface TableOutboundAutoBulkTuple<
   TInsert,
-  TPKey extends IndexableType
+  TPKey extends IndexableType,
+  TExcessLeaves
 > {
   /**
    * Alias of `bulkAdd`; accepts tuple-array and optional allKeys option.
    * Dexie reference: https://dexie.org/docs/Table/Table.bulkAdd()
    */
   bulkAddTuple<TArr extends readonly [...any[]], B extends boolean = false>(
-    items: TArr & NoExcessDataPropertiesArray<TArr, TInsert>,
+    items: NoExcessDataPropertiesArray<TArr, TInsert, TExcessLeaves>,
     options?: {
       allKeys: B;
     }
@@ -95,7 +102,7 @@ export interface TableOutboundAutoBulkTuple<
    * Dexie reference: https://dexie.org/docs/Table/Table.bulkAdd()
    */
   bulkAddTuple<TArr extends readonly [...any[]], B extends boolean = false>(
-    items: TArr & NoExcessDataPropertiesArray<TArr, TInsert>,
+    items: NoExcessDataPropertiesArray<TArr, TInsert, TExcessLeaves>,
     keys: readonly (TPKey | undefined)[],
     options?: {
       allKeys: B;
@@ -107,7 +114,7 @@ export interface TableOutboundAutoBulkTuple<
    * Dexie reference: https://dexie.org/docs/Table/Table.bulkPut()
    */
   bulkPutTuple<TArr extends readonly [...any[]]>(
-    items: TArr & NoExcessDataPropertiesArray<TArr, TInsert>,
+    items: NoExcessDataPropertiesArray<TArr, TInsert, TExcessLeaves>,
     keys: readonly TPKey[]
   ): PromiseExtended<TPKey>;
 
@@ -116,7 +123,7 @@ export interface TableOutboundAutoBulkTuple<
    * Dexie reference: https://dexie.org/docs/Table/Table.bulkPut()
    */
   bulkPutTuple<TArr extends readonly [...any[]], B extends boolean = false>(
-    items: TArr & NoExcessDataPropertiesArray<TArr, TInsert>,
+    items: NoExcessDataPropertiesArray<TArr, TInsert, TExcessLeaves>,
     keys: readonly (TPKey | undefined)[],
     options: { allKeys: B }
   ): PromiseExtendedPKeyOrKeys<TPKey, B>;
@@ -131,10 +138,10 @@ export interface TableOutboundAutoBulkTuple<
  */
 export function TableBulkTupleAddOn(db: Dexie): void {
   const tablePrototype = db.Table.prototype as Table &
-    TableInboundBaseBulkTuple<any, any, any> &
-    TableInboundAutoBulkTuple<any, any, any> &
-    TableOutboundBulkTuple<any, any> &
-    TableOutboundAutoBulkTuple<any, any>;
+    TableInboundBaseBulkTuple<any, any, any, any> &
+    TableInboundAutoBulkTuple<any, any, any, any> &
+    TableOutboundBulkTuple<any, any, any> &
+    TableOutboundAutoBulkTuple<any, any, any>;
   aliasMethodTs(tablePrototype, "bulkAddTuple", "bulkAdd");
   aliasMethodTs(tablePrototype, "bulkPutTuple", "bulkPut");
 }

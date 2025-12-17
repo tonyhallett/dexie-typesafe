@@ -1,6 +1,6 @@
 import Dexie, { type Table } from "dexie";
 import type { PrimaryKey } from "./primarykey";
-import type { NoExcessDataProperties } from "./utilitytypes";
+import type { MaybeNoExcess } from "./utilitytypes";
 
 /**
  * Adds `addObject`, a convenience alias of Dexie's `add` that returns
@@ -8,13 +8,19 @@ import type { NoExcessDataProperties } from "./utilitytypes";
  *
  * Dexie reference: https://dexie.org/docs/Table/Table.add()
  */
-export interface TableInboundAutoAdd<TDatabase, TPKeyPathOrPaths, TInsert> {
+export interface TableInboundAutoAdd<
+  TDatabase,
+  TPKeyPathOrPaths,
+  TInsert,
+  TExcessDisabled extends boolean,
+  TExcessLeaves
+> {
   /**
    * Insert a record and return the inserted object with its primary key populated.
    * The returned type is augmented with the derived key property.
    */
   addObject<T extends TInsert>(
-    item: NoExcessDataProperties<T, TInsert>
+    item: MaybeNoExcess<T, TInsert, TExcessLeaves, TExcessDisabled>
   ): Promise<
     T & {
       [K in TPKeyPathOrPaths & string]: PrimaryKey<TDatabase, TPKeyPathOrPaths>;
@@ -29,7 +35,7 @@ export interface TableInboundAutoAdd<TDatabase, TPKeyPathOrPaths, TInsert> {
  */
 export function AddAutoReturnObjectAddon(db: Dexie): void {
   const tablePrototype = db.Table.prototype as Table &
-    TableInboundAutoAdd<any, any, any>;
+    TableInboundAutoAdd<any, any, any, any, any>;
 
   tablePrototype.addObject = async function (
     this: Table,

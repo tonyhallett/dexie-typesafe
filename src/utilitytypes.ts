@@ -46,7 +46,7 @@ type NoExcessDataPropertiesIsPotentialMethod<
     : IsMethod<T, Property>
   : false;
 
-type IndexedDBSafeLeaf =
+export type IndexedDBSafeLeaf =
   | string
   | number
   | boolean
@@ -61,9 +61,9 @@ type IndexedDBSafeLeaf =
   | ArrayBuffer
   | DataView;
 
-type NoExcessDataPropertiesImpl<TExtends, TExtended> =
+type NoExcessDataPropertiesImpl<TExtends, TExtended, TLeaves> =
   // Stop recursion on known safe leaves
-  TExtends extends IndexedDBSafeLeaf
+  TExtends extends TLeaves
     ? TExtends
     : // Arrays / tuples
     TExtends extends readonly any[]
@@ -71,7 +71,7 @@ type NoExcessDataPropertiesImpl<TExtends, TExtended> =
       ? TExtends extends readonly (infer TE)[]
         ? UE extends object
           ? TE extends object
-            ? NoExcessDataProperties<TE, UE>[]
+            ? NoExcessDataProperties<TE, UE, TLeaves>[]
             : TExtends
           : TExtends
         : never
@@ -79,12 +79,15 @@ type NoExcessDataPropertiesImpl<TExtends, TExtended> =
     : // Map
     TExtends extends Map<infer K, infer V>
     ? TExtended extends Map<infer UK, infer UV>
-      ? Map<NoExcessDataProperties<K, UK>, NoExcessDataProperties<V, UV>>
+      ? Map<
+          NoExcessDataProperties<K, UK, TLeaves>,
+          NoExcessDataProperties<V, UV, TLeaves>
+        >
       : TExtends
     : // Set
     TExtends extends Set<infer TItem>
     ? TExtended extends Set<infer UItem>
-      ? Set<NoExcessDataProperties<TItem, UItem>>
+      ? Set<NoExcessDataProperties<TItem, UItem, TLeaves>>
       : TExtends
     : // Objects
     TExtends extends object
@@ -103,13 +106,13 @@ type NoExcessDataPropertiesImpl<TExtends, TExtended> =
                 ? TExtended[K] extends readonly (infer UE)[]
                   ? UE extends object
                     ? TE extends object
-                      ? NoExcessDataProperties<TE, UE>[]
+                      ? NoExcessDataProperties<TE, UE, TLeaves>[]
                       : TExtends[K]
                     : TExtends[K]
                   : never
                 : never
               : TExtends[K] extends object
-              ? NoExcessDataProperties<TExtends[K], TExtended[K]>
+              ? NoExcessDataProperties<TExtends[K], TExtended[K], TLeaves>
               : TExtends[K]
             : IsFunction<TExtends[K]> extends true
             ? NoExcessDataPropertiesIsPotentialMethod<TExtends, K> extends true
@@ -120,20 +123,29 @@ type NoExcessDataPropertiesImpl<TExtends, TExtended> =
       : TExtends
     : TExtends;
 
-export type NoExcessDataProperties<TExtends, TExtended> =
-  TExtended extends unknown
-    ? NoExcessDataPropertiesImpl<TExtends, TExtended>
-    : never;
+export type NoExcessDataProperties<
+  TExtends,
+  TExtended,
+  TLeaves = IndexedDBSafeLeaf
+> = TExtended extends unknown
+  ? NoExcessDataPropertiesImpl<TExtends, TExtended, TLeaves>
+  : never;
 
 export type NoExcessDataPropertiesArray<
   TArr extends readonly any[],
-  TInsert
+  TInsert,
+  TLeaves = IndexedDBSafeLeaf
 > = TArr extends readonly [infer First, ...infer Rest]
   ? First extends TInsert
-    ? HasNeverProperty<NoExcessDataProperties<First, TInsert>> extends never
+    ? HasNeverProperty<
+        NoExcessDataProperties<First, TInsert, TLeaves>
+      > extends never
       ? Rest extends readonly []
         ? readonly [First]
-        : readonly [First, ...NoExcessDataPropertiesArray<Rest, TInsert>]
+        : readonly [
+            First,
+            ...NoExcessDataPropertiesArray<Rest, TInsert, TLeaves>
+          ]
       : never
     : never
   : readonly [];
@@ -194,6 +206,14 @@ export type PathKeyTypes = readonly PathKeyType<
   string | readonly string[],
   any
 >[];
+
+// Conditional wrappers to optionally enforce NoExcessDataProperties
+export type MaybeNoExcess<
+  T,
+  TInsert,
+  TLeaves,
+  TDisabled extends boolean
+> = TDisabled extends true ? T : NoExcessDataProperties<T, TInsert, TLeaves>;
 
 // helper: get one "last" member of the union
 type LastOf<U> = UnionToIntersection<

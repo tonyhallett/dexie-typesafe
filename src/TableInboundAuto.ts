@@ -23,7 +23,9 @@ export type TableInboundAuto<
   TGet,
   TInsert,
   TDexie,
-  TMaxDepth extends string
+  TMaxDepth extends string,
+  TExcessDisabled extends boolean,
+  TExcessLeaves
 > = TableInboundBase<
   TName,
   TDatabase,
@@ -32,10 +34,23 @@ export type TableInboundAuto<
   TGet,
   TInsert,
   TDexie,
-  TMaxDepth
+  TMaxDepth,
+  TExcessDisabled,
+  TExcessLeaves
 > &
-  TableInboundAutoAdd<TDatabase, TPKeyPathOrPaths, TInsert> &
-  TableInboundAutoBulkTuple<TDatabase, TPKeyPathOrPaths, TInsert> & {
+  TableInboundAutoAdd<
+    TDatabase,
+    TPKeyPathOrPaths,
+    TInsert,
+    TExcessDisabled,
+    TExcessLeaves
+  > &
+  TableInboundAutoBulkTuple<
+    TDatabase,
+    TPKeyPathOrPaths,
+    TInsert,
+    TExcessLeaves
+  > & {
     /**
      * Insert multiple records with options to return all keys.
      * https://dexie.org/docs/Table/Table.bulkAdd()
