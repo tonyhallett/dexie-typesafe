@@ -19,19 +19,111 @@ export type HasNeverProperty<T> = {
 
 type IsFunction<T> = T extends (...args: any[]) => any ? true : false;
 
-export type NoExcessDataProperties<T, U> = {
-  [K in keyof T]: K extends keyof U
-    ? IsFunction<T[K]> extends true
-      ? T[K]
-      : T[K] extends object
-      ? U[K] extends object
-        ? NoExcessDataProperties<T[K], U[K]>
-        : T[K]
-      : T[K]
-    : IsFunction<T[K]> extends true
-    ? T[K]
+// Note that this does not work with parameterless methods
+type IsMethod<T, Property extends keyof T> = T[Property] extends (
+  arg0: infer A,
+  ...args: infer Rest
+) => infer R
+  ? {
+      [key in keyof T]: key extends Property
+        ? (arg0: never, ...args: Rest) => R
+        : T[key];
+    } extends T
+    ? true
+    : false
+  : false;
+
+type ZeroParameters<F extends (...args: any) => any> = Parameters<F> extends []
+  ? true
+  : false;
+
+type NoExcessDataPropertiesIsPotentialMethod<
+  T,
+  Property extends keyof T
+> = T[Property] extends (...args: any[]) => any
+  ? ZeroParameters<T[Property]> extends true
+    ? true
+    : IsMethod<T, Property>
+  : false;
+
+type IndexedDBSafeLeaf =
+  | string
+  | number
+  | boolean
+  | bigint
+  | null
+  | undefined
+  | Date
+  | RegExp
+  | Blob
+  | File
+  | FileList
+  | ArrayBuffer
+  | DataView;
+
+type NoExcessDataPropertiesImpl<TExtends, TExtended> =
+  // Stop recursion on known safe leaves
+  TExtends extends IndexedDBSafeLeaf
+    ? TExtends
+    : // Arrays / tuples
+    TExtends extends readonly any[]
+    ? TExtended extends readonly (infer UE)[]
+      ? TExtends extends readonly (infer TE)[]
+        ? UE extends object
+          ? TE extends object
+            ? NoExcessDataProperties<TE, UE>[]
+            : TExtends
+          : TExtends
+        : never
+      : never
+    : // Map
+    TExtends extends Map<infer K, infer V>
+    ? TExtended extends Map<infer UK, infer UV>
+      ? Map<NoExcessDataProperties<K, UK>, NoExcessDataProperties<V, UV>>
+      : TExtends
+    : // Set
+    TExtends extends Set<infer TItem>
+    ? TExtended extends Set<infer UItem>
+      ? Set<NoExcessDataProperties<TItem, UItem>>
+      : TExtends
+    : // Objects
+    TExtends extends object
+    ? TExtended extends object
+      ? {
+          [K in keyof TExtends]: K extends keyof TExtended
+            ? IsFunction<TExtends[K]> extends true
+              ? NoExcessDataPropertiesIsPotentialMethod<
+                  TExtends,
+                  K
+                > extends true
+                ? TExtends[K]
+                : never
+              : TExtended[K] extends readonly any[]
+              ? TExtends[K] extends readonly (infer TE)[]
+                ? TExtended[K] extends readonly (infer UE)[]
+                  ? UE extends object
+                    ? TE extends object
+                      ? NoExcessDataProperties<TE, UE>[]
+                      : TExtends[K]
+                    : TExtends[K]
+                  : never
+                : never
+              : TExtends[K] extends object
+              ? NoExcessDataProperties<TExtends[K], TExtended[K]>
+              : TExtends[K]
+            : IsFunction<TExtends[K]> extends true
+            ? NoExcessDataPropertiesIsPotentialMethod<TExtends, K> extends true
+              ? TExtends[K]
+              : never
+            : never;
+        }
+      : TExtends
+    : TExtends;
+
+export type NoExcessDataProperties<TExtends, TExtended> =
+  TExtended extends unknown
+    ? NoExcessDataPropertiesImpl<TExtends, TExtended>
     : never;
-};
 
 export type NoExcessDataPropertiesArray<
   TArr extends readonly any[],

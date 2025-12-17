@@ -1763,6 +1763,69 @@ describe("Inbound - non auto", () => {
         new EntityClass(1)
       );
     });
+
+    it("should allow tuple for array property", () => {
+      const test = dexieFactory(
+        {
+          test: tableBuilder<{ id: number; arr: string[] }>()
+            .pkey("id")
+            .build(),
+        },
+        "DemoDexieEntityExclude"
+      ).test;
+      test.add({ id: 1, arr: [""] });
+    });
+
+    it("should disallow additional function properties with parameters when add", () => {
+      const db = dexieFactory(
+        {
+          table: tableBuilder<{ id: number }>().autoPkey("id").build(),
+        },
+        "DemoDexie"
+      );
+      const fnMethod = { m(arg: number) {} };
+      const fnProperty = { p: (arg: number) => {} };
+      const fnPropertyParameterless = { fn: () => {} };
+
+      db.table.add(fnMethod);
+      db.table.add(fnPropertyParameterless);
+      expect(db.table.add).type.not.toBeCallableWith(fnProperty);
+    });
+
+    it("should allow adding Date properties", () => {
+      const db = dexieFactory(
+        {
+          table: tableBuilder<{ id: number; date: Date }>()
+            .autoPkey("id")
+            .build(),
+        },
+        "DemoDexie"
+      );
+      db.table.add({ id: 1, date: new Date() });
+    });
+
+    it("should add with unions", () => {
+      interface UnionTableItem {
+        id: number;
+        union: { a: number } | { b: string };
+      }
+      const db = dexieFactory(
+        {
+          table: tableBuilder<UnionTableItem>().autoPkey("id").build(),
+        },
+        "DemoDexie"
+      );
+      db.table.add({ id: 1, union: { a: 123 } });
+      db.table.add({ id: 1, union: { b: "string" } });
+      expect(db.table.add).type.not.toBeCallableWith({
+        id: 1,
+        union: { a: 1, additional: 1 },
+      });
+      expect(db.table.add).type.not.toBeCallableWith({
+        id: 1,
+        union: { b: "string", additional: 1 },
+      });
+    });
   });
 
   describe("update, upsert", () => {
