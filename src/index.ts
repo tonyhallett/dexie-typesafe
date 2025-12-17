@@ -12,4 +12,5 @@ export {
   tableClassBuilder,
   tableClassBuilderExcluded,
 } from "./tableBuilder";
+export type { Options } from "./tableBuilder";
 export { upgrade } from "./upgrade";

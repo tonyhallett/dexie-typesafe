@@ -1,4 +1,4 @@
-import { dexieFactory, PropModification, tableBuilder } from "dexie-typesafe";
+import { dexieFactory, tableBuilder, PropModification } from "dexie-typesafe";
 
 interface TableItem {
   pkey: string;
@@ -9,7 +9,7 @@ interface TableItem {
 
 const db = dexieFactory(
   {
-    demo: tableBuilder<TableItem, { KeyMaxDepth: "I" }>().pkey("pkey").build(),
+    demo: tableBuilder<TableItem, { MaxDepth: "" }>().pkey("pkey").build(),
   },
   "Demo db"
 );

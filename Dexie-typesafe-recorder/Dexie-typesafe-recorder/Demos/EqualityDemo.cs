@@ -71,7 +71,7 @@ namespace Dexie_typesafe_recorder.Demos
             await Intellisense.SelectSelectedOption();
             await Typer.Type(":\"1\"}, {");
             await Intellisense.ShowCtrlSpace(1000);
-            await Intellisense.DownAndSelect(4);
+            await Intellisense.DownAndSelect(5);
             await Typer.Type(":1});");
             await Typer.NewLine();
             await Typer.MoveUp(1);

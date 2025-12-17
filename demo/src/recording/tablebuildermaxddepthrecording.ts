@@ -10,4 +10,4 @@ interface TableItem {
   };
 }
 
-tableBuilder<TableItem, { MaxDepth: "II" }>();
+tableBuilder<TableItem, { KeyMaxDepth: "" }>();

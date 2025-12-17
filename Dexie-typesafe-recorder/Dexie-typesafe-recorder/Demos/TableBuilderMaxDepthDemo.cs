@@ -9,11 +9,11 @@ namespace Dexie_typesafe_recorder.Demos
         public async Task TypeAsync()
         {
             await PkeySuggestFirstParameter();
-            await Typer.Backspace(11);
-            await Typer.Type("I\">()");
+            await Typer.Backspace(13);
+            await Typer.Type("I\" }>()");
             await PkeySuggestFirstParameter();
-            await Typer.Backspace(11);
-            await Typer.Type("I\">()");
+            await Typer.Backspace(13);
+            await Typer.Type("I\" }>()");
             await PkeySuggestFirstParameter();
             await FunctionTyper.PickIntellisenseStringArgument(1);
             await FunctionTyper.TypeParameterClosingBracket();
