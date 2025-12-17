@@ -135,6 +135,8 @@ Dexie docs
 
 Dexie-typesafe has excess data properties prevention on by default when adding a single entry or `put`.
 
+Note on methods vs function properties: IndexedDB stores data, not behavior, so methods aren’t persisted. Due to TypeScript’s structural typing it isn’t reliable to distinguish parameterless methods from function-valued properties; to avoid false positives, strict checks treat zero-argument callables as potential methods and allow them.
+
 In addition to `add`, for table inbound auto there is an alias `addObject` that will return the added object with the primary key from the database applied ( as this is what dexie does for you. )
 
 There are `bulkAddTuple`, `bulkPutTuple` alias methods with no excess data properties checking for when you have the parameter as a tuple rather than an array.
