@@ -8,64 +8,55 @@ import type { StringKeyOf } from "./utilitytypes";
 
 type KeepOldNotInNew<
   TOldConfig extends Record<string, TableConfigAny>,
-  TNewConfig extends Record<string, TableConfigAny | null>
+  TNewConfig extends Record<string, TableConfigAny | null>,
 > = {
-  [K in keyof TOldConfig as K extends keyof TNewConfig
-    ? never
-    : K]: TOldConfig[K];
+  [K in keyof TOldConfig as K extends keyof TNewConfig ? never : K]: TOldConfig[K];
 };
-type NewThatAreNotNull<
-  TNewConfig extends Record<string, TableConfigAny | null>
-> = {
+type NewThatAreNotNull<TNewConfig extends Record<string, TableConfigAny | null>> = {
   // 2) Add keys from new config that are NOT null
-  [K in keyof TNewConfig as TNewConfig[K] extends null ? never : K]: Exclude<
-    TNewConfig[K],
-    null
-  >;
+  [K in keyof TNewConfig as TNewConfig[K] extends null ? never : K]: Exclude<TNewConfig[K], null>;
 };
 
 type MergedConfig<
   TOldConfig extends Record<string, TableConfigAny>,
-  TNewConfig extends Record<string, TableConfigAny | null>
+  TNewConfig extends Record<string, TableConfigAny | null>,
 > = KeepOldNotInNew<TOldConfig, TNewConfig> & NewThatAreNotNull<TNewConfig>;
 
 type UpgradedDexie<
   TOldConfig extends Record<string, TableConfigAny>,
-  TNewConfig extends Record<string, TableConfigAny | null>
+  TNewConfig extends Record<string, TableConfigAny | null>,
 > = TypedDexie<MergedConfig<TOldConfig, TNewConfig>, false>;
 
-type ReplaceInsert<
-  T extends TableConfigAny,
-  TNewInsert
-> = T extends TableConfig<
-  infer TDatabase,
-  infer TPKeyPathOrPaths,
-  infer TAuto,
-  infer TIndexPaths,
-  infer TGet,
-  any, // old insert ignored
-  infer TOutboundPKey,
-  infer TMaxDepth,
-  infer TExcessDisabled extends boolean,
-  infer TExcessLeaves
->
-  ? TableConfig<
-      TDatabase,
-      TPKeyPathOrPaths,
-      TAuto,
-      TIndexPaths,
-      TGet,
-      TNewInsert,
-      TOutboundPKey,
-      TMaxDepth,
-      TExcessDisabled,
-      TExcessLeaves
-    >
-  : never;
+type ReplaceInsert<T extends TableConfigAny, TNewInsert> =
+  T extends TableConfig<
+    infer TDatabase,
+    infer TPKeyPathOrPaths,
+    infer TAuto,
+    infer TIndexPaths,
+    infer TGet,
+    any, // old insert ignored
+    infer TOutboundPKey,
+    infer TMaxDepth,
+    infer TExcessDisabled extends boolean,
+    infer TExcessLeaves
+  >
+    ? TableConfig<
+        TDatabase,
+        TPKeyPathOrPaths,
+        TAuto,
+        TIndexPaths,
+        TGet,
+        TNewInsert,
+        TOutboundPKey,
+        TMaxDepth,
+        TExcessDisabled,
+        TExcessLeaves
+      >
+    : never;
 
 type UpgradeConfig<
   TOldConfig extends Record<string, TableConfigAny>,
-  TNewConfig extends Record<string, TableConfigAny | null>
+  TNewConfig extends Record<string, TableConfigAny | null>,
 > = {
   [K in keyof TOldConfig]: K extends keyof TNewConfig
     ? TNewConfig[K] extends TableConfig<
@@ -85,14 +76,15 @@ type UpgradeConfig<
     : TOldConfig[K];
 };
 
-export type TransactionWithTables<
-  TConfig extends Record<string, TableConfigAny>
-> = Omit<Transaction, "table"> &
+export type TransactionWithTables<TConfig extends Record<string, TableConfigAny>> = Omit<
+  Transaction,
+  "table"
+> &
   Pick<DBTables<TConfig, any>, StringKeyOf<DBTables<TConfig, any>>>;
 
 type UpgradeTransaction<
   TOldConfig extends Record<string, TableConfigAny>,
-  TNewConfig extends Record<string, TableConfigAny | null>
+  TNewConfig extends Record<string, TableConfigAny | null>,
 > = TransactionWithTables<UpgradeConfig<TOldConfig, TNewConfig>>;
 
 type GetDexieConfig<TTypedDexie extends TypedDexie<any, any>> =
@@ -100,10 +92,8 @@ type GetDexieConfig<TTypedDexie extends TypedDexie<any, any>> =
 
 type UpgradeFunction<
   TTypedDexie extends TypedDexie<any, any>,
-  TNewConfig extends Record<string, TableConfigAny | null>
-> = (
-  trans: UpgradeTransaction<GetDexieConfig<TTypedDexie>, TNewConfig>
-) => PromiseLike<any> | void;
+  TNewConfig extends Record<string, TableConfigAny | null>,
+> = (trans: UpgradeTransaction<GetDexieConfig<TTypedDexie>, TNewConfig>) => PromiseLike<any> | void;
 /**
  * Upgrade a typed Dexie instance to a new schema without an explicit version.
  * Computes the next version from `db.verno` and applies `tableConfigs`.
@@ -114,10 +104,10 @@ type UpgradeFunction<
  */
 export function upgrade<
   TTypedDexie extends TypedDexie<any, any>,
-  TNewConfig extends Record<string, TableConfigAny | null>
+  TNewConfig extends Record<string, TableConfigAny | null>,
 >(
   db: TTypedDexie,
-  tableConfigs: TNewConfig
+  tableConfigs: TNewConfig,
 ): UpgradedDexie<GetDexieConfig<TTypedDexie>, TNewConfig>;
 
 /**
@@ -129,11 +119,11 @@ export function upgrade<
  */
 export function upgrade<
   TTypedDexie extends TypedDexie<any, any>,
-  TNewConfig extends Record<string, TableConfigAny | null>
+  TNewConfig extends Record<string, TableConfigAny | null>,
 >(
   db: TTypedDexie,
   tableConfigs: TNewConfig,
-  upgradeFunction: UpgradeFunction<TTypedDexie, TNewConfig>
+  upgradeFunction: UpgradeFunction<TTypedDexie, TNewConfig>,
 ): UpgradedDexie<GetDexieConfig<TTypedDexie>, TNewConfig>;
 
 /**
@@ -143,11 +133,11 @@ export function upgrade<
  */
 export function upgrade<
   TTypedDexie extends TypedDexie<any, any>,
-  TNewConfig extends Record<string, TableConfigAny | null>
+  TNewConfig extends Record<string, TableConfigAny | null>,
 >(
   db: TTypedDexie,
   tableConfigs: TNewConfig,
-  version: number
+  version: number,
 ): UpgradedDexie<GetDexieConfig<TTypedDexie>, TNewConfig>;
 
 /**
@@ -158,21 +148,21 @@ export function upgrade<
  */
 export function upgrade<
   TTypedDexie extends TypedDexie<any, any>,
-  TNewConfig extends Record<string, TableConfigAny | null>
+  TNewConfig extends Record<string, TableConfigAny | null>,
 >(
   db: TTypedDexie,
   tableConfigs: TNewConfig,
   version: number,
-  upgradeFunction: UpgradeFunction<TTypedDexie, TNewConfig>
+  upgradeFunction: UpgradeFunction<TTypedDexie, TNewConfig>,
 ): UpgradedDexie<GetDexieConfig<TTypedDexie>, TNewConfig>;
 export function upgrade<
   TTypedDexie extends TypedDexie<any, any>,
-  TNewConfig extends Record<string, TableConfigAny | null>
+  TNewConfig extends Record<string, TableConfigAny | null>,
 >(
   db: TTypedDexie,
   tableConfigs: TNewConfig,
   versionOrUpgrade?: number | UpgradeFunction<TTypedDexie, TNewConfig>,
-  upgradeFunction?: UpgradeFunction<TTypedDexie, TNewConfig>
+  upgradeFunction?: UpgradeFunction<TTypedDexie, TNewConfig>,
 ): UpgradedDexie<GetDexieConfig<TTypedDexie>, TNewConfig> {
   const incrementVersion = () => (db.verno || 0) + 1;
   let version: number;

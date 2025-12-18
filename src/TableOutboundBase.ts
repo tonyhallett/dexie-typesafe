@@ -20,18 +20,8 @@ export type TableOutboundBase<
   TDexie,
   TMaxDepth extends string,
   TExcessDisabled extends boolean,
-  TExcessLeaves
-> = TableBase<
-  TName,
-  TGet,
-  TDatabase,
-  TInsert,
-  never,
-  TIndexPaths,
-  TPKey,
-  TDexie,
-  TMaxDepth
-> & {
+  TExcessLeaves,
+> = TableBase<TName, TGet, TDatabase, TInsert, never, TIndexPaths, TPKey, TDexie, TMaxDepth> & {
   /*
    making the key required, although allowed by the spec to be optional for auto-increment keys
    use add without a key on TableOutboundAuto for that case
@@ -44,6 +34,6 @@ export type TableOutboundBase<
    */
   put<T extends TInsert>(
     item: MaybeNoExcess<T, TInsert, TExcessLeaves, TExcessDisabled>,
-    key: TPKey
+    key: TPKey,
   ): PromiseExtended<TPKey>;
 };

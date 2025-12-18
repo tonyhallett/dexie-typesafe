@@ -8,11 +8,7 @@ type GetEqualityMethods = ExcludeKeysTuple<
   TableGetEquality<any, any>,
   "getSingleFilterEquality" | "get"
 >;
-const getMethods: GetEqualityMethods = [
-  "getEquality",
-  "getCompositeEquality",
-  "getSingleEquality",
-];
+const getMethods: GetEqualityMethods = ["getEquality", "getCompositeEquality", "getSingleEquality"];
 type WhereEqualityMethods = ExcludeKeysTuple<
   WhereEquality<any, any, any, any, any, any, any, any, any>,
   "whereSingleFilterEquality" | "where"
@@ -35,21 +31,20 @@ export function WhereEqualityAddOn(db: Dexie): void {
   tablePrototype.whereSingleFilterEquality = function (
     this: Table,
     index: Record<string, any>,
-    filter: Record<string, any>
+    filter: Record<string, any>,
   ) {
     const equality = { ...index, ...filter };
     return tablePrototype.where.call(this, equality) as any;
   };
-  const getSingleFilterEquality: (typeof tablePrototype)["getSingleFilterEquality"] =
-    function (
-      this: Table,
-      index: any,
-      filter: any,
-      thenShortcut?: ThenShortcut<any, unknown>
-    ) {
-      const equality = { ...index, ...filter };
-      return tablePrototype.get.call(this, equality, thenShortcut as any);
-    };
+  const getSingleFilterEquality: (typeof tablePrototype)["getSingleFilterEquality"] = function (
+    this: Table,
+    index: any,
+    filter: any,
+    thenShortcut?: ThenShortcut<any, unknown>,
+  ) {
+    const equality = { ...index, ...filter };
+    return tablePrototype.get.call(this, equality, thenShortcut as any);
+  };
 
   tablePrototype.getSingleFilterEquality = getSingleFilterEquality;
 }

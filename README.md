@@ -157,10 +157,7 @@ Examples:
 tableBuilder<MyEntity, { ExcessDataProperties: true }>().pkey("id");
 
 // Extend allowed leaf types for excess-property checks (still strict)
-tableBuilder<
-  MyEntity,
-  { ExcessDataProperties: { Leaves: MyCustomLeaf } }
->().pkey("id");
+tableBuilder<MyEntity, { ExcessDataProperties: { Leaves: MyCustomLeaf } }>().pkey("id");
 ```
 
 2. With Table inbound the update method is overloaded to allowing providing the primary key using your table item type.
@@ -228,6 +225,8 @@ whereSingleFilterEquality
 Dexie tables can be updated / upserted and collections modified with PropModification.
 Dexie provides three methods that produce a PropModification
 [add](<https://dexie.org/docs/PropModification/add()>)
+[remove](<https://dexie.org/docs/PropModification/remove()>)
+[replacePrefix](<https://dexie.org/docs/PropModification/replacePrefix()>)
 
 example code
 
@@ -242,9 +241,6 @@ db.files
   });
 
 ```
-
-[remove](<https://dexie.org/docs/PropModification/remove()>)
-[replacePrefix](<https://dexie.org/docs/PropModification/replacePrefix()>)
 
 Although this works it is not suitable for strong typing.
 Their typescript
@@ -296,12 +292,12 @@ Below is the implementation signature.
 ```ts
 export function upgrade<
   TTypedDexie extends TypedDexie<any, any>,
-  TNewConfig extends Record<string, TableConfigAny | null>
+  TNewConfig extends Record<string, TableConfigAny | null>,
 >(
   db: TTypedDexie,
   tableConfigs: TNewConfig,
   versionOrUpgrade?: number | UpgradeFunction<TTypedDexie, TNewConfig>,
-  upgradeFunction?: UpgradeFunction<TTypedDexie, TNewConfig>
+  upgradeFunction?: UpgradeFunction<TTypedDexie, TNewConfig>,
 ): UpgradedDexie<GetDexieConfig<TTypedDexie>, TNewConfig>;
 ```
 
@@ -319,15 +315,13 @@ Most importantly, if your schema mandates updating existing tables then you will
 ```ts
 type UpgradeTransaction<
   TOldConfig extends Record<string, TableConfigAny>,
-  TNewConfig extends Record<string, TableConfigAny | null>
+  TNewConfig extends Record<string, TableConfigAny | null>,
 > = TransactionWithTables<UpgradeConfig<TOldConfig, TNewConfig>>;
 
 type UpgradeFunction<
   TTypedDexie extends TypedDexie<any, any>,
-  TNewConfig extends Record<string, TableConfigAny | null>
-> = (
-  trans: UpgradeTransaction<GetDexieConfig<TTypedDexie>, TNewConfig>
-) => PromiseLike<any> | void;
+  TNewConfig extends Record<string, TableConfigAny | null>,
+> = (trans: UpgradeTransaction<GetDexieConfig<TTypedDexie>, TNewConfig>) => PromiseLike<any> | void;
 ```
 
 It is not necessary to understand the typescript except to know that

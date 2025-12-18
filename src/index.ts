@@ -7,10 +7,6 @@ export {
   replacePrefix,
   safeRemoveNumber,
 } from "./propmodifications";
-export {
-  tableBuilder,
-  tableClassBuilder,
-  tableClassBuilderExcluded,
-} from "./tableBuilder";
+export { tableBuilder, tableClassBuilder, tableClassBuilderExcluded } from "./tableBuilder";
 export type { Options } from "./tableBuilder";
 export { upgrade } from "./upgrade";

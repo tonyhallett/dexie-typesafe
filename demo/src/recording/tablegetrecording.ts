@@ -14,10 +14,8 @@ interface TableItem2 {
 const db = dexieFactory(
   {
     table1: tableBuilder<TableItem1>().pkey("pkey").build(),
-    table2: tableBuilder<TableItem2>()
-      .compoundPkey("compoundPkey1", "compoundPkey2")
-      .build(),
+    table2: tableBuilder<TableItem2>().compoundPkey("compoundPkey1", "compoundPkey2").build(),
   },
   "Demo db",
-  1
+  1,
 );

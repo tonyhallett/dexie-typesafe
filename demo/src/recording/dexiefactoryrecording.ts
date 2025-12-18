@@ -16,5 +16,5 @@ const db = dexieFactory(
     table2: tableBuilder<TableItem2>().autoPkey("pkeyAuto").build(),
   },
   "Demo db",
-  1
+  1,
 );

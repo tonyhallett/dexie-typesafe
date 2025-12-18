@@ -11,7 +11,7 @@ const db = dexieFactory(
   {
     demo: tableBuilder<TableItem, { MaxDepth: "" }>().pkey("pkey").build(),
   },
-  "Demo db"
+  "Demo db",
 );
 
 db.demo.update("someid", {

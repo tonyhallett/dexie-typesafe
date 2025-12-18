@@ -1,0 +1,13 @@
+node_modules
+coverage
+.DS_Store
+
+# build outputs
+/dist
+/types
+/demo/dist
+/demo/.parcel-cache
+
+# binary/assets
+/readme-assets
+/Dexie-typesafe-recorder

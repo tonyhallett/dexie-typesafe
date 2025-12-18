@@ -25,7 +25,7 @@ export type TableInboundAuto<
   TDexie,
   TMaxDepth extends string,
   TExcessDisabled extends boolean,
-  TExcessLeaves
+  TExcessLeaves,
 > = TableInboundBase<
   TName,
   TDatabase,
@@ -38,19 +38,8 @@ export type TableInboundAuto<
   TExcessDisabled,
   TExcessLeaves
 > &
-  TableInboundAutoAdd<
-    TDatabase,
-    TPKeyPathOrPaths,
-    TInsert,
-    TExcessDisabled,
-    TExcessLeaves
-  > &
-  TableInboundAutoBulkTuple<
-    TDatabase,
-    TPKeyPathOrPaths,
-    TInsert,
-    TExcessLeaves
-  > & {
+  TableInboundAutoAdd<TDatabase, TPKeyPathOrPaths, TInsert, TExcessDisabled, TExcessLeaves> &
+  TableInboundAutoBulkTuple<TDatabase, TPKeyPathOrPaths, TInsert, TExcessLeaves> & {
     /**
      * Insert multiple records with options to return all keys.
      * https://dexie.org/docs/Table/Table.bulkAdd()
@@ -59,7 +48,7 @@ export type TableInboundAuto<
       items: readonly TInsert[],
       options: {
         allKeys: B;
-      }
+      },
     ): PromiseExtendedPKeyOrKeys<PrimaryKey<TDatabase, TPKeyPathOrPaths>, B>;
     /**
      * Insert or update multiple records with options to return all keys.
@@ -67,6 +56,6 @@ export type TableInboundAuto<
      */
     bulkPut<B extends boolean>(
       items: readonly TInsert[],
-      options: { allKeys: B }
+      options: { allKeys: B },
     ): PromiseExtendedPKeyOrKeys<PrimaryKey<TDatabase, TPKeyPathOrPaths>, B>;
   };

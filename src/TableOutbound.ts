@@ -22,7 +22,7 @@ export type TableOutbound<
   TDexie,
   TMaxDepth extends string,
   TExcessDisabled extends boolean,
-  TExcessLeaves
+  TExcessLeaves,
 > = TableOutboundBase<
   TName,
   TDatabase,
@@ -42,23 +42,17 @@ export type TableOutbound<
      */
     add<T extends TInsert>(
       item: MaybeNoExcess<T, TInsert, TExcessLeaves, TExcessDisabled>,
-      key: TPKey
+      key: TPKey,
     ): PromiseExtended<TPKey>;
     // no need for options overloads here as the keys are always provided
     /**
      * Insert multiple records with explicit keys.
      * https://dexie.org/docs/Table/Table.bulkAdd()
      */
-    bulkAdd(
-      items: readonly TInsert[],
-      keys: readonly TPKey[]
-    ): PromiseExtended<TPKey>;
+    bulkAdd(items: readonly TInsert[], keys: readonly TPKey[]): PromiseExtended<TPKey>;
     /**
      * Insert or update multiple records with explicit keys.
      * https://dexie.org/docs/Table/Table.bulkPut()
      */
-    bulkPut(
-      items: readonly TInsert[],
-      keys: readonly TPKey[]
-    ): PromiseExtended<TPKey>;
+    bulkPut(items: readonly TInsert[], keys: readonly TPKey[]): PromiseExtended<TPKey>;
   };

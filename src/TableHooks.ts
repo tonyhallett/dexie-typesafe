@@ -26,8 +26,8 @@ export interface TableHooks<TInsert, TExisting, TPKey> extends DexieEventSet {
       this: CreatingHookContext<TPKey>,
       primKey: TPKey,
       insert: TInsert,
-      transaction: Transaction
-    ) => void | undefined | TPKey
+      transaction: Transaction,
+    ) => void | undefined | TPKey,
   ): void;
   (eventName: "reading", subscriber: (obj: any) => any): void;
   (
@@ -42,8 +42,8 @@ export interface TableHooks<TInsert, TExisting, TPKey> extends DexieEventSet {
       modifications: Object,
       primKey: TPKey,
       existing: TExisting,
-      transaction: Transaction
-    ) => any
+      transaction: Transaction,
+    ) => any,
   ): void;
   (
     eventName: "deleting",
@@ -51,8 +51,8 @@ export interface TableHooks<TInsert, TExisting, TPKey> extends DexieEventSet {
       this: DeletingHookContext<TPKey>,
       primKey: TPKey,
       existing: TExisting,
-      transaction: Transaction
-    ) => any
+      transaction: Transaction,
+    ) => any,
   ): void;
   creating: DexieEvent;
   reading: DexieEvent;

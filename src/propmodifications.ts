@@ -13,10 +13,7 @@ export abstract class PropModificationBase<T> {
   abstract execute(value: T): T;
 }
 
-Object.setPrototypeOf(
-  PropModificationBase.prototype,
-  DexiePropModification.prototype
-);
+Object.setPrototypeOf(PropModificationBase.prototype, DexiePropModification.prototype);
 
 /**
  * Create a string modification that replaces a leading prefix.
@@ -28,14 +25,8 @@ Object.setPrototypeOf(
  * @param replaced The replacement value to use when the prefix matches.
  * @returns A `PropModificationBase<string>` to use within `modify()`.
  */
-export function replacePrefix(
-  prefix: string,
-  replaced: string
-): PropModificationBase<string> {
-  return dexiereplacePrefix(
-    prefix,
-    replaced
-  ) as unknown as PropModificationBase<string>;
+export function replacePrefix(prefix: string, replaced: string): PropModificationBase<string> {
+  return dexiereplacePrefix(prefix, replaced) as unknown as PropModificationBase<string>;
 }
 
 /**
@@ -48,9 +39,7 @@ export function replacePrefix(
  * @param value The value to add (numeric delta or array items).
  * @returns A typed `PropModificationBase<T>` for use in `modify()`.
  */
-export function add<T extends AddRemoveValueType>(
-  value: T
-): PropModificationBase<T> {
+export function add<T extends AddRemoveValueType>(value: T): PropModificationBase<T> {
   return dexieadd(value) as unknown as PropModificationBase<T>;
 }
 
@@ -64,9 +53,7 @@ export function add<T extends AddRemoveValueType>(
  * @param value The value to remove (numeric delta or array items).
  * @returns A typed `PropModificationBase<T>` for use in `modify()`.
  */
-export function remove<T extends AddRemoveValueType>(
-  value: T
-): PropModificationBase<T> {
+export function remove<T extends AddRemoveValueType>(value: T): PropModificationBase<T> {
   return dexieremove(value) as unknown as PropModificationBase<T>;
 }
 
@@ -114,7 +101,7 @@ export enum RemoveUndefinedBehaviour {
  */
 export function safeRemoveNumber(
   num: number,
-  undefinedBehaviour: RemoveUndefinedBehaviour = RemoveUndefinedBehaviour.LeaveUndefined
+  undefinedBehaviour: RemoveUndefinedBehaviour = RemoveUndefinedBehaviour.LeaveUndefined,
 ): PropModification<number | undefined> {
   return new PropModification<number | undefined>((value) => {
     if (value === undefined) {

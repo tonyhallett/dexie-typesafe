@@ -24,7 +24,7 @@ export type TableInboundBase<
   TDexie,
   TMaxDepth extends string,
   TExcessDisabled extends boolean,
-  TExcessLeaves
+  TExcessLeaves,
 > = TableBase<
   TName,
   TGet,
@@ -36,26 +36,19 @@ export type TableInboundBase<
   TDexie,
   TMaxDepth
 > &
-  TableInboundBaseBulkTuple<
-    TDatabase,
-    TPKeyPathOrPaths,
-    TInsert,
-    TExcessLeaves
-  > & {
+  TableInboundBaseBulkTuple<TDatabase, TPKeyPathOrPaths, TInsert, TExcessLeaves> & {
     /**
      * Insert a single record and return the derived primary key.
      * https://dexie.org/docs/Table/Table.add()
      */
     add<T extends TInsert>(
-      item: MaybeNoExcess<T, TInsert, TExcessLeaves, TExcessDisabled>
+      item: MaybeNoExcess<T, TInsert, TExcessLeaves, TExcessDisabled>,
     ): PromiseExtended<PrimaryKey<TDatabase, TPKeyPathOrPaths>>;
     /**
      * Insert multiple records; returns the last key (Dexie behavior).
      * https://dexie.org/docs/Table/Table.bulkAdd()
      */
-    bulkAdd(
-      items: readonly TInsert[]
-    ): PromiseExtended<PrimaryKey<TDatabase, TPKeyPathOrPaths>>;
+    bulkAdd(items: readonly TInsert[]): PromiseExtended<PrimaryKey<TDatabase, TPKeyPathOrPaths>>;
     /*
    making the key required, although allowed by the spec to be optional for auto-increment keys
    use add for that case
@@ -65,13 +58,11 @@ export type TableInboundBase<
      * https://dexie.org/docs/Table/Table.put()
      */
     put<T extends TDatabase>(
-      item: MaybeNoExcess<T, TDatabase, TExcessLeaves, TExcessDisabled>
+      item: MaybeNoExcess<T, TDatabase, TExcessLeaves, TExcessDisabled>,
     ): PromiseExtended<PrimaryKey<TDatabase, TPKeyPathOrPaths>>;
     /**
      * Insert or update multiple records; returns the last key.
      * https://dexie.org/docs/Table/Table.bulkPut()
      */
-    bulkPut(
-      items: readonly TInsert[]
-    ): PromiseExtended<PrimaryKey<TDatabase, TPKeyPathOrPaths>>;
+    bulkPut(items: readonly TInsert[]): PromiseExtended<PrimaryKey<TDatabase, TPKeyPathOrPaths>>;
   };

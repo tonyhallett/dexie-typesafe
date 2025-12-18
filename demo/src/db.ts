@@ -24,7 +24,7 @@ const dbV1 = dexieFactory(
       .multiIndex("tags")
       .build(),
   },
-  "Demo"
+  "Demo",
 );
 
 dbV1.on("populate", (tx) => {
@@ -56,7 +56,7 @@ const dbV2 = upgrade(
         tags: friendV1.tags,
       };
     });
-  }
+  },
 );
 
 export const friends = dbV2.friends;

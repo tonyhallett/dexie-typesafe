@@ -15,7 +15,7 @@ export type TableOutboundAuto<
   TDexie,
   TMaxDepth extends string,
   TExcessDisabled extends boolean,
-  TExcessLeaves
+  TExcessLeaves,
 > = TableOutboundBase<
   TName,
   TDatabase,
@@ -35,7 +35,7 @@ export type TableOutboundAuto<
      */
     add<T extends TInsert>(
       item: MaybeNoExcess<T, TInsert, TExcessLeaves, TExcessDisabled>,
-      key?: TPKey
+      key?: TPKey,
     ): PromiseExtended<TPKey>;
 
     /**
@@ -46,7 +46,7 @@ export type TableOutboundAuto<
       items: readonly TInsert[],
       options?: {
         allKeys: B;
-      }
+      },
     ): PromiseExtendedPKeyOrKeys<TPKey, B>;
 
     /**
@@ -58,17 +58,14 @@ export type TableOutboundAuto<
       keys: readonly (TPKey | undefined)[],
       options?: {
         allKeys: B;
-      }
+      },
     ): PromiseExtendedPKeyOrKeys<TPKey, B>;
 
     /**
      * Insert or update multiple records with explicit keys.
      * Dexie reference: https://dexie.org/docs/Table/Table.bulkPut()
      */
-    bulkPut(
-      items: readonly TInsert[],
-      keys: readonly TPKey[]
-    ): PromiseExtended<TPKey>;
+    bulkPut(items: readonly TInsert[], keys: readonly TPKey[]): PromiseExtended<TPKey>;
 
     /**
      * Insert or update multiple records with optional keys; optionally return all keys.
@@ -77,6 +74,6 @@ export type TableOutboundAuto<
     bulkPut<B extends boolean = false>(
       items: readonly TInsert[],
       keys: readonly (TPKey | undefined)[],
-      options: { allKeys: B }
+      options: { allKeys: B },
     ): PromiseExtendedPKeyOrKeys<TPKey, B>;
   };

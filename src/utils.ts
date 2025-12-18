@@ -1,7 +1,7 @@
 export function aliasMethodTs<
   TProto extends object,
   TAlias extends keyof TProto,
-  TKey extends keyof TProto
+  TKey extends keyof TProto,
 >(proto: TProto, alias: TAlias, original: TKey): void {
   aliasMethod(proto, alias, original);
 }
@@ -9,7 +9,7 @@ export function aliasMethodTs<
 export function aliasMethod<TProto extends object, TKey extends keyof TProto>(
   proto: TProto,
   alias: PropertyKey,
-  original: TKey
+  original: TKey,
 ): void {
   type Fn = TProto[TKey] extends (...args: any[]) => any ? TProto[TKey] : never;
 
@@ -26,7 +26,7 @@ export function aliasMethod<TProto extends object, TKey extends keyof TProto>(
 export function aliasMethodsTs<
   TProto extends object,
   TAliases extends readonly (keyof TProto)[],
-  TKey extends keyof TProto
+  TKey extends keyof TProto,
 >(proto: TProto, aliases: TAliases, original: TKey): void {
   aliasMethods(proto, aliases, original);
 }
@@ -34,7 +34,7 @@ export function aliasMethodsTs<
 export function aliasMethods<TProto extends object, TKey extends keyof TProto>(
   proto: TProto,
   aliases: readonly PropertyKey[],
-  original: TKey
+  original: TKey,
 ): void {
   aliases.forEach((alias) => {
     aliasMethod(proto, alias, original);

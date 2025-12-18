@@ -14,7 +14,7 @@ const dbV1 = dexieFactory(
     toDelete: tableBuilder<TableDelete>().hiddenAutoPkey().build(),
     friends: tableBuilder<Friends>().autoPkey("id").index("name").build(),
   },
-  "UpgradeDemo"
+  "UpgradeDemo",
 );
 
 dbV1.on("populate", (tx) => {

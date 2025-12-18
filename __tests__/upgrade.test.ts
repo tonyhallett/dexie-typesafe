@@ -30,12 +30,7 @@ describe("upgrade", () => {
 
     const upgradeFunction = jest.fn();
     const dbUpgradedTs = upgrade(db, tableConfigs, 2, upgradeFunction);
-    expect(configureStores).toHaveBeenCalledWith(
-      db,
-      2,
-      tableConfigs,
-      upgradeFunction
-    );
+    expect(configureStores).toHaveBeenCalledWith(db, 2, tableConfigs, upgradeFunction);
     expect(mapToClass).toHaveBeenCalledWith(db, tableConfigs);
     expect(dbUpgradedTs).toBe(db);
   });
@@ -43,23 +38,13 @@ describe("upgrade", () => {
   it("should increment version if not provided", () => {
     const db: any = { my: "db", verno: 3 };
     const dbUpgradedTs = upgrade(db, tableConfigs);
-    expect(configureStores).toHaveBeenCalledWith(
-      db,
-      4,
-      tableConfigs,
-      undefined
-    );
+    expect(configureStores).toHaveBeenCalledWith(db, 4, tableConfigs, undefined);
   });
 
   it("should increment version if not provided and use the upgrader fn", () => {
     const db: any = { my: "db", verno: 2 };
     const upgradeFunction = jest.fn();
     const dbUpgradedTs = upgrade(db, tableConfigs, upgradeFunction);
-    expect(configureStores).toHaveBeenCalledWith(
-      db,
-      3,
-      tableConfigs,
-      upgradeFunction
-    );
+    expect(configureStores).toHaveBeenCalledWith(db, 3, tableConfigs, upgradeFunction);
   });
 });

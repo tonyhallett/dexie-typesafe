@@ -28,18 +28,7 @@ interface PkConfig<TAuto extends boolean> {
   auto: TAuto;
 }
 
-export type TableConfigAny = TableConfig<
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any,
-  any
->;
+export type TableConfigAny = TableConfig<any, any, any, any, any, any, any, any, any, any>;
 
 export interface TableConfig<
   TDatabase,
@@ -51,31 +40,24 @@ export interface TableConfig<
   TOutboundPKey extends IndexableType = never,
   TMaxDepth extends string = NoDescend,
   TExcessDisabled extends boolean = false,
-  TExcessLeaves = IndexedDBSafeLeaf
+  TExcessLeaves = IndexedDBSafeLeaf,
 > {
   readonly pk: PkConfig<TAuto>;
   readonly indicesSchema: string;
   readonly mapToClass?: ConstructorOf<TDatabase>;
 }
 
-type IsMultiEntryArray<T> = NonNullable<T> extends readonly (infer E)[]
-  ? E extends AllowedKeyLeaf
-    ? true
-    : false
-  : false;
+type IsMultiEntryArray<T> =
+  NonNullable<T> extends readonly (infer E)[] ? (E extends AllowedKeyLeaf ? true : false) : false;
 
-type MultiEntryKeyPath<T, TMaxDepth extends string> = ValidIndexedDBKeyPath<
-  T,
-  false,
-  TMaxDepth,
-  true
-> extends infer P
-  ? P extends string
-    ? IsMultiEntryArray<KeyPathValue<T, P>> extends true
-      ? P
+type MultiEntryKeyPath<T, TMaxDepth extends string> =
+  ValidIndexedDBKeyPath<T, false, TMaxDepth, true> extends infer P
+    ? P extends string
+      ? IsMultiEntryArray<KeyPathValue<T, P>> extends true
+        ? P
+        : never
       : never
-    : never
-  : never;
+    : never;
 
 export type DuplicateKeysError = {
   readonly error: "Duplicate keys in compound key are not allowed";
@@ -110,7 +92,7 @@ type SingleIndexKeyPathExcludePrimaryKey<
   TDatabase,
   PkPathOrPaths,
   TAllowTypeSpecificProperties extends boolean,
-  TMaxDepth extends string
+  TMaxDepth extends string,
 > = ValidIndexedDBKeyPath<
   ApplySinglePkRemoval<TDatabase, PkPathOrPaths>,
   TAllowTypeSpecificProperties,
@@ -121,19 +103,14 @@ type SingleIndexKeyPathExcludePrimaryKey<
 type MultiIndexKeyPathExcludePrimaryKey<
   TDatabase,
   PkPathOrPaths,
-  TMaxDepth extends string
-> = MultiEntryKeyPath<
-  ApplySinglePkRemoval<TDatabase, PkPathOrPaths>,
-  TMaxDepth
->;
+  TMaxDepth extends string,
+> = MultiEntryKeyPath<ApplySinglePkRemoval<TDatabase, PkPathOrPaths>, TMaxDepth>;
 
-type ApplySinglePkRemoval<TDatabase, PkPathOrPaths> = [PkPathOrPaths] extends [
-  never
-]
+type ApplySinglePkRemoval<TDatabase, PkPathOrPaths> = [PkPathOrPaths] extends [never]
   ? TDatabase
   : PkPathOrPaths extends readonly string[]
-  ? TDatabase
-  : DeletePrimaryKeys<TDatabase, PkPathOrPaths>;
+    ? TDatabase
+    : DeletePrimaryKeys<TDatabase, PkPathOrPaths>;
 
 interface AvailableIndexMethods<TSingle, TMulti, TCompound> {
   single: TSingle;
@@ -143,18 +120,16 @@ interface AvailableIndexMethods<TSingle, TMulti, TCompound> {
 
 type StrictCompoundIndexPaths<
   TCompoundIndexPaths extends string[],
-  TIndexPaths extends DexieIndexPaths<any>
-> = NoDuplicates<TCompoundIndexPaths> extends never
-  ? never
-  : ExcludeExistingCompound<TCompoundIndexPaths, TIndexPaths>;
+  TIndexPaths extends DexieIndexPaths<any>,
+> =
+  NoDuplicates<TCompoundIndexPaths> extends never
+    ? never
+    : ExcludeExistingCompound<TCompoundIndexPaths, TIndexPaths>;
 
 export type ExcludeExistingCompound<
   TCompoundIndexPaths extends readonly string[],
-  TIndexPaths extends DexieIndexPaths<any>
-> = TIndexPaths extends readonly [
-  infer First,
-  ...infer Rest extends DexieIndexPaths<any>
-]
+  TIndexPaths extends DexieIndexPaths<any>,
+> = TIndexPaths extends readonly [infer First, ...infer Rest extends DexieIndexPaths<any>]
   ? First extends CompoundIndexPaths<any, infer P extends CompoundKeyPathsAsStr>
     ? TuplesEqual<TCompoundIndexPaths, P> extends true
       ? never // exact match found → exclude
@@ -176,11 +151,7 @@ interface IndexMethods<
   TMaxDepth extends string = Level2,
   TExcessDisabled extends boolean = false,
   TExcessLeaves = IndexedDBSafeLeaf,
-  TAvailableIndexMethods extends AvailableIndexMethods<
-    any,
-    any,
-    any
-  > = AvailableIndexMethods<
+  TAvailableIndexMethods extends AvailableIndexMethods<any, any, any> = AvailableIndexMethods<
     SingleIndexKeyPathExcludePrimaryKey<
       TDatabase,
       PkPathOrPaths,
@@ -188,13 +159,8 @@ interface IndexMethods<
       TKeyMaxDepth
     >,
     MultiIndexKeyPathExcludePrimaryKey<TDatabase, PkPathOrPaths, TKeyMaxDepth>,
-    CompoundKeyPaths<
-      TDatabase,
-      TAllowTypeSpecificProperties,
-      TKeyMaxDepth,
-      true
-    >
-  >
+    CompoundKeyPaths<TDatabase, TAllowTypeSpecificProperties, TKeyMaxDepth, true>
+  >,
 > {
   /**
    * Add a single-field index for the given key path.
@@ -207,7 +173,7 @@ interface IndexMethods<
    * @param indexPath Key path to index (e.g., "title" or "author.name").
    */
   index<TIndexPath extends TAvailableIndexMethods["single"]>(
-    indexPath: TIndexPath
+    indexPath: TIndexPath,
   ): IndexMethods<
     TDatabase,
     PkPathOrPaths,
@@ -246,7 +212,7 @@ interface IndexMethods<
    * @param indexPath Array-valued key path to multi-index.
    */
   multiIndex<TIndexPath extends TAvailableIndexMethods["multi"]>(
-    indexPath: TIndexPath
+    indexPath: TIndexPath,
   ): IndexMethods<
     TDatabase,
     PkPathOrPaths,
@@ -286,13 +252,8 @@ interface IndexMethods<
    * @param indexPaths The key paths composing the compound index.
    * @returns Either a new builder state or a `CompoundIndexError` when invalid.
    */
-  compoundIndex<
-    const TCompoundIndexPaths extends TAvailableIndexMethods["compound"]
-  >(
-    ...indexPaths: CompoundMatchesPK<
-      TCompoundIndexPaths,
-      PkPathOrPaths
-    > extends true
+  compoundIndex<const TCompoundIndexPaths extends TAvailableIndexMethods["compound"]>(
+    ...indexPaths: CompoundMatchesPK<TCompoundIndexPaths, PkPathOrPaths> extends true
       ? never
       : TCompoundIndexPaths
   ): StrictCompoundIndexPaths<TCompoundIndexPaths, TIndexPaths> extends never
@@ -355,16 +316,14 @@ const isDistinctArray = (arr: readonly any[]): boolean => {
   return Array.from(new Set(arr)).length === arr.length;
 };
 
-type InboundAutoIncrementKeyPath<
-  T,
-  TMaxDepth extends string
-> = ValidIndexedDBKeyPath<T, false, TMaxDepth, false> extends infer K
-  ? K extends string
-    ? IncludesNumber<KeyPathValue<T, K>> extends true
-      ? K
+type InboundAutoIncrementKeyPath<T, TMaxDepth extends string> =
+  ValidIndexedDBKeyPath<T, false, TMaxDepth, false> extends infer K
+    ? K extends string
+      ? IncludesNumber<KeyPathValue<T, K>> extends true
+        ? K
+        : never
       : never
-    : never
-  : never;
+    : never;
 
 function createCompoundSchemaPart(keys: string[]): string {
   return `[${keys.join("+")}]`;
@@ -377,12 +336,10 @@ type TableBuilder<
   TKeyMaxDepth extends string,
   TMaxDepth extends string,
   TExcessDisabled extends boolean,
-  TExcessLeaves
+  TExcessLeaves,
 > = {
-  autoPkey<
-    TPKeyPath extends InboundAutoIncrementKeyPath<TDatabase, TKeyMaxDepth>
-  >(
-    key: TPKeyPath
+  autoPkey<TPKeyPath extends InboundAutoIncrementKeyPath<TDatabase, TKeyMaxDepth>>(
+    key: TPKeyPath,
   ): IndexMethods<
     TDatabase,
     TPKeyPath,
@@ -404,9 +361,9 @@ type TableBuilder<
       TAllowTypeSpecificProperties,
       TKeyMaxDepth,
       false
-    >
+    >,
   >(
-    key: TPKeyPath
+    key: TPKeyPath,
   ): IndexMethods<
     TDatabase,
     TPKeyPath,
@@ -427,7 +384,7 @@ type TableBuilder<
       TAllowTypeSpecificProperties,
       TKeyMaxDepth,
       false
-    >
+    >,
   >(
     ...keys: TCompoundKeyPaths
   ): NoDuplicates<TCompoundKeyPaths> extends never
@@ -490,9 +447,9 @@ function createTableBuilder<
   TKeyMaxDepth extends string,
   TMaxDepth extends string,
   TExcessDisabled extends boolean,
-  TExcessLeaves
+  TExcessLeaves,
 >(
-  mapToClass?: ConstructorOf<TDatabase>
+  mapToClass?: ConstructorOf<TDatabase>,
 ): TableBuilder<
   TDatabase,
   TGet,
@@ -510,35 +467,22 @@ function createTableBuilder<
     TIndexPaths extends DexieIndexPaths<TDatabase>,
     TPKeyIsInbound extends boolean,
     TOutboundPKey extends IndexableType,
-    TAvailableIndexMethods extends AvailableIndexMethods<
-      any,
-      any,
-      any
-    > = AvailableIndexMethods<
+    TAvailableIndexMethods extends AvailableIndexMethods<any, any, any> = AvailableIndexMethods<
       SingleIndexKeyPathExcludePrimaryKey<
         TDatabase,
         TPKeyPathOrPaths,
         TAllowTypeSpecificProperties,
         TKeyMaxDepth
       >,
-      MultiIndexKeyPathExcludePrimaryKey<
-        TDatabase,
-        TPKeyPathOrPaths,
-        TKeyMaxDepth
-      >,
-      CompoundKeyPaths<
-        TDatabase,
-        TAllowTypeSpecificProperties,
-        TKeyMaxDepth,
-        true
-      >
-    >
+      MultiIndexKeyPathExcludePrimaryKey<TDatabase, TPKeyPathOrPaths, TKeyMaxDepth>,
+      CompoundKeyPaths<TDatabase, TAllowTypeSpecificProperties, TKeyMaxDepth, true>
+    >,
   >(
     key: TPKeyPathOrPaths,
     auto: TAuto,
     indices: TIndexPaths,
     pkeyIsInbound: TPKeyIsInbound,
-    outboundPKey: TOutboundPKey
+    outboundPKey: TOutboundPKey,
   ): IndexMethods<
     TDatabase,
     TPKeyPathOrPaths,
@@ -560,7 +504,7 @@ function createTableBuilder<
 
     function doIndex<TIndexPath extends TAvailableIndexMethods["single"]>(
       indexKey: TIndexPath,
-      unique: boolean
+      unique: boolean,
     ) {
       addIndexPart(indexKey, unique);
       return createIndexMethods(
@@ -575,7 +519,7 @@ function createTableBuilder<
           },
         ],
         pkeyIsInbound,
-        outboundPKey
+        outboundPKey,
       ) as IndexMethods<
         TDatabase,
         TPKeyPathOrPaths,
@@ -599,7 +543,7 @@ function createTableBuilder<
 
     function doMulti<TIndexPath extends TAvailableIndexMethods["multi"]>(
       indexKey: TIndexPath,
-      unique: boolean
+      unique: boolean,
     ) {
       addIndexPart(`*${indexKey}`, unique);
       return createIndexMethods(
@@ -607,7 +551,7 @@ function createTableBuilder<
         auto,
         [...indices, { kind: "multi", path: indexKey, multi: true }],
         pkeyIsInbound,
-        outboundPKey
+        outboundPKey,
       ) as IndexMethods<
         TDatabase,
         TPKeyPathOrPaths,
@@ -629,14 +573,9 @@ function createTableBuilder<
       >;
     }
 
-    function doCompound<
-      const TCompoundIndexPaths extends TAvailableIndexMethods["compound"]
-    >(
+    function doCompound<const TCompoundIndexPaths extends TAvailableIndexMethods["compound"]>(
       unique: boolean,
-      ...keys: CompoundMatchesPK<
-        TCompoundIndexPaths,
-        TPKeyPathOrPaths
-      > extends true
+      ...keys: CompoundMatchesPK<TCompoundIndexPaths, TPKeyPathOrPaths> extends true
         ? never
         : TCompoundIndexPaths
     ): StrictCompoundIndexPaths<TCompoundIndexPaths, TIndexPaths> extends never
@@ -687,7 +626,7 @@ function createTableBuilder<
         auto,
         [...indices, { kind: "compound", paths: keys }],
         pkeyIsInbound,
-        outboundPKey
+        outboundPKey,
       ) as IndexMethods<
         TDatabase,
         TPKeyPathOrPaths,
@@ -734,8 +673,8 @@ function createTableBuilder<
           key === null
             ? null
             : typeof key === "string"
-            ? key
-            : createCompoundSchemaPart(key as string[]);
+              ? key
+              : createCompoundSchemaPart(key as string[]);
         const pk: PkConfig<TAuto> = { key: primaryKeyPart, auto };
         const indicesSchema = indexParts.join(",");
         if (mapToClass) {
@@ -753,13 +692,7 @@ function createTableBuilder<
           return mapToClasstableConfig;
         }
 
-        const tableConfig: TableConfig<
-          TDatabase,
-          TPKeyPathOrPaths,
-          TAuto,
-          TIndexPaths,
-          TGet
-        > = {
+        const tableConfig: TableConfig<TDatabase, TPKeyPathOrPaths, TAuto, TIndexPaths, TGet> = {
           pk,
           indicesSchema,
         };
@@ -769,9 +702,9 @@ function createTableBuilder<
   }
 
   return {
-    autoPkey<
-      TPKeyPath extends InboundAutoIncrementKeyPath<TDatabase, TKeyMaxDepth>
-    >(key: TPKeyPath) {
+    autoPkey<TPKeyPath extends InboundAutoIncrementKeyPath<TDatabase, TKeyMaxDepth>>(
+      key: TPKeyPath,
+    ) {
       return createIndexMethods(key, true, [] as const, true, null as never);
     },
     pkey<
@@ -780,7 +713,7 @@ function createTableBuilder<
         TAllowTypeSpecificProperties,
         TKeyMaxDepth,
         false
-      >
+      >,
     >(key: TPKeyPath) {
       return createIndexMethods(key, false, [] as const, true, null as never);
     },
@@ -790,7 +723,7 @@ function createTableBuilder<
         TAllowTypeSpecificProperties,
         TKeyMaxDepth,
         false
-      >
+      >,
     >(
       ...keys: TCompoundKeyPaths
     ): NoDuplicates<TCompoundKeyPaths> extends never
@@ -812,13 +745,7 @@ function createTableBuilder<
       if (isDistinctArray(keys) === false) {
         return duplicateKeysErrorInstance as any;
       }
-      return createIndexMethods(
-        keys,
-        false,
-        [] as const,
-        true,
-        null as never
-      ) as any;
+      return createIndexMethods(keys, false, [] as const, true, null as never) as any;
     },
 
     hiddenAutoPkey<PKey extends IndexableType = number>(
@@ -828,22 +755,10 @@ function createTableBuilder<
           : [never] // Error: PKey must include number in union
         : []
     ) {
-      return createIndexMethods(
-        null,
-        true,
-        [] as const,
-        false,
-        null as unknown as PKey
-      );
+      return createIndexMethods(null, true, [] as const, false, null as unknown as PKey);
     },
     hiddenExplicitPkey<PKey extends IndexableType = number>() {
-      return createIndexMethods(
-        null,
-        false,
-        [] as const,
-        false,
-        null as unknown as PKey
-      );
+      return createIndexMethods(null, false, [] as const, false, null as unknown as PKey);
     },
   };
 }
@@ -898,12 +813,11 @@ type Opt_KeyMaxDepth<TOptions extends Options> = TOptions extends {
   ? K
   : NoDescend;
 
-type Opt_AllowTypeSpecificProperties<TOptions extends Options> =
-  TOptions extends {
-    AllowTypeSpecificProperties: infer A extends boolean;
-  }
-    ? A
-    : false;
+type Opt_AllowTypeSpecificProperties<TOptions extends Options> = TOptions extends {
+  AllowTypeSpecificProperties: infer A extends boolean;
+}
+  ? A
+  : false;
 
 // Excess data properties options
 type Opt_ExcessDisabled<TOptions extends Options> = TOptions extends {
@@ -937,10 +851,7 @@ type Opt_ExcessLeaves<TOptions extends Options> = TOptions extends {
  * Tuple aliases (`bulkAddTuple`, `bulkPutTuple`) always remain strict.
  * @returns A builder for configuring keys and indexes.
  */
-export function tableBuilder<
-  TDatabase,
-  TOptions extends Options = {}
->(): TableBuilder<
+export function tableBuilder<TDatabase, TOptions extends Options = {}>(): TableBuilder<
   TDatabase,
   TDatabase,
   Opt_AllowTypeSpecificProperties<TOptions>,
@@ -977,9 +888,9 @@ export function tableBuilder<
  */
 export function tableClassBuilder<
   TGetCtor extends new (...args: any) => any,
-  TOptions extends Options = {}
+  TOptions extends Options = {},
 >(
-  ctor: TGetCtor
+  ctor: TGetCtor,
 ): TableBuilder<
   InsertType<InstanceType<TGetCtor>, never>,
   InstanceType<TGetCtor>,
@@ -1005,11 +916,9 @@ export function tableClassBuilder<
 
 type TableClassBuilderExcluded<
   TGetCtor extends new (...args: any) => any,
-  TOptions extends Options = {}
+  TOptions extends Options = {},
 > = {
-  excludedKeys<
-    TExcludeProps extends keyof InstanceType<TGetCtor> & string
-  >(): TableBuilder<
+  excludedKeys<TExcludeProps extends keyof InstanceType<TGetCtor> & string>(): TableBuilder<
     InsertType<Omit<InstanceType<TGetCtor>, TExcludeProps>, never>,
     InstanceType<TGetCtor>,
     Opt_AllowTypeSpecificProperties<TOptions>,
@@ -1037,13 +946,11 @@ type TableClassBuilderExcluded<
  */
 export function tableClassBuilderExcluded<
   TGetCtor extends new (...args: any) => any,
-  TOptions extends Options = {}
+  TOptions extends Options = {},
 >(ctor: TGetCtor): TableClassBuilderExcluded<TGetCtor, TOptions> {
   type TGet = InstanceType<TGetCtor>;
   return {
-    excludedKeys<
-      TExcludeProps extends keyof InstanceType<TGetCtor> & string
-    >() {
+    excludedKeys<TExcludeProps extends keyof InstanceType<TGetCtor> & string>() {
       type T = Omit<TGet, TExcludeProps>;
       type TDatabase = InsertType<T, never>;
 

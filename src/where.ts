@@ -1,9 +1,6 @@
 import type { Collection } from "./Collection";
 import type { PathKeyTypes } from "./utilitytypes";
-import type {
-  EqualityRegistryLookup,
-  KeyTypeForEquality,
-} from "./whereEquality";
+import type { EqualityRegistryLookup, KeyTypeForEquality } from "./whereEquality";
 
 type KeyTypeForPath<TPathLookup extends PathKeyTypes, TPath> = Extract<
   TPathLookup[number],
@@ -20,7 +17,7 @@ export interface WherePaths<
   TDexie,
   TPKeyPathOrPaths,
   TCollectionKey,
-  TMaxDepth extends string
+  TMaxDepth extends string,
 > {
   /**
    * Start a where-clause on an indexed or primary key path.
@@ -28,9 +25,9 @@ export interface WherePaths<
    */
   where<
     TPath extends TWherePathKeyTypes[number]["path"],
-    TKey extends KeyTypeForPath<TWherePathKeyTypes, TPath>
+    TKey extends KeyTypeForPath<TWherePathKeyTypes, TPath>,
   >(
-    indexOrPrimaryKeyPath: TPath
+    indexOrPrimaryKeyPath: TPath,
   ): WhereClause<
     TGet,
     TDatabase,
@@ -55,7 +52,7 @@ export interface WhereEquality<
   TEqualityRegistryLookup extends EqualityRegistryLookup,
   TDexie,
   TPKeyPathOrPaths,
-  TMaxDepth extends string
+  TMaxDepth extends string,
 > {
   /** Alias of `where` using equality tokens. Dexie: https://dexie.org/docs/Table/Table.where() */
   where<
@@ -64,9 +61,9 @@ export interface WhereEquality<
       TEqualityRegistryLookup["all"],
       TEqualityRegistryLookup["singleLookup"],
       TEquality
-    >
+    >,
   >(
-    equality: TEquality
+    equality: TEquality,
   ): [TKey] extends [never]
     ? never
     : Collection<
@@ -88,9 +85,9 @@ export interface WhereEquality<
       TEqualityRegistryLookup["all"],
       TEqualityRegistryLookup["singleLookup"],
       TEquality
-    >
+    >,
   >(
-    equality: TEquality
+    equality: TEquality,
   ): [TKey] extends [never]
     ? never
     : Collection<
@@ -112,9 +109,9 @@ export interface WhereEquality<
       TEqualityRegistryLookup["composite"],
       TEqualityRegistryLookup["singleLookup"],
       TEquality
-    >
+    >,
   >(
-    equality: TEquality
+    equality: TEquality,
   ): [TKey] extends [never]
     ? never
     : Collection<
@@ -136,9 +133,9 @@ export interface WhereEquality<
       TEqualityRegistryLookup["single"],
       TEqualityRegistryLookup["singleLookup"],
       TEquality
-    >
+    >,
   >(
-    equality: TEquality
+    equality: TEquality,
   ): [TKey] extends [never]
     ? never
     : Collection<
@@ -161,10 +158,10 @@ export interface WhereEquality<
       TEqualityRegistryLookup["single"],
       TEqualityRegistryLookup["singleLookup"],
       TEquality
-    >
+    >,
   >(
     equality: TEquality,
-    equalityFilter: TEqualityRegistryLookup["equalityFilterType"]
+    equalityFilter: TEqualityRegistryLookup["equalityFilterType"],
   ): [TKey] extends [never]
     ? never
     : Collection<
@@ -185,9 +182,7 @@ export interface WhereEquality<
       >;
 }
 
-type CollectionKey<TCurrent, TKey> = [TCurrent] extends [undefined]
-  ? TKey
-  : TCurrent | TKey;
+type CollectionKey<TCurrent, TKey> = [TCurrent] extends [undefined] ? TKey : TCurrent | TKey;
 
 export type PathsOf<Lookup extends PathKeyTypes> = Lookup[number]["path"];
 
@@ -202,7 +197,7 @@ export type WhereClause<
   TDexie,
   TPKeyPathOrPaths,
   TCollectionKey,
-  TMaxDepth extends string
+  TMaxDepth extends string,
 > = WhereClauseNonStrings<
   TGet,
   TDatabase,
@@ -240,7 +235,7 @@ export interface WhereClauseNonStrings<
   TDexie,
   TPKeyPathOrPaths,
   TCollectionKey,
-  TMaxDepth extends string
+  TMaxDepth extends string,
 > {
   /*
     above, aboveOrEqual, below, belowOrEqual, between and equals all create dexie DBCoreKeyRange
@@ -270,7 +265,7 @@ export interface WhereClauseNonStrings<
     lower: TKey,
     upper: TKey,
     includeLower?: boolean,
-    includeUpper?: boolean
+    includeUpper?: boolean,
   ): Collection<
     TGet,
     TDatabase,
@@ -289,7 +284,7 @@ export interface WhereClauseNonStrings<
    * Dexie: https://dexie.org/docs/WhereClause/WhereClause.above()
    */
   above(
-    value: TKey
+    value: TKey,
   ): Collection<
     TGet,
     TDatabase,
@@ -308,7 +303,7 @@ export interface WhereClauseNonStrings<
    * Dexie: https://dexie.org/docs/WhereClause/WhereClause.aboveOrEqual()
    */
   aboveOrEqual(
-    value: TKey
+    value: TKey,
   ): Collection<
     TGet,
     TDatabase,
@@ -327,7 +322,7 @@ export interface WhereClauseNonStrings<
    * Dexie: https://dexie.org/docs/WhereClause/WhereClause.below()
    */
   below(
-    value: TKey
+    value: TKey,
   ): Collection<
     TGet,
     TDatabase,
@@ -346,7 +341,7 @@ export interface WhereClauseNonStrings<
    * Dexie: https://dexie.org/docs/WhereClause/WhereClause.belowOrEqual()
    */
   belowOrEqual(
-    key: TKey
+    key: TKey,
   ): Collection<
     TGet,
     TDatabase,
@@ -365,7 +360,7 @@ export interface WhereClauseNonStrings<
    * Dexie: https://dexie.org/docs/WhereClause/WhereClause.equals()
    */
   equals(
-    value: TKey
+    value: TKey,
   ): Collection<
     TGet,
     TDatabase,
@@ -402,7 +397,7 @@ export interface WhereClauseNonStrings<
    * Dexie: https://dexie.org/docs/WhereClause/WhereClause.notEqual()
    */
   notEqual(
-    value: TKey
+    value: TKey,
   ): Collection<
     TGet,
     TDatabase,
@@ -444,7 +439,7 @@ export interface WhereClauseNonStrings<
     options?: {
       includeLowers?: boolean;
       includeUppers?: boolean;
-    }
+    },
   ): Collection<
     TGet,
     TDatabase,
@@ -469,9 +464,11 @@ interface Prefixes<
   TDexie,
   TPKeyPathOrPaths,
   TCollectionKey,
-  TMaxDepth extends string
+  TMaxDepth extends string,
 > {
-  (prefixes: string[]): Collection<
+  (
+    prefixes: string[],
+  ): Collection<
     TGet,
     TDatabase,
     TInsert,
@@ -483,7 +480,9 @@ interface Prefixes<
     TPKeyPathOrPaths,
     TMaxDepth
   >;
-  (...prefixes: string[]): Collection<
+  (
+    ...prefixes: string[]
+  ): Collection<
     TGet,
     TDatabase,
     TInsert,
@@ -508,9 +507,11 @@ interface ValuesOf<
   TDexie,
   TPKeyPathOrPaths,
   TCollectionKey,
-  TMaxDepth extends string
+  TMaxDepth extends string,
 > {
-  (values: readonly Key[]): Collection<
+  (
+    values: readonly Key[],
+  ): Collection<
     TGet,
     TDatabase,
     TInsert,
@@ -522,7 +523,9 @@ interface ValuesOf<
     TPKeyPathOrPaths,
     TMaxDepth
   >;
-  (...values: readonly Key[]): Collection<
+  (
+    ...values: readonly Key[]
+  ): Collection<
     TGet,
     TDatabase,
     TInsert,
@@ -546,7 +549,7 @@ interface WhereStringClause<
   TDexie,
   TPKeyPathOrPaths,
   TCollectionKey,
-  TMaxDepth extends string
+  TMaxDepth extends string,
 > {
   //https://dexie.org/docs/WhereClause/WhereClause.anyOfIgnoreCase()
   /**
@@ -573,7 +576,7 @@ interface WhereStringClause<
    * Dexie: https://dexie.org/docs/WhereClause/WhereClause.equalsIgnoreCase()
    */
   equalsIgnoreCase(
-    value: string
+    value: string,
   ): Collection<
     TGet,
     TDatabase,
@@ -593,7 +596,7 @@ interface WhereStringClause<
    * Dexie: https://dexie.org/docs/WhereClause/WhereClause.startsWith/
    */
   startsWith(
-    prefix: string
+    prefix: string,
   ): Collection<
     TGet,
     TDatabase,
@@ -612,7 +615,7 @@ interface WhereStringClause<
    * Dexie: https://dexie.org/docs/WhereClause/WhereClause.startsWithIgnoreCase()
    */
   startsWithIgnoreCase(
-    prefix: string
+    prefix: string,
   ): Collection<
     TGet,
     TDatabase,

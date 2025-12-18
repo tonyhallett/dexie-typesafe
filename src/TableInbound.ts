@@ -15,7 +15,7 @@ export type TableInbound<
   TDexie,
   TMaxDepth extends string,
   TExcessDisabled extends boolean,
-  TExcessLeaves
+  TExcessLeaves,
 > = TableInboundBase<
   TName,
   TDatabase,
@@ -33,20 +33,13 @@ export type TableInbound<
    * Update fields on a single record where the object's primary key is provided by the `object` itself.
    * Dexie reference: https://dexie.org/docs/Table/Table.update/
    */
-  update(
-    object: TDatabase,
-    changes: UpdateSpec<TDatabase, TMaxDepth>
-  ): PromiseExtended<0 | 1>;
+  update(object: TDatabase, changes: UpdateSpec<TDatabase, TMaxDepth>): PromiseExtended<0 | 1>;
   /**
    * Update via change-callback on a single record; the `object` carries its primary key.
    * Dexie reference: https://dexie.org/docs/Table/Table.update/
    */
   update(
     object: TDatabase,
-    changes: ChangeCallback<
-      TDatabase,
-      TInsert,
-      PrimaryKey<TDatabase, TPKeyPathOrPaths>
-    >
+    changes: ChangeCallback<TDatabase, TInsert, PrimaryKey<TDatabase, TPKeyPathOrPaths>>,
   ): PromiseExtended<0 | 1>;
 };

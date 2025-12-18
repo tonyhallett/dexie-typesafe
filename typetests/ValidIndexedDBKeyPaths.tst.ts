@@ -19,12 +19,7 @@ describe("ValidIndexedDBKeyPaths type", () => {
       false
     >;
     expect<ValidPaths>().type.toBe<
-      | "strProp"
-      | "numProp"
-      | "dateProp"
-      | "arrBufferProp"
-      | "arrBufferViewProp"
-      | "dataViewProp"
+      "strProp" | "numProp" | "dateProp" | "arrBufferProp" | "arrBufferViewProp" | "dataViewProp"
     >();
   });
 
@@ -72,10 +67,7 @@ describe("ValidIndexedDBKeyPaths type", () => {
         false
       >;
       expect<ValidPaths>().type.toBe<
-        | "fileProp.size"
-        | "fileProp.type"
-        | "fileProp.name"
-        | "fileProp.lastModified"
+        "fileProp.size" | "fileProp.type" | "fileProp.name" | "fileProp.lastModified"
       >();
     });
   });
@@ -94,24 +86,12 @@ describe("ValidIndexedDBKeyPaths type", () => {
     });
 
     it("should descend into nested objects when max depth is I and have type specific properties when specified", () => {
-      type ValidPathsWithTypeSpecific = ValidIndexedDBKeyPath<
-        Nested,
-        true,
-        "I",
-        false
-      >;
-      expect<ValidPathsWithTypeSpecific>().type.toBe<
-        "root" | "nested.id" | "nested.id.length"
-      >();
+      type ValidPathsWithTypeSpecific = ValidIndexedDBKeyPath<Nested, true, "I", false>;
+      expect<ValidPathsWithTypeSpecific>().type.toBe<"root" | "nested.id" | "nested.id.length">();
     });
 
     it("should not descend into nested objects when max depth is the default", () => {
-      type ValidPathsDefaultExplicit = ValidIndexedDBKeyPath<
-        Nested,
-        false,
-        "",
-        false
-      >;
+      type ValidPathsDefaultExplicit = ValidIndexedDBKeyPath<Nested, false, "", false>;
       expect<ValidPathsDefaultExplicit>().type.toBe<"root">();
 
       type ValidPathsDefault = ValidIndexedDBKeyPath<Nested, false, "", false>;

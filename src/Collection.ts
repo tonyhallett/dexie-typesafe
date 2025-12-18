@@ -4,14 +4,7 @@ import type { PathKeyTypes } from "./utilitytypes";
 import type { WherePaths } from "./where";
 import type { EqualityRegistryLookup } from "./whereEquality";
 
-type Comparable =
-  | number
-  | string
-  | Date
-  | Array<any>
-  | Uint8Array
-  | ArrayBuffer
-  | DataView;
+type Comparable = number | string | Date | Array<any> | Uint8Array | ArrayBuffer | DataView;
 /** Helper to detect `any`. Returns true for `any`. */
 type IsAny<T> = 0 extends 1 & T ? true : false;
 
@@ -28,15 +21,16 @@ type DotKeysOfType<T, V> = T extends object
       [K in Extract<keyof T, string>]: T[K] extends V
         ? K
         : T[K] extends object
-        ? `${K}.${DotKeysOfType<T[K], V>}`
-        : never;
+          ? `${K}.${DotKeysOfType<T[K], V>}`
+          : never;
     }[Extract<keyof T, string>]
   : never;
 
-export type DotKeyComparable<TValue> = IsAny<TValue> extends true
-  ? string
-  : // the cmp function
-    DotKeysOfType<TValue, Comparable>;
+export type DotKeyComparable<TValue> =
+  IsAny<TValue> extends true
+    ? string
+    : // the cmp function
+      DotKeysOfType<TValue, Comparable>;
 
 export type DotKey<T> = DotNestedKeys<T>;
 
@@ -50,7 +44,7 @@ export type Collection<
   TEqualityRegistryLookup extends EqualityRegistryLookup,
   TDexie,
   TPKeyPathOrPaths,
-  TMaxDepth extends string
+  TMaxDepth extends string,
 > = CollectionBase<
   TGet,
   TDatabase,
@@ -101,7 +95,7 @@ export interface ChangeCallback<TDatabase, TInsert, TPKey> {
   (
     this: ChangeContext<TInsert, TPKey>,
     obj: TDatabase,
-    ctx: ChangeContext<TInsert, TPKey>
+    ctx: ChangeContext<TInsert, TPKey>,
   ): void | boolean;
 }
 
@@ -121,12 +115,12 @@ interface CollectionBase<
   TEqualityRegistryLookup extends EqualityRegistryLookup,
   TDexie,
   TPKeyPathOrPaths,
-  TMaxDepth extends string
+  TMaxDepth extends string,
 > {
   db: TDexie;
   /** Create a cloned collection with modified props. https://dexie.org/docs/Collection/Collection.clone() */
   clone(
-    props?: Object
+    props?: Object,
   ): Collection<
     TGet,
     TDatabase,
@@ -154,7 +148,7 @@ interface CollectionBase<
   sortBy(keyPath: DotKeyComparable<TGet>): PromiseExtended<TGet[]>;
   sortBy<R>(
     keyPath: DotKeyComparable<TGet>,
-    thenShortcut: ThenShortcut<TGet[], R>
+    thenShortcut: ThenShortcut<TGet[], R>,
   ): PromiseExtended<R>;
   /*
       ***********************
@@ -164,9 +158,7 @@ interface CollectionBase<
     */
   // https://dexie.org/docs/Collection/Collection.each()
   /** Iterate each object. https://dexie.org/docs/Collection/Collection.each() */
-  each(
-    callback: (obj: TGet, cursor: Cursor<TKey, TPKey>) => any
-  ): PromiseExtended<void>;
+  each(callback: (obj: TGet, cursor: Cursor<TKey, TPKey>) => any): PromiseExtended<void>;
   // https://dexie.org/docs/Collection/Collection.eachKey()
   // ***************
   /** Iterate each key. https://dexie.org/docs/Collection/Collection.eachKey() */
@@ -174,14 +166,10 @@ interface CollectionBase<
   // https://dexie.org/docs/Collection/Collection.eachUniqueKey()
   // ***************
   /** Iterate each unique key. https://dexie.org/docs/Collection/Collection.eachUniqueKey() */
-  eachUniqueKey(
-    callback: EachKeyCallback<TKey, TKey, TPKey>
-  ): PromiseExtended<void>;
+  eachUniqueKey(callback: EachKeyCallback<TKey, TKey, TPKey>): PromiseExtended<void>;
 
   /** Iterate each primary key. https://dexie.org/docs/Collection/Collection.eachPrimaryKey() */
-  eachPrimaryKey(
-    callback: EachKeyCallback<TPKey, TKey, TPKey>
-  ): PromiseExtended<void>;
+  eachPrimaryKey(callback: EachKeyCallback<TPKey, TKey, TPKey>): PromiseExtended<void>;
 
   /** Get all keys. https://dexie.org/docs/Collection/Collection.keys() */
   keys(): PromiseExtended<TKey[]>;
@@ -209,10 +197,7 @@ interface CollectionBase<
   limit(n: number): this;
   // https://dexie.org/docs/Collection/Collection.until()  works similar to limit
   /** Iterate until predicate; optionally include stop entry. https://dexie.org/docs/Collection/Collection.until() */
-  until(
-    filter: (value: TDatabase) => boolean,
-    includeStopEntry?: boolean
-  ): this;
+  until(filter: (value: TDatabase) => boolean, includeStopEntry?: boolean): this;
   /** Skip n items. https://dexie.org/docs/Collection/Collection.offset() */
   offset(n: number): this;
   /** Alias of filter. https://dexie.org/docs/Collection/Collection.filter() */
@@ -233,9 +218,7 @@ interface CollectionBase<
   delete(): PromiseExtended<number>;
   // https://dexie.org/docs/Collection/Collection.modify()
   /** Modify items via callback. https://dexie.org/docs/Collection/Collection.modify() */
-  modify(
-    changeCallback: ChangeCallback<TDatabase, TInsert, TPKey>
-  ): PromiseExtended<number>;
+  modify(changeCallback: ChangeCallback<TDatabase, TInsert, TPKey>): PromiseExtended<number>;
   /** Modify items via update spec. https://dexie.org/docs/Collection/Collection.modify() */
   modify(changes: UpdateSpec<TDatabase, TMaxDepth>): PromiseExtended<number>;
 

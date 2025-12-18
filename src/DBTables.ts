@@ -5,10 +5,7 @@ import type { TableOutbound } from "./TableOutbound";
 import type { TableOutboundAuto } from "./TableOutboundAuto";
 import type { TypedDexie } from "./TypedDexie";
 
-export type DBTables<
-  TConfig extends Record<string, TableConfigAny>,
-  TInitialDb extends boolean
-> = {
+export type DBTables<TConfig extends Record<string, TableConfigAny>, TInitialDb extends boolean> = {
   [TName in keyof TConfig as TName extends string
     ? TName
     : never]: TConfig[TName] extends TableConfig<
@@ -50,29 +47,29 @@ export type DBTables<
             TExcessLeaves
           >
       : TAuto extends true
-      ? TableInboundAuto<
-          TName & string,
-          TDatabase,
-          TPKeyPathOrPaths,
-          TIndexPaths,
-          TGet,
-          TInsert,
-          TypedDexie<TConfig, TInitialDb>,
-          TMaxDepth,
-          TExcessDisabled,
-          TExcessLeaves
-        >
-      : TableInbound<
-          TName & string,
-          TDatabase,
-          TPKeyPathOrPaths,
-          TIndexPaths,
-          TGet,
-          TInsert,
-          TypedDexie<TConfig, TInitialDb>,
-          TMaxDepth,
-          TExcessDisabled,
-          TExcessLeaves
-        >
+        ? TableInboundAuto<
+            TName & string,
+            TDatabase,
+            TPKeyPathOrPaths,
+            TIndexPaths,
+            TGet,
+            TInsert,
+            TypedDexie<TConfig, TInitialDb>,
+            TMaxDepth,
+            TExcessDisabled,
+            TExcessLeaves
+          >
+        : TableInbound<
+            TName & string,
+            TDatabase,
+            TPKeyPathOrPaths,
+            TIndexPaths,
+            TGet,
+            TInsert,
+            TypedDexie<TConfig, TInitialDb>,
+            TMaxDepth,
+            TExcessDisabled,
+            TExcessLeaves
+          >
     : never;
 };

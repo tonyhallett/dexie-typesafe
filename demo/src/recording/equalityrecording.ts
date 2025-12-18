@@ -19,5 +19,5 @@ const db = dexieFactory(
       .compoundIndex("compoundIndex1", "compoundIndex2", "compoundIndex3")
       .build(),
   },
-  "Demo db"
+  "Demo db",
 );

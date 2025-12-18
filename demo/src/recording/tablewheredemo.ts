@@ -28,5 +28,5 @@ const db = dexieFactory(
       .build(),
   },
   "Demo db",
-  1
+  1,
 );

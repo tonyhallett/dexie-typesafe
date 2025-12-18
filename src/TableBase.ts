@@ -1,9 +1,4 @@
-import type {
-  DBCoreTable,
-  PromiseExtended,
-  TableSchema,
-  ThenShortcut,
-} from "dexie";
+import type { DBCoreTable, PromiseExtended, TableSchema, ThenShortcut } from "dexie";
 import type { BulkUpdate } from "./BulkUpdate";
 import type { ChangeCallback, Collection } from "./Collection";
 import type {
@@ -13,11 +8,7 @@ import type {
   IndexPathRegistry,
   KeyForIndexPath,
 } from "./indexpaths";
-import type {
-  PrimaryKey,
-  PrimaryKeyId,
-  PrimaryKeyRegistry,
-} from "./primarykey";
+import type { PrimaryKey, PrimaryKeyId, PrimaryKeyRegistry } from "./primarykey";
 import type { TableHooks } from "./TableHooks";
 import type { UpdateSpec } from "./UpdateSpec";
 import type { UpsertSpec } from "./UpsertSpec";
@@ -33,11 +24,11 @@ type PathRegistry<
   TDatabase,
   TIndexPaths extends DexieIndexPaths<TDatabase>,
   TPKeyPathOrPaths,
-  TPKey
+  TPKey,
 > = readonly [
   ...IndexPathRegistry<TDatabase, TIndexPaths>,
   ...PrimaryKeyRegistry<TPKeyPathOrPaths, TPKey>,
-  PathKeyType<PrimaryKeyId, TPKey>
+  PathKeyType<PrimaryKeyId, TPKey>,
 ];
 
 /**
@@ -46,16 +37,13 @@ type PathRegistry<
  * See Dexie documentation:
  * https://dexie.org/docs/Table/Table.get()
  */
-export interface TableGetEquality<
-  TGet,
-  TEqualityRegistryLookup extends EqualityRegistryLookup
-> {
+export interface TableGetEquality<TGet, TEqualityRegistryLookup extends EqualityRegistryLookup> {
   /**
    * Get a single object by an equality matcher (alias of get).
    * See: https://dexie.org/docs/Table/Table.get()
    */
   get<TEquality extends TEqualityRegistryLookup["all"][number]["equality"]>(
-    equality: TEquality
+    equality: TEquality,
   ): IsValidEquality<
     TEqualityRegistryLookup["all"],
     TEqualityRegistryLookup["singleLookup"],
@@ -69,7 +57,7 @@ export interface TableGetEquality<
    */
   get<R, TEquality extends TEqualityRegistryLookup["all"][number]["equality"]>(
     equality: TEquality,
-    thenShortcut: ThenShortcut<TGet | undefined, R>
+    thenShortcut: ThenShortcut<TGet | undefined, R>,
   ): IsValidEquality<
     TEqualityRegistryLookup["all"],
     TEqualityRegistryLookup["singleLookup"],
@@ -82,10 +70,8 @@ export interface TableGetEquality<
    * Alias of get using explicit naming for equality.
    * See: https://dexie.org/docs/Table/Table.get()
    */
-  getEquality<
-    TEquality extends TEqualityRegistryLookup["all"][number]["equality"]
-  >(
-    equality: TEquality
+  getEquality<TEquality extends TEqualityRegistryLookup["all"][number]["equality"]>(
+    equality: TEquality,
   ): IsValidEquality<
     TEqualityRegistryLookup["all"],
     TEqualityRegistryLookup["singleLookup"],
@@ -98,12 +84,9 @@ export interface TableGetEquality<
    * Alias of get with then-shortcut.
    * See: https://dexie.org/docs/Table/Table.get()
    */
-  getEquality<
-    R,
-    TEquality extends TEqualityRegistryLookup["all"][number]["equality"]
-  >(
+  getEquality<R, TEquality extends TEqualityRegistryLookup["all"][number]["equality"]>(
     equality: TEquality,
-    thenShortcut: ThenShortcut<TGet | undefined, R>
+    thenShortcut: ThenShortcut<TGet | undefined, R>,
   ): IsValidEquality<
     TEqualityRegistryLookup["all"],
     TEqualityRegistryLookup["singleLookup"],
@@ -116,10 +99,8 @@ export interface TableGetEquality<
    * Alias of get for composite equality.
    * See: https://dexie.org/docs/Table/Table.get()
    */
-  getCompositeEquality<
-    TEquality extends TEqualityRegistryLookup["composite"][number]["equality"]
-  >(
-    equality: TEquality
+  getCompositeEquality<TEquality extends TEqualityRegistryLookup["composite"][number]["equality"]>(
+    equality: TEquality,
   ): IsValidEquality<
     TEqualityRegistryLookup["composite"],
     TEqualityRegistryLookup["singleLookup"],
@@ -134,10 +115,10 @@ export interface TableGetEquality<
    */
   getCompositeEquality<
     R,
-    TEquality extends TEqualityRegistryLookup["composite"][number]["equality"]
+    TEquality extends TEqualityRegistryLookup["composite"][number]["equality"],
   >(
     equality: TEquality,
-    thenShortcut: ThenShortcut<TGet | undefined, R>
+    thenShortcut: ThenShortcut<TGet | undefined, R>,
   ): IsValidEquality<
     TEqualityRegistryLookup["composite"],
     TEqualityRegistryLookup["singleLookup"],
@@ -150,10 +131,8 @@ export interface TableGetEquality<
    * Alias of get for single equality.
    * See: https://dexie.org/docs/Table/Table.get()
    */
-  getSingleEquality<
-    TEquality extends TEqualityRegistryLookup["single"][number]["equality"]
-  >(
-    equality: TEquality
+  getSingleEquality<TEquality extends TEqualityRegistryLookup["single"][number]["equality"]>(
+    equality: TEquality,
   ): IsValidEquality<
     TEqualityRegistryLookup["single"],
     TEqualityRegistryLookup["singleLookup"],
@@ -166,12 +145,9 @@ export interface TableGetEquality<
    * Alias of get for single equality with then-shortcut.
    * See: https://dexie.org/docs/Table/Table.get()
    */
-  getSingleEquality<
-    R,
-    TEquality extends TEqualityRegistryLookup["single"][number]["equality"]
-  >(
+  getSingleEquality<R, TEquality extends TEqualityRegistryLookup["single"][number]["equality"]>(
     equality: TEquality,
-    thenShortcut: ThenShortcut<TGet | undefined, R>
+    thenShortcut: ThenShortcut<TGet | undefined, R>,
   ): IsValidEquality<
     TEqualityRegistryLookup["single"],
     TEqualityRegistryLookup["singleLookup"],
@@ -184,11 +160,9 @@ export interface TableGetEquality<
    * Alias of get with an equality filter.
    * See: https://dexie.org/docs/Table/Table.get()
    */
-  getSingleFilterEquality<
-    TEquality extends TEqualityRegistryLookup["single"][number]["equality"]
-  >(
+  getSingleFilterEquality<TEquality extends TEqualityRegistryLookup["single"][number]["equality"]>(
     equality: TEquality,
-    equalityFilter: TEqualityRegistryLookup["equalityFilterType"]
+    equalityFilter: TEqualityRegistryLookup["equalityFilterType"],
   ): IsValidEquality<
     TEqualityRegistryLookup["single"],
     TEqualityRegistryLookup["singleLookup"],
@@ -203,11 +177,11 @@ export interface TableGetEquality<
    */
   getSingleFilterEquality<
     R,
-    TEquality extends TEqualityRegistryLookup["single"][number]["equality"]
+    TEquality extends TEqualityRegistryLookup["single"][number]["equality"],
   >(
     equality: TEquality,
     equalityFilter: TEqualityRegistryLookup["equalityFilterType"],
-    thenShortcut: ThenShortcut<TGet | undefined, R>
+    thenShortcut: ThenShortcut<TGet | undefined, R>,
   ): IsValidEquality<
     TEqualityRegistryLookup["single"],
     TEqualityRegistryLookup["singleLookup"],
@@ -228,10 +202,7 @@ export interface TableGetKey<TGet, TPKey> {
   /** Get a single object by primary key. See: https://dexie.org/docs/Table/Table.get/ */
   get(key: TPKey): PromiseExtended<TGet | undefined>;
   /** Get by primary key with then-shortcut. See: https://dexie.org/docs/Table/Table.get/ */
-  get<R>(
-    key: TPKey,
-    thenShortcut: ThenShortcut<TGet | undefined, R>
-  ): PromiseExtended<R>;
+  get<R>(key: TPKey, thenShortcut: ThenShortcut<TGet | undefined, R>): PromiseExtended<R>;
   /**
    * Fetch multiple records by primary keys.
    *
@@ -241,11 +212,11 @@ export interface TableGetKey<TGet, TPKey> {
   bulkGet(keys: TPKey[]): PromiseExtended<(TGet | undefined)[]>;
 }
 
-type TableGet<
+type TableGet<TGet, TPKey, TEqualityRegistryLookup extends EqualityRegistryLookup> = TableGetKey<
   TGet,
-  TPKey,
-  TEqualityRegistryLookup extends EqualityRegistryLookup
-> = TableGetKey<TGet, TPKey> & TableGetEquality<TGet, TEqualityRegistryLookup>;
+  TPKey
+> &
+  TableGetEquality<TGet, TEqualityRegistryLookup>;
 
 /**
  * Core table operations and collection conversions.
@@ -265,7 +236,7 @@ export interface TableCore<
   TWherePathKeyTypes extends PathKeyTypes,
   TEqualityRegistryLookup extends EqualityRegistryLookup,
   TDexie,
-  TMaxDepth extends string
+  TMaxDepth extends string,
 > {
   db: TDexie;
   readonly name: TName;
@@ -302,7 +273,7 @@ export interface TableCore<
   >;
   /** Order by an indexed path. See: https://dexie.org/docs/Collection/Collection.orderBy() */
   orderBy<Path extends IndexPath<TDatabase, TIndexPaths[number]>>(
-    index: Path
+    index: Path,
   ): Collection<
     TGet,
     TDatabase,
@@ -317,7 +288,7 @@ export interface TableCore<
   >;
   /** Order by the primary key id. See: https://dexie.org/docs/Collection/Collection.orderBy() */
   orderBy(
-    id: PrimaryKeyId
+    id: PrimaryKeyId,
   ): Collection<
     TGet,
     TDatabase,
@@ -343,21 +314,17 @@ export interface TableCore<
   /** Update fields on a single record. See: https://dexie.org/docs/Table/Table.update() */
   update(
     key: PrimaryKey<TDatabase, TPKeyPathOrPaths>,
-    changes: UpdateSpec<TDatabase, TMaxDepth>
+    changes: UpdateSpec<TDatabase, TMaxDepth>,
   ): PromiseExtended<0 | 1>;
   /** Update via change-callback on a single record. See: https://dexie.org/docs/Table/Table.update() */
   update(
     key: PrimaryKey<TDatabase, TPKeyPathOrPaths>,
-    changes: ChangeCallback<
-      TDatabase,
-      TInsert,
-      PrimaryKey<TDatabase, TPKeyPathOrPaths>
-    >
+    changes: ChangeCallback<TDatabase, TInsert, PrimaryKey<TDatabase, TPKeyPathOrPaths>>,
   ): PromiseExtended<0 | 1>;
 
   /** Bulk update multiple records. See: https://dexie.org/docs/Table/Table.bulkUpdate/ */
   bulkUpdate(
-    changes: BulkUpdate<TDatabase, TPKeyPathOrPaths, TMaxDepth>[]
+    changes: BulkUpdate<TDatabase, TPKeyPathOrPaths, TMaxDepth>[],
   ): PromiseExtended<number>;
 
   /*
@@ -377,10 +344,7 @@ export interface TableCore<
    * Dexie reference:
    * https://dexie.org/docs/Table/Table.upsert/
    */
-  upsert(
-    key: TPKey,
-    spec: UpsertSpec<TDatabase, TPKeyPathOrPaths>
-  ): PromiseExtended<boolean>;
+  upsert(key: TPKey, spec: UpsertSpec<TDatabase, TPKeyPathOrPaths>): PromiseExtended<boolean>;
 }
 
 export type TableBase<
@@ -405,7 +369,7 @@ export type TableBase<
     TPKeyPathOrPaths,
     TPKey,
     TMaxDepth
-  >
+  >,
 > = TableCore<
   TName,
   TGet,
@@ -441,7 +405,7 @@ type TableWhere<
   TEqualityRegistryLookup extends EqualityRegistryLookup,
   TDexie,
   TPKeyPathOrPaths,
-  TMaxDepth extends string
+  TMaxDepth extends string,
 > = WherePaths<
   TGet,
   TDatabase,

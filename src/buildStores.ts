@@ -1,7 +1,7 @@
 import type { TableConfigAny } from "./tableBuilder";
 
 export function buildStores(
-  tableConfigs: Record<string, TableConfigAny | null>
+  tableConfigs: Record<string, TableConfigAny | null>,
 ): Record<string, string | null> {
   const stores: Record<string, string | null> = {};
   for (const [name, cfg] of Object.entries(tableConfigs)) {

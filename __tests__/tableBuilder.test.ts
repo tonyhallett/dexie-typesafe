@@ -29,32 +29,22 @@ describe("tableBuilder", () => {
     });
 
     it("should build with just hidden auto", () => {
-      const tableConfig = tableBuilder<{ id1: number }>()
-        .hiddenAutoPkey()
-        .build();
+      const tableConfig = tableBuilder<{ id1: number }>().hiddenAutoPkey().build();
       expectHiddenNoIndices(tableConfig, true);
     });
 
     it("should build with just hidden explicit", () => {
-      const tableConfig = tableBuilder<{ id1: number }>()
-        .hiddenExplicitPkey()
-        .build();
+      const tableConfig = tableBuilder<{ id1: number }>().hiddenExplicitPkey().build();
       expectHiddenNoIndices(tableConfig, false);
     });
 
     it("should error on duplicate compound part", () => {
-      const error = tableBuilder<{ id: number; index: string }>().compoundPkey(
-        "id",
-        "id"
-      );
+      const error = tableBuilder<{ id: number; index: string }>().compoundPkey("id", "id");
 
       expect(error).toBe(duplicateKeysErrorInstance);
     });
 
-    function expectHiddenNoIndices(
-      tableConfig: TableConfigAny,
-      expectedAuto: boolean
-    ) {
+    function expectHiddenNoIndices(tableConfig: TableConfigAny, expectedAuto: boolean) {
       expect(tableConfig.pk).toEqual({ key: null, auto: expectedAuto });
       expectNoSchemaOrMapToClass(tableConfig);
     }
@@ -118,9 +108,7 @@ describe("tableBuilder", () => {
         .pkey("id")
         .uniqueCompoundIndex("compoundIndex1", "compoundIndex2")
         .build();
-      expect(tableConfig.indicesSchema).toBe(
-        "&[compoundIndex1+compoundIndex2]"
-      );
+      expect(tableConfig.indicesSchema).toBe("&[compoundIndex1+compoundIndex2]");
     });
 
     it("should join all indexes together", () => {
@@ -139,7 +127,7 @@ describe("tableBuilder", () => {
         .multiIndex("multi")
         .build();
       expect(tableConfig.indicesSchema).toBe(
-        "&uniqueIndex,index2,[compoundIndex1+compoundIndex2],*multi"
+        "&uniqueIndex,index2,[compoundIndex1+compoundIndex2],*multi",
       );
     });
 
