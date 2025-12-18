@@ -1,4 +1,10 @@
-import { dexieFactory, tableBuilder, upgrade, type TableInboundAutoTInsert } from "dexie-typesafe";
+import {
+  dexieFactory,
+  tableBuilder,
+  upgrade,
+  type TableInboundAutoInsert,
+  type TableInboundUpgradeConverter,
+} from "dexie-typesafe";
 export type FriendV1 = { id: number; name: string; dateOfBirth: Date | undefined; tags: string[] };
 export type Friend = {
   id: number;
@@ -20,7 +26,6 @@ const dbV1 = dexieFactory(
   "dexie-typesafe-demo",
   1,
 );
-type InsertFriendV1 = TableInboundAutoTInsert<typeof dbV1.friends>;
 
 const dbV2 = upgrade(
   dbV1,
@@ -35,14 +40,14 @@ const dbV2 = upgrade(
       .build(),
   },
   (tx) => {
-    return tx.friends.toCollection().modify((friendV1: FriendV1, ctx) => {
+    return tx.friends.toCollection().modify((friendV1, ctx) => {
       ctx.value = upgradeFriend(friendV1);
     });
   },
 );
 
 dbV2.on("populate", (tx) => {
-  const v1Seeds: InsertFriendV1[] = [
+  const v1Seeds: TableInboundAutoInsert<typeof dbV1.friends>[] = [
     { name: "Dexter Morgan", tags: ["antihero", "tv", "demo"], dateOfBirth: new Date(1971, 0, 1) },
     {
       name: "Donald Trump",
@@ -80,7 +85,9 @@ dbV2.on("populate", (tx) => {
   return tx.friends.bulkAdd(seeds);
 });
 
-const upgradeFriend = (friendV1: InsertFriendV1): TableInboundAutoTInsert<typeof dbV2.friends> => {
+const upgradeFriend: TableInboundUpgradeConverter<typeof dbV1.friends, typeof dbV2.friends> = (
+  friendV1,
+) => {
   const nameParts = friendV1.name.split(" ");
   const dob = friendV1.dateOfBirth;
   const dobMonthDay = dob

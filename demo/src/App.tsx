@@ -1,5 +1,5 @@
 import AddIcon from "@mui/icons-material/Add";
-import HomeIcon from "@mui/icons-material/Home";
+import PeopleIcon from "@mui/icons-material/People";
 import {
   BottomNavigation,
   BottomNavigationAction,
@@ -32,7 +32,7 @@ export function App() {
               navigate(newValue === 0 ? "/" : "/create");
             }}
           >
-            <BottomNavigationAction label="Home" icon={<HomeIcon />} />
+            <BottomNavigationAction label="Home" icon={<PeopleIcon />} />
             <BottomNavigationAction label="Create" icon={<AddIcon />} />
           </BottomNavigation>
         </Paper>

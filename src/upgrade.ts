@@ -1,5 +1,6 @@
 import type { Transaction } from "dexie";
 import type { DBTables } from "./DBTables";
+import type { TableInboundAuto, TableInboundAutoInsert } from "./TableInboundAuto";
 import type { TypedDexie } from "./TypedDexie";
 import { configureStores } from "./configureStores";
 import { mapToClass } from "./mapToClass";
@@ -179,3 +180,8 @@ export function upgrade<
   mapToClass(db, tableConfigs);
   return db as UpgradedDexie<GetDexieConfig<TTypedDexie>, TNewConfig>;
 }
+
+export type TableInboundUpgradeConverter<
+  TTableOld extends TableInboundAuto<any, any, any, any, any, any, any, any, any, any>,
+  TTableNew extends TableInboundAuto<any, any, any, any, any, any, any, any, any, any>,
+> = (old: TableInboundAutoInsert<TTableOld>) => TableInboundAutoInsert<TTableNew>;

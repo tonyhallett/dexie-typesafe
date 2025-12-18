@@ -64,9 +64,9 @@ export type TableInboundAuto<
  * Helper to infer the `TInsert` type from a `TableInboundAuto<...>` table type.
  *
  * Example:
- *   type Insert = TableInboundAutoTInsert<typeof db.friends>;
+ *   type Insert = TableInboundAutoInsert<typeof db.friends>;
  */
-export type TableInboundAutoTInsert<T> =
+export type TableInboundAutoInsert<T> =
   T extends TableInboundAuto<any, any, any, any, any, infer TInsert, any, any, any, any>
     ? TInsert
     : never;

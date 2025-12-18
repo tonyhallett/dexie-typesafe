@@ -9,5 +9,5 @@ export {
 } from "./propmodifications";
 export { tableBuilder, tableClassBuilder, tableClassBuilderExcluded } from "./tableBuilder";
 export type { Options } from "./tableBuilder";
-export type { TableInboundAutoTInsert } from "./TableInboundAuto";
-export { upgrade } from "./upgrade";
+export type { TableInboundAutoInsert } from "./TableInboundAuto";
+export { upgrade, type TableInboundUpgradeConverter } from "./upgrade";

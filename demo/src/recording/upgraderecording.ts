@@ -1,10 +1,10 @@
-import { tableBuilder, dexieFactory, upgrade } from "dexie-typesafe";
+import { dexieFactory, tableBuilder, type TableInboundAutoInsert } from "dexie-typesafe";
 
 interface TableDelete {
   thing: string;
 }
 
-interface Friends {
+interface Friend {
   id: number;
   name: string;
 }
@@ -12,13 +12,14 @@ interface Friends {
 const dbV1 = dexieFactory(
   {
     toDelete: tableBuilder<TableDelete>().hiddenAutoPkey().build(),
-    friends: tableBuilder<Friends>().autoPkey("id").index("name").build(),
+    friends: tableBuilder<Friend>().autoPkey("id").index("name").build(),
   },
   "UpgradeDemo",
 );
 
 dbV1.on("populate", (tx) => {
-  tx.friends.add({ name: "Dexter Morgan" });
+  const friendsSeed: TableInboundAutoInsert<typeof dbV1.friends>[] = [{ name: "Dexter Morgan" }];
+  tx.friends.bulkAdd(friendsSeed);
   tx.toDelete.add({ thing: "thing1" });
 });
 
