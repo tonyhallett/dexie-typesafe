@@ -37,11 +37,23 @@ namespace Dexie_typesafe_recorder.Typers
             await SelectSelectedOption(delay);
         }
 
+        public static void QuickFix()
+        {
+            using (Keyboard.Pressing(VirtualKeyShort.CONTROL))
+                Keyboard.Type(".");
+        }
+
+        public static async Task QuickFixDownAndSelect(int times, int? intellisensePause = null, int? delay = null)
+        {
+            QuickFix();
+            await Task.Delay(intellisensePause ?? 1000);
+            await DownAndSelect(times, delay);
+        }
+
         public static async Task ShowWithDotDownAndSelect(int times, int? intellisensePause = null, int? delay = null)
         {
             await ShowWithDot(intellisensePause);
             await DownAndSelect(times, delay);
-
         }
         public static Task IntellisenseDown(int times, int? delay = null)
         {

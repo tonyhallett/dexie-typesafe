@@ -13,13 +13,12 @@ namespace Dexie_typesafe_recorder.Demos
             await UpgradeToV2();
             await CreateConverterFn();
             await ChangeOnPopulateToDbV2();
-            //await CtxValueConverted();
-            //await DemoSchemaChange();
-            //await ChangeToExportDbv2();
-
+            await CtxValueConverted();
+            await ChangeToExportDbv2();
+            await DemoSchemaChange();
         }
 
-        private Task RenameFriendsToV1() => Intellisense.Rename("FriendsV1");
+        private Task RenameFriendsToV1() => Intellisense.Rename("FriendV1");
 
         private async Task AddNewFriendInterface() {
             await Typer.MoveDown(12);
@@ -35,10 +34,13 @@ interface Friend {
             await Typer.NewLine();
         }
 
-        private Task  UpgradeToV2()
+        private async Task  UpgradeToV2()
         {
-            return Typer.Type("""
-const dbV2 = upgrade(dbV1, {
+            await Typer.Type("const dbV2 = upgrade");
+            await Task.Delay(1500);
+            await Intellisense.QuickFixDownAndSelect(0);
+            await Typer.Type("""
+(dbV1, {
   toDelete: null,
   friends: tableBuilder<Friend>().autoPkey("id").index("firstName").index("lastName").build(),
 }, tx => {
@@ -50,14 +52,17 @@ const dbV2 = upgrade(dbV1, {
 """);
         }
 
-        private Task CreateConverterFn()
+        private async Task CreateConverterFn()
         {
-            return Typer.Type("""
-const converter: TableInboundUpgradeConverter<typeof dbV1.friends, typeof dbV2.friends> = (friendV1) => {
+            await Typer.Type("const converter: TableInboundUpgradeConverter");
+            await Task.Delay(1500);
+            await Intellisense.QuickFixDownAndSelect(0);
+            await Typer.Type("""
+<typeof dbV1.friends, typeof dbV2.friends> = (friendV1) => {
   const nameParts = friendV1.name.split(" ");
   return {
     firstName: nameParts[0]!,
-    lastName: nameParts[1],
+    lastName: nameParts[1]!,
   };
 };
 """);
@@ -66,49 +71,52 @@ const converter: TableInboundUpgradeConverter<typeof dbV1.friends, typeof dbV2.f
         private async Task ChangeOnPopulateToDbV2()
         {
             await Typer.MoveDown(1);
-            await Typer.MoveRight(4);
+            await Typer.MoveRight(2);
             await Typer.Backspace(1);
             await Typer.Type("2");
+            await MapSeedToConverter();
             await DeletePopulateDeletedTable();
-            // await MapSeedToConverter();
+        }
+
+
+
+        private async Task MapSeedToConverter()
+        {
+            await Typer.MoveDown(2);
+            await Typer.MoveRight(28);
+            await Typer.Type(".map(converter)");
+            await Task.CompletedTask;
         }
 
         private async Task DeletePopulateDeletedTable()
         {
-            await Typer.MoveDown(3);
-            // need new Typer.DeleteLine();
-        }
-
-        private async Task MapSeedToConverter()
-        {
-            await Task.CompletedTask;
-            //change to  tx.friends.bulkAdd(friendsSeed.map(converter));
+            await Typer.MoveDown(1);
+            await Typer.Backspace(39);
         }
 
         private async Task CtxValueConverted()
         {
-            //move up and ctx.value = converter(friendV1)
-            await Task.CompletedTask;
+            await Typer.MoveUp(12);
+            await Typer.Tab(2);
+            await Typer.Type("ctx.value = converter(friendV1);");
         }
 
         private async Task ChangeToExportDbv2()
         {
-            await Task.CompletedTask;
+            await Typer.MoveDown(15);
+            await Typer.Backspace(2);
+            await Typer.Type("2;");
         }
 
         private async Task DemoSchemaChange()
         {
-            await Task.CompletedTask;
-            //await Typer.Type("dbV2.friends.where(\"");
-            //await Task.Delay(2000);
-            //await Typer.Backspace(15);
-            //await Typer.Type("toDel");
-            //await Task.Delay(1000);
-            //await Typer.Backspace(10);
-            //await Typer.MoveDown(1);
-            //await Typer.CtrlRightArrow(5);
-            //await Typer.Backspace(1);
-            //await Typer.Type("2");
+            await Typer.MoveDown(1);
+            await Typer.Type("db.friends.where(\"");
+            await Task.Delay(2000);
+            await Typer.Backspace(15);
+            await Typer.Type("toDel");
+            await Task.Delay(1000);
+            await Typer.Backspace(9);
         }
     }
 }

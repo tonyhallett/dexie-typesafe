@@ -75,10 +75,11 @@ namespace Dexie_typesafe_recorder.Typers
             return Repeat(VirtualKeyShort.RETURN, times);
         }
 
-        public static async Task Tab()
+        public static Task Tab(int times = 1)
         {
-            Keyboard.TypeVirtualKeyCode((ushort)VirtualKeyShort.TAB);
+            return Repeat(VirtualKeyShort.TAB, times);
         }
+
         public static async Task Escape()
         {
             Keyboard.TypeVirtualKeyCode((ushort)VirtualKeyShort.ESCAPE);
@@ -123,5 +124,14 @@ namespace Dexie_typesafe_recorder.Typers
                 Keyboard.Type(VirtualKeyShort.KEY_S);
             }
         }
+
+        // not working
+        //public static void DeleteLine()
+        //{
+        //    using (Keyboard.Pressing(VirtualKeyShort.SHIFT))
+        //    {
+        //        Keyboard.Type(VirtualKeyShort.DELETE);
+        //    }
+        //}
     }
 }
