@@ -69,7 +69,7 @@ export function FriendsView() {
       return friends.where("dateOfBirth").belowOrEqual(endOfDay(filters.beforeDate));
     }
     if (filters.tagsAnyOf.length) {
-      return friends.where("tags").anyOf(filters.tagsAnyOf);
+      return friends.where("tags").anyOf(filters.tagsAnyOf).distinct();
     }
     return friends.toCollection();
   }, [filters]);

@@ -46,7 +46,7 @@ dbV2.on("populate", (tx) => {
     { name: "Dexter Morgan", tags: ["antihero", "tv", "demo"], dateOfBirth: new Date(1971, 0, 1) },
     {
       name: "Donald Trump",
-      tags: ["politician", "businessman", "tv", "demo"],
+      tags: ["***", "****", "******", "demo"],
       dateOfBirth: new Date(1946, 5, 14),
     },
     {
