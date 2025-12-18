@@ -3,16 +3,16 @@ import { dexieFactory, tableBuilder, upgrade } from "dexie-typesafe";
 interface FriendV1 {
   id: number;
   name: string;
-  dateOfBirth: Date;
-  tags: string[];
+  dateOfBirth: Date | undefined;
+  tags: string[] | undefined;
 }
 
 export interface Friend {
   id: number;
   firstName: string;
   lastName: string;
-  tags: string[];
-  dateOfBirth: Date;
+  tags: string[] | undefined;
+  dateOfBirth: Date | undefined;
 }
 
 const dbV1 = dexieFactory(
@@ -21,7 +21,7 @@ const dbV1 = dexieFactory(
       .autoPkey("id")
       .index("name")
       .index("dateOfBirth")
-      .index("tags")
+      .multiIndex("tags")
       .build(),
   },
   "Demo"
@@ -43,7 +43,7 @@ const dbV2 = upgrade(
       .index("firstName")
       .index("lastName")
       .index("dateOfBirth")
-      .index("tags")
+      .multiIndex("tags")
       .build(),
   },
   (tx) => {

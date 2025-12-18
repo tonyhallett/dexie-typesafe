@@ -132,7 +132,7 @@ type PropertyKeyPaths<
   ? FilePathProperties<TPrefix, TKey, TAllowTypeSpecificProperties>
   : IsBlob<CleanForIndex<T[TKey], TIsIndexPath>> extends true
   ? BlobPathProperties<TPrefix, TKey, TAllowTypeSpecificProperties>
-  : IsArray<T[TKey]> extends true
+  : IsArray<CleanForIndex<T[TKey], TIsIndexPath>> extends true
   ? ArrayElement<T[TKey]> extends infer Elem
     ? IsValidKey<Elem> extends true
       ? Elem extends string

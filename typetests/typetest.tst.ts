@@ -256,6 +256,7 @@ describe("tableBuilder", () => {
         nested: { index: string };
         notAnIndex: { obj: string };
         optionalIndex1: number | undefined;
+        optionalArray: number[] | undefined;
         optionalIndex2?: number;
         nullable: number | null;
         nullableObject: { a: number } | null;
@@ -273,6 +274,7 @@ describe("tableBuilder", () => {
       expect(builder.index).type.toBeCallableWith("optionalIndex2");
       expect(builder.index).type.toBeCallableWith("nullable");
       expect(builder.index).type.toBeCallableWith("nullableObject.a");
+      expect(builder.index).type.toBeCallableWith("optionalArray");
     });
 
     it("should allow nested index path when MaxDepth allows", () => {
@@ -427,6 +429,13 @@ describe("tableBuilder", () => {
       expect(builder.multiIndex).type.not.toBeCallableWith(
         "notAMultiEntryArray"
       );
+
+      tableBuilder<{
+        id: string[];
+        multiUndefined: string[] | undefined;
+      }>()
+        .pkey("id")
+        .multiIndex("multiUndefined");
     });
 
     it("should not allow multi on primary key", () => {

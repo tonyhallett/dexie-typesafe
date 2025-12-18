@@ -58,7 +58,7 @@ export interface TableConfig<
   readonly mapToClass?: ConstructorOf<TDatabase>;
 }
 
-type IsMultiEntryArray<T> = T extends readonly (infer E)[]
+type IsMultiEntryArray<T> = NonNullable<T> extends readonly (infer E)[]
   ? E extends AllowedKeyLeaf
     ? true
     : false
