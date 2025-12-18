@@ -51,7 +51,13 @@
     "clean": true
   },
   "peerDependencies": {
-    "dexie": "^4.2.1"
+    "dexie": "^4.2.1",
+    "typescript": ">=5.0"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",

@@ -2,6 +2,8 @@
 
 A Very Minimalistic Type Safe Wrapper for Dexie
 
+**Requires TypeScript >=5**
+
 # Type safe dexie schema
 
 The "tableBuilder" functions ensure that the schema does represent what you see in the database.
