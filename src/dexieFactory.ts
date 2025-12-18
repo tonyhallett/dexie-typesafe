@@ -26,7 +26,7 @@ Dexie.addons.push(WhereEqualityAddOn);
 export function dexieFactory<S extends Record<string, TableConfigAny>>(
   tableConfigs: S,
   databaseName: string,
-): TypedDexie<S, true>;
+): TypedDexie<S>;
 
 /**
  * Overload: Provide a schema `version` number.
@@ -40,7 +40,7 @@ export function dexieFactory<S extends Record<string, TableConfigAny>>(
   tableConfigs: S,
   databaseName: string,
   version: number,
-): TypedDexie<S, true>;
+): TypedDexie<S>;
 
 /**
  * Overload: Provide Dexie `options` (no explicit version).
@@ -54,7 +54,7 @@ export function dexieFactory<S extends Record<string, TableConfigAny>>(
   tableConfigs: S,
   databaseName: string,
   options: DexieOptions,
-): TypedDexie<S, true>;
+): TypedDexie<S>;
 
 /**
  * Overload: Provide both schema `version` and Dexie `options`.
@@ -70,7 +70,7 @@ export function dexieFactory<S extends Record<string, TableConfigAny>>(
   databaseName: string,
   version: number,
   options: DexieOptions,
-): TypedDexie<S, true>;
+): TypedDexie<S>;
 
 export function dexieFactory<S extends Record<string, TableConfigAny>>(
   tableConfigs: S,
@@ -80,7 +80,7 @@ export function dexieFactory<S extends Record<string, TableConfigAny>>(
 ) {
   const version = typeof versionOrOptions === "number" ? versionOrOptions : 1;
   const options = typeof versionOrOptions === "object" ? versionOrOptions : maybeOptions;
-  const db = new Dexie(databaseName, options) as unknown as TypedDexie<S, true>;
+  const db = new Dexie(databaseName, options) as unknown as TypedDexie<S>;
   configureStores(db, version, tableConfigs);
   mapToClass(db, tableConfigs);
   return db;

@@ -59,3 +59,14 @@ export type TableInboundAuto<
       options: { allKeys: B },
     ): PromiseExtendedPKeyOrKeys<PrimaryKey<TDatabase, TPKeyPathOrPaths>, B>;
   };
+
+/**
+ * Helper to infer the `TInsert` type from a `TableInboundAuto<...>` table type.
+ *
+ * Example:
+ *   type Insert = TableInboundAutoTInsert<typeof db.friends>;
+ */
+export type TableInboundAutoTInsert<T> =
+  T extends TableInboundAuto<any, any, any, any, any, infer TInsert, any, any, any, any>
+    ? TInsert
+    : never;

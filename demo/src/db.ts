@@ -1,4 +1,4 @@
-import { dexieFactory, tableBuilder, upgrade } from "dexie-typesafe";
+import { dexieFactory, tableBuilder, upgrade, type TableInboundAutoTInsert } from "dexie-typesafe";
 export type FriendV1 = { id: number; name: string; dateOfBirth: Date | undefined; tags: string[] };
 export type Friend = {
   id: number;
@@ -20,9 +20,29 @@ const dbV1 = dexieFactory(
   "dexie-typesafe-demo",
   1,
 );
+type InsertFriendV1 = TableInboundAutoTInsert<typeof dbV1.friends>;
 
-dbV1.on("populate", (tx) => {
-  const seeds: Omit<FriendV1, "id">[] = [
+const dbV2 = upgrade(
+  dbV1,
+  {
+    friends: tableBuilder<Friend>()
+      .autoPkey("id")
+      .index("firstName")
+      .index("lastName")
+      .index("dateOfBirth")
+      .index("dateOfBirthMonthDay")
+      .multiIndex("tags")
+      .build(),
+  },
+  (tx) => {
+    return tx.friends.toCollection().modify((friendV1: FriendV1, ctx) => {
+      ctx.value = upgradeFriend(friendV1);
+    });
+  },
+);
+
+dbV2.on("populate", (tx) => {
+  const v1Seeds: InsertFriendV1[] = [
     { name: "Dexter Morgan", tags: ["antihero", "tv", "demo"], dateOfBirth: new Date(1971, 0, 1) },
     {
       name: "Donald Trump",
@@ -56,37 +76,22 @@ dbV1.on("populate", (tx) => {
     { name: "Sundar Pichai", tags: ["tech", "google", "demo"], dateOfBirth: new Date(1972, 5, 10) },
     { name: "Mark Zuckerberg", tags: ["tech", "meta", "demo"], dateOfBirth: new Date(1984, 4, 14) },
   ];
+  const seeds = v1Seeds.map(upgradeFriend);
   return tx.friends.bulkAdd(seeds);
 });
 
-const dbV2 = upgrade(
-  dbV1,
-  {
-    friends: tableBuilder<Friend>()
-      .autoPkey("id")
-      .index("firstName")
-      .index("lastName")
-      .index("dateOfBirth")
-      .index("dateOfBirthMonthDay")
-      .multiIndex("tags")
-      .build(),
-  },
-  (tx) => {
-    return tx.friends.toCollection().modify((friendV1: FriendV1, ctx) => {
-      const nameParts = friendV1.name.split(" ");
-      const dob = friendV1.dateOfBirth;
-      const dobMonthDay = dob
-        ? String(dob.getMonth() + 1).padStart(2, "0") + "-" + String(dob.getDate()).padStart(2, "0")
-        : undefined;
-      ctx.value = {
-        firstName: nameParts[0]!,
-        lastName: nameParts[1]!,
-        dateOfBirth: dob,
-        dateOfBirthMonthDay: dobMonthDay,
-        tags: friendV1.tags,
-      } as Omit<Friend, "id">;
-    });
-  },
-);
-
+const upgradeFriend = (friendV1: InsertFriendV1): TableInboundAutoTInsert<typeof dbV2.friends> => {
+  const nameParts = friendV1.name.split(" ");
+  const dob = friendV1.dateOfBirth;
+  const dobMonthDay = dob
+    ? String(dob.getMonth() + 1).padStart(2, "0") + "-" + String(dob.getDate()).padStart(2, "0")
+    : undefined;
+  return {
+    firstName: nameParts[0]!,
+    lastName: nameParts[1]!,
+    dateOfBirth: dob,
+    dateOfBirthMonthDay: dobMonthDay,
+    tags: friendV1.tags,
+  };
+};
 export const friends = dbV2.friends;

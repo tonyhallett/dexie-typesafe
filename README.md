@@ -307,8 +307,7 @@ The schema is updated using table builders as used by the dexie factory.
 
 A different "db" type is returned as this reflects the new config.
 
-1. Tables can be deleted
-2. There is no `on("populate")` for an upgraded database.
+Tables can be deleted with null.
 
 Most importantly, if your schema mandates updating existing tables then you will need to supply the upgradeFunction.
 

@@ -25,7 +25,7 @@ type MergedConfig<
 type UpgradedDexie<
   TOldConfig extends Record<string, TableConfigAny>,
   TNewConfig extends Record<string, TableConfigAny | null>,
-> = TypedDexie<MergedConfig<TOldConfig, TNewConfig>, false>;
+> = TypedDexie<MergedConfig<TOldConfig, TNewConfig>>;
 
 type ReplaceInsert<T extends TableConfigAny, TNewInsert> =
   T extends TableConfig<
@@ -80,18 +80,18 @@ export type TransactionWithTables<TConfig extends Record<string, TableConfigAny>
   Transaction,
   "table"
 > &
-  Pick<DBTables<TConfig, any>, StringKeyOf<DBTables<TConfig, any>>>;
+  Pick<DBTables<TConfig>, StringKeyOf<DBTables<TConfig>>>;
 
 type UpgradeTransaction<
   TOldConfig extends Record<string, TableConfigAny>,
   TNewConfig extends Record<string, TableConfigAny | null>,
 > = TransactionWithTables<UpgradeConfig<TOldConfig, TNewConfig>>;
 
-type GetDexieConfig<TTypedDexie extends TypedDexie<any, any>> =
-  TTypedDexie extends TypedDexie<infer TConfig, any> ? TConfig : never;
+type GetDexieConfig<TTypedDexie extends TypedDexie<any>> =
+  TTypedDexie extends TypedDexie<infer TConfig> ? TConfig : never;
 
 type UpgradeFunction<
-  TTypedDexie extends TypedDexie<any, any>,
+  TTypedDexie extends TypedDexie<any>,
   TNewConfig extends Record<string, TableConfigAny | null>,
 > = (trans: UpgradeTransaction<GetDexieConfig<TTypedDexie>, TNewConfig>) => PromiseLike<any> | void;
 /**
@@ -103,7 +103,7 @@ type UpgradeFunction<
  * @returns The upgraded typed Dexie instance.
  */
 export function upgrade<
-  TTypedDexie extends TypedDexie<any, any>,
+  TTypedDexie extends TypedDexie<any>,
   TNewConfig extends Record<string, TableConfigAny | null>,
 >(
   db: TTypedDexie,
@@ -118,7 +118,7 @@ export function upgrade<
  * @param upgradeFunction The migration function to run during upgrade.
  */
 export function upgrade<
-  TTypedDexie extends TypedDexie<any, any>,
+  TTypedDexie extends TypedDexie<any>,
   TNewConfig extends Record<string, TableConfigAny | null>,
 >(
   db: TTypedDexie,
@@ -132,7 +132,7 @@ export function upgrade<
  * @param version The target schema version number.
  */
 export function upgrade<
-  TTypedDexie extends TypedDexie<any, any>,
+  TTypedDexie extends TypedDexie<any>,
   TNewConfig extends Record<string, TableConfigAny | null>,
 >(
   db: TTypedDexie,
@@ -147,7 +147,7 @@ export function upgrade<
  * @param upgradeFunction The migration function to run during upgrade.
  */
 export function upgrade<
-  TTypedDexie extends TypedDexie<any, any>,
+  TTypedDexie extends TypedDexie<any>,
   TNewConfig extends Record<string, TableConfigAny | null>,
 >(
   db: TTypedDexie,
@@ -156,7 +156,7 @@ export function upgrade<
   upgradeFunction: UpgradeFunction<TTypedDexie, TNewConfig>,
 ): UpgradedDexie<GetDexieConfig<TTypedDexie>, TNewConfig>;
 export function upgrade<
-  TTypedDexie extends TypedDexie<any, any>,
+  TTypedDexie extends TypedDexie<any>,
   TNewConfig extends Record<string, TableConfigAny | null>,
 >(
   db: TTypedDexie,

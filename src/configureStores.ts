@@ -3,7 +3,7 @@ import type { TableConfigAny } from "./tableBuilder";
 import type { TypedDexie } from "./TypedDexie";
 
 export function configureStores(
-  db: TypedDexie<any, any>,
+  db: TypedDexie<any>,
   version: number,
   tableConfigs: Record<string, TableConfigAny | null>,
   upgradeFunction?: any,

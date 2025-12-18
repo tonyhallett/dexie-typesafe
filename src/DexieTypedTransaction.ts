@@ -12,9 +12,9 @@ import type {
 } from "dexie";
 import type { DBTables } from "./DBTables";
 
-type TableArg<TDbTables extends DBTables<any, any>> = keyof TDbTables | TDbTables[keyof TDbTables];
+type TableArg<TDbTables extends DBTables<any>> = keyof TDbTables | TDbTables[keyof TDbTables];
 
-type TablesArg<TDbTables extends DBTables<any, any>> = readonly TableArg<TDbTables>[];
+type TablesArg<TDbTables extends DBTables<any>> = readonly TableArg<TDbTables>[];
 
 // Extract name from a single arg
 type ArgName<A> = A extends { readonly name: infer N extends string }
@@ -28,7 +28,7 @@ type ArgNames<TTables extends readonly any[]> = ArgName<TTables[number]>;
 
 // The result: TransactionWithTables exposes only the named tables from the DBTables mapping
 type TransactionWithTables<
-  TDbTables extends DBTables<any, any>,
+  TDbTables extends DBTables<any>,
   TTables extends TablesArg<TDbTables>,
 > = Omit<Transaction, "table"> & Pick<TDbTables, ArgNames<TTables>>;
 
@@ -40,7 +40,7 @@ export interface DbEventFnsWithoutPopulate {
   (eventName: "close", subscriber: (event: Event) => any): void;
 }
 
-type TypedOnOnce<TDbTables extends DBTables<any, any>, TInitialDb extends boolean> = {
+type TypedOnOnce<TDbTables extends DBTables<any>> = {
   on: DexieEventSet &
     DbEventFnsWithoutPopulate & {
       // from DbEvents
@@ -50,23 +50,18 @@ type TypedOnOnce<TDbTables extends DBTables<any, any>, TInitialDb extends boolea
       blocked: DexieEvent;
       versionchange: DexieVersionChangeEvent;
       close: DexieCloseEvent;
-    } & PopulateInitialOnly<TDbTables, TInitialDb>;
-  once: DbEventFnsWithoutPopulate & PopulateInitialOnly<TDbTables, TInitialDb>;
+    } & TypedPopulate<TDbTables>;
+  once: DbEventFnsWithoutPopulate & TypedPopulate<TDbTables>;
 };
 
-type TypedPopulate<TDbTables extends DBTables<any, any>> = {
+type TypedPopulate<TDbTables extends DBTables<any>> = {
   // DbEventFns typed transaction for 'populate' event
   (eventName: "populate", subscriber: (trans: Transaction & TDbTables) => any): void;
   populate: DexiePopulateEvent; // this is old style.
 };
 
-type PopulateInitialOnly<
-  TDbTables extends DBTables<any, any>,
-  TInitialDb extends boolean,
-> = TInitialDb extends true ? TypedPopulate<TDbTables> : {};
-
 // todo - suppport table array, table, table array args
-type TypedTransaction<TDbTable extends DBTables<any, any>> = {
+type TypedTransaction<TDbTable extends DBTables<any>> = {
   // Array form: transaction(mode, [tables], scope)
   transaction<U, TTables extends TablesArg<TDbTable>>(
     mode: TransactionMode,
@@ -84,9 +79,6 @@ type TypedTransaction<TDbTable extends DBTables<any, any>> = {
   ): PromiseExtended<U>;
 };
 
-export type DexieTypedTransaction<
-  TDbTables extends DBTables<any, any>,
-  TInitialDb extends boolean,
-> = DexieWithoutTransactionOnOnce &
+export type DexieTypedTransaction<TDbTables extends DBTables<any>> = DexieWithoutTransactionOnOnce &
   TypedTransaction<TDbTables> &
-  TypedOnOnce<TDbTables, TInitialDb>;
+  TypedOnOnce<TDbTables>;
