@@ -20,6 +20,8 @@
     "@fontsource/roboto": "^5.2.8",
     "@mui/icons-material": "^7.3.4",
     "@mui/material": "^7.3.4",
+    "@mui/x-date-pickers": "^7.12.0",
+    "dayjs": "^1.11.13",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "dexie": "^4.2.1",
