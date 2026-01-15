@@ -333,7 +333,7 @@ The upgrade function is best explained via a demo
 
 ![upgrade demo](/readme-assets/UpgradeDemo.gif)
 
-# Demo app
+# Demo app1
 
 [demo](https://tonyhallett.github.io/dexie-typesafe/)
-[src](https://github.com/tonyhallett/dexie-typesafe/blob/main/demo/src/index.tsx)
+[src](/demo/src/index.tsx)
