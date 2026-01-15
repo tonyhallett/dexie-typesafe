@@ -27,9 +27,9 @@
   },
   "files": [
     "dist",
-    "types",
-    "package.json"
+    "types"
   ],
+  "repository": "github:tonyhallett/dexie-typesafe",
   "scripts": {
     "build": "npm run build:tsup && npm run build:types",
     "build:tsup": "tsup",
@@ -41,7 +41,12 @@
     "lint:ci": "eslint . --ext .ts,.tsx,.js,.jsx --max-warnings=0",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css,html}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css,html}\"",
-    "prepare": "husky install"
+    "prepare": "husky",
+    "prepack": "npm run build && reporeadmerewriter"
+  },
+  "repoReadmeRewriter": {
+    "output": "README.md",
+    "readme": ".github/README.md"
   },
   "tsup": {
     "entry": [
@@ -74,10 +79,11 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react": "^7.37.2",
-    "lint-staged": "^15.2.10",
     "husky": "^9.0.11",
     "jest": "^30.2.0",
+    "lint-staged": "^15.2.10",
     "prettier": "^3.4.2",
+    "reporeadmerewriter": "^1.0.1",
     "ts-jest": "^29.4.5",
     "tstyche": "^5.0.1",
     "tsup": "^8.5.1",
